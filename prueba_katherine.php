@@ -8,7 +8,7 @@
 <body>
     <h1> Prueba katherine</h1>
  <?php
-    echo " prueba katherine";
+    echo " prueba katherine cambiada";
 ?>
     
 
