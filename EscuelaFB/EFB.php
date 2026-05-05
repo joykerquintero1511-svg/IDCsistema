@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>Escuela de Formación Bíblica (EFB)</title>
-        <link rel="stylesheet" href="estilos/style.css">
+        <link rel="stylesheet" href="../estilos/style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
@@ -11,13 +11,13 @@
         <div class="background-titulo">
             <div class="header-container">
             
-            <img src="imagenes/EFB.png" alt="Logo Escuela de Formación Bíblica" class="header-logo">
+            <img src="../imagenes/EFB.png" alt="Logo Escuela de Formación Bíblica" class="header-logo">
     <h1 class="header-title">Escuela de Formación Bíblica (EFB)</h1>
         </div>
 </div>
         <h5 class="subtitulos">¡Bienvenido! Dios te bendiga</h5>
     
-        <?php include("nav.php"); ?>
+        <?php include("../nav.php"); ?>
 
         <div class="contenedor_flex">
         <div class="cuadro_informativos">

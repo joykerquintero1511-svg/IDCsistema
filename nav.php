@@ -5,6 +5,6 @@
                 <li><a href="Registro_de_miembros.php">Registro de Miembros</a></li>
                 <li><a href="Noticias#">Noticias</a></li>
                 <li><a href="Contacto#">Contacto</a></li>
-                <li><a href="EFB.php">Escuela de Formacion Bíblica (EFB)</a></li>
+                <li><a href="EscuelaFB/EFB.php">Escuela de Formacion Bíblica (EFB)</a></li>
             </ul>
         </nav>
