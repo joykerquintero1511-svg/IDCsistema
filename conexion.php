@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "IDCsistema"; 
+$db   = "idcdatabase"; 
 
 // Creamos la conexión usando las variables de arriba
 $conexion = mysqli_connect($host, $user, $pass, $db);

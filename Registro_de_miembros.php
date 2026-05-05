@@ -23,7 +23,7 @@
 
         <p class="descripcion">Este formulario  te permite  registrarte en el sitema de miembros IDC.</p>
 
-        <form class="formulario_registro" action="registrar_usuarios.php" method="POST" class="registro-form">
+        <form class="formulario_registro registro-form" action="registrar_usuarios.php" method="POST">
             
             <input class="formulario-input" type="text" id="nombre" name="nombre" placeholder="Nombre" required> <br>
 
@@ -37,7 +37,7 @@
             <input class="formulario-input" type="tel" id="telefono" name="telefono" placeholder="Número de Teléfono"> 
             <br>
 
-            <select class="inscripciones-input" type="text" id="Red" name="Red" required aria-placeholder="Seleccione una Red">
+            <select class="inscripciones-input" type="text" id="red" name="red" required aria-placeholder="Seleccione una Red">
                 <option value="Ebenezer">Ebenezer (Lider Mayvel y Vanessa de Mora)</option>
                 <option value="Kairos">Kairos (Lider Darwin y Zulimar de Hidalgo)</option>
                 <option value="otro">Otro</option>
