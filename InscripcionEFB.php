@@ -22,7 +22,7 @@ include("Niveles.php");
         <h5 class="subtitulos">¡Bienvenido! Dios te bendiga</h5>
 
         <div class="form-container">
-            <form  action="procesar_inscripcion.php" method="POST">
+            <form  action="registrar_usuarios.php" method="POST">
                 
                 <input class="formulario-input" type="text" id="nombre" name="nombre" placeholder="Nombres" required> <br>
 
