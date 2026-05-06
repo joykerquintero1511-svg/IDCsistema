@@ -1,10 +1,24 @@
 <?php
     require_once '../conexion.php'; // conexión a la BD (más seguro que include)
     require_once '../nav.php';     // menú de navegación
+
+ $conexion = $conexion ?? null; 
+/* Significa:
+
+“si $conexion no existe, créala como null”
+
+ Para PHP → no cambia nada
+ Para VS Code → deja de marcar error,xq se tildaba
+ $conexion(linea 56) x la extension intelephense q pensaba no
+ estaba declarada la variable igual corria el sistema
+ pero no m gustaba cm se veia.y tambien xq se usa
+ require_once,la variable viene de otro archivo y
+ el codigo funciona bien.
+*/
 ?>
 
     <!DOCTYPE html>
-    <html lang="es"> <!-- Coloco "es" xq la pag estara en español, "en"significa ingles
+    <html lang="es"> <!-- Coloco "es" xq la pag estara en español, "en"significa ingles-->
     <head>
         <meta charset="UTF-8"> <!--	Asegura que los textos con tildes y la ñ se vean bien-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--Hace que la página sea responsive (se adapte a móviles)-->
@@ -34,20 +48,15 @@
           <?php
           $sql = "SELECT * FROM estudiantes";  // Consulta SQL para seleccionar todos los estudiantes
 
-          global $conexion;  
+           
  /* Cree esta  global $conexion; para decirle 
  “hey PHP, esa variable que viene de otro archivo, úsala aquí también */
 
 
-        $resultado = mysqli_query($conexion,$sql);   // Ejecuta la consulta en la base de datos
-  
- // VALIDACIÓN DE ERROR 
+       $resultado = ejecutarConsulta($conexion, $sql); // Nva funcion creada en conexion
+ 
 
-        if (!$resultado) {
-             die("Error en la consulta: " . mysqli_error($conexion));
-  }
-    
-        while ($fila= mysqli_fetch_assoc($resultado)){ // Recorre cada fila de resultados obtenidos
+    while ($fila= mysqli_fetch_assoc($resultado)){ // Recorre cada fila de resultados obtenidos
            
             echo "<tr>"; // Imprime una celda con el dato del estudiante
 
