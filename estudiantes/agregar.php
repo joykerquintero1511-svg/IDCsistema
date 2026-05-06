@@ -14,16 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nivel = trim($_POST['nivel_academico']);
 
     if (empty($nombre) || empty($apellido)) {
-        $error = "⚠️ Nombre y Apellido son obligatorios.";
+        $error = "Nombre y Apellido son obligatorios.";
     } else {
         $sql = "INSERT INTO estudiantes (nombre, apellido, email, telefono, nivel_academico) 
                 VALUES ('$nombre', '$apellido', '$email', '$telefono', '$nivel')";
 
         if (ejecutarConsulta($conexion, $sql)) {
-            $exito = "✅ Estudiante agregado correctamente.";
+            $exito = "Estudiante agregado correctamente.";
             $nombre = $apellido = $email = $telefono = $nivel = "";
         } else {
-            $error = "❌ Error al agregar estudiante.";
+            $error = "Error al agregar estudiante.";
         }
     }
 }
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label>Nivel Académico:</label><br>
         <input type="text" name="nivel_academico" value="<?php echo htmlspecialchars($nivel); ?>"><br><br>
 
-        <button type="submit">💾 Guardar Estudiante</button>
+        <button type="submit">Guardar Estudiante</button>
         <a href="listar.php">Cancelar</a>
     </form>
 </body>
