@@ -45,10 +45,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Agregar Estudiante</title>
-    <link rel="stylesheet" href="../estilos/style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-    <h1> Agregar Nuevo Estudiante</h1>
+
+<div class="background-titulo">
+            <div class="header-container">
+            
+            <img src="../imagenes/EFB.png" alt="Logo Escuela de Formación Bíblica" class="header-logo">
+    <h1 class="header-title">Agregar Estudiante</h1>
+        </div>
+</div>
+        <h5 class="subtitulos">¡Bienvenido! Dios te bendiga</h5>
+
 
  <!-- Aca se puede abrir y cerrar php varias veces y finalizando el endif -->
     <?php if ($error): ?>
@@ -62,17 +71,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     <form method="POST"> <!-- El formulario envía los datos ocultos (seguro) con POST-->
-        <input type="text" name="nombre" placeholder="Nombres" value="<?php echo htmlspecialchars($nombre); ?>" required><br><br>
-        <input type="text" name="apellido" placeholder="Apellido" value="<?php echo htmlspecialchars($apellido); ?>" required ><br><br>
-        <input type= "text" name="cedula" placeholder="Cedula" value="<?php echo htmlspecialchars($cedula);?>"required><br><br>
-        <input type="text" name= "direccion" placeholder="Dirección" value="<?php echo htmlspecialchars($direccion);?>"required><br><br>
-        <input type="text" name="email" placeholder="Email" value="<?php echo htmlspecialchars($email); ?>"><br><br> 
-        <input type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($telefono);?>"required><br><br>
-       <input type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
-        <input type ="text" name="estado_civil" placeholder="Estado_civil" value="<?php echo htmlspecialchars($estado_civil);?>"required><br><br>
-        <input type="date" name="fecha_registro" placeholder="Fecha de Registro" value="<?php echo htmlspecialchars($fecha_registro); ?>"><br><br>       
+        <input class="formulario-input" type="text" name="nombre" placeholder="Nombres" value="<?php echo htmlspecialchars($nombre); ?>" required><br><br>
+        <input class="formulario-input" type="text" name="apellido" placeholder="Apellido" value="<?php echo htmlspecialchars($apellido); ?>" required ><br><br>
+        <input class="formulario-input" type= "text" name="cedula" placeholder="Cedula" value="<?php echo htmlspecialchars($cedula);?>"required><br><br>
+        <input class="formulario-input" type="text" name= "direccion" placeholder="Dirección" value="<?php echo htmlspecialchars($direccion);?>"required><br><br>
+        <input class="formulario-input" type="text" name="email" placeholder="Email" value="<?php echo htmlspecialchars($email); ?>"><br><br> 
+        <input class="formulario-input" type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($telefono);?>"required><br><br>
+       <input class="formulario-input" type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
+        <input class="formulario-input" type ="text" name="estado_civil" placeholder="Estado_civil" value="<?php echo htmlspecialchars($estado_civil);?>"required><br><br>
+        <input class="formulario-input" type="date" name="fecha_registro" placeholder="Fecha de Registro" value="<?php echo htmlspecialchars($fecha_registro); ?>"><br><br>       
 
-        <select name="nivel_instruccion">
+        <select class="inscripciones-input" name="nivel_instruccion">
             <option value="">Seleccione</option>
             <option value="Primaria">Primaria</option>
             <option value="Secundaria">Secundaria</option>
@@ -85,8 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-        <button type="submit">Guardar Estudiante</button>
-        <a href="listar.php">Cancelar</a>
+        <button type="submit" class="boton-input">Guardar Estudiante</button>
+        <a href="listar.php" class="boton-volver">Cancelar</a>
     </form>
 </body>
 </html>
