@@ -8,13 +8,14 @@
     $apellido = $_POST['apellidos'];
     $email = $_POST['email'];
     $telefono = $_POST['telefono'];
-    $nivel_academico = $_POST['nivel_academico']; // cree esta columna la base d datos q faltaba
+    $nivel_academico = $_POST['nivel_academico']; 
+    $contraseña = $_POST['contraseña']; // cree esta columna la base d datos q faltaba
 
 
 /* (empty) es una función de PHP que verifica si una variable está vacía,
  es decir, si no tiene un valor válido como texto, número o si es nula.
  */
-    if (empty($nombre) || empty($apellido) || empty($email) || empty($nivel_academico)) {
+    if (empty($nombre) || empty($apellido) || empty($email) || empty($nivel_academico) || empty($contraseña)) {
         die("Error: Todos los campos son obligatorios.");
 }
 
@@ -23,8 +24,8 @@
   va qué columnas voy a llenar. En VALUES van los datos que voy a 
   poner en esas columnas, en el mismo orden."      */
 
-    $sql = "INSERT INTO estudiantes (nombre, apellido, email, telefono, nivel_academico) 
-        VALUES ('$nombre', '$apellido', '$email', '$telefono','$nivel_academico')";
+    $sql = "INSERT INTO estudiantes (nombre, apellido, email, telefono, nivel_academico, contraseña) 
+        VALUES ('$nombre', '$apellido', '$email', '$telefono','$nivel_academico', '$contraseña')";
 
     if (mysqli_query($conexion, $sql)) {
     echo "<h2> Registro exitoso</h2>"; // se puede colcocar etiqueta HTML ya q php trabaja con html sin problema
