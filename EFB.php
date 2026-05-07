@@ -17,7 +17,8 @@
 </div>
         <h5 class="subtitulos">¡Bienvenido! Dios te bendiga</h5>
     
-        <?php include("../nav.php"); ?>
+        <?php include("nav.php"); //cambie la ruta xq esta en la misma carpeta
+        ?> 
 
         <div class="contenedor_flex">
         <div class="cuadro_informativos">
