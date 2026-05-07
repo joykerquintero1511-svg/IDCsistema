@@ -22,6 +22,7 @@ if (!$conexion) {
  * @param bool $detenerSiError (true = detiene el sistema si falla)
  * @return mysqli_result|false
  */
+
 function ejecutarConsulta($conexion, $sql, $detenerSiError = true) {
     $resultado = mysqli_query($conexion, $sql);
 
