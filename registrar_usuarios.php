@@ -1,6 +1,11 @@
 <?php
  // Incluye el contenido del archivo conexion.php dentro de este archivo. 
-    include ("conexion.php");
+  require_once 'conexion.php';
+
+   // Verificar que el formulario fue enviado por POST
+  if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    die("Acceso no permitido. Por favor, envía el formulario desde la página de inscripción.");
+}
 
 // Recibir los datos del formulario
 
@@ -8,8 +13,13 @@
     $apellido = $_POST['apellidos'];
     $email = $_POST['email'];
     $telefono = $_POST['telefono'];
+<<<<<<< HEAD
     $nivel_academico = $_POST['nivel_academico']; 
     $contraseña = $_POST['contraseña']; // cree esta columna la base d datos q faltaba
+=======
+    $nivel_academico = $_POST['nivel_academico'];
+     // cree esta columna la base d datos q faltaba
+>>>>>>> 610430851cd8030ef81907da62e30224e75183ab
 
 
 /* (empty) es una función de PHP que verifica si una variable está vacía,

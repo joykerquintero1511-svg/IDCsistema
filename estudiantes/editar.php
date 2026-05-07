@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $apellido = trim($_POST['apellido']);
     $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono']);
-    $nivel = trim($_POST['nivel_academico']);
+    $nivel_academico = trim($_POST['nivel_academico']);
+    $status = trim ($_POST['status']); 
 
     if (empty($nombre) || empty($apellido)) {
         $error = " Nombre y Apellido son obligatorios.";
@@ -37,7 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 apellido = '$apellido',
                 email = '$email',
                 telefono = '$telefono',
-                nivel_academico = '$nivel'
+                nivel_academico = '$nivel_academico',
+                status = '$status'
                 WHERE id_estudiante = $id";
 
         if (ejecutarConsulta($conexion, $sql)) {
@@ -47,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $estudiante['apellido'] = $apellido;
             $estudiante['email'] = $email;
             $estudiante['telefono'] = $telefono;
-            $estudiante['nivel_academico'] = $nivel;
+            $estudiante['nivel_academico'] = $nivel_academico;
         } else {
             $error = " Error al actualizar estudiante.";
         }
@@ -74,22 +76,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
 
     <form method="POST">
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" value="<?php echo htmlspecialchars($estudiante['nombre']); ?>" required><br><br>
 
-        <label>Apellido:</label><br>
-        <input type="text" name="apellido" value="<?php echo htmlspecialchars($estudiante['apellido']); ?>" required><br><br>
+        <input type="text" name="nombre" placeholder="Nombres" value="<?php echo htmlspecialchars($estudiante['nombre']); ?>" required><br><br>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" value="<?php echo htmlspecialchars($estudiante['email']); ?>"><br><br>
+        <input type="text" name="apellido" placeholder="Apellido" value="<?php echo htmlspecialchars($estudiante['apellido']); ?>" required><br><br>
 
-        <label>Teléfono:</label><br>
-        <input type="text" name="telefono" value="<?php echo htmlspecialchars($estudiante['telefono']); ?>"><br><br>
+        <input type="text" name="email" placeholder="Correo Electrónico" value="<?php echo htmlspecialchars($estudiante['email']); ?>"><br><br>
 
-        <label>Nivel Académico:</label><br>
-        <input type="text" name="nivel_academico" value="<?php echo htmlspecialchars($estudiante['nivel_academico']); ?>"><br><br>
+        <input type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($estudiante['telefono']); ?>"><br><br>
 
-        <button type="submit">💾 Guardar Cambios</button>
+       <input type="text" name="nivel_academico" placeholder="nivel_academico" value="<?php echo htmlspecialchars($estudiante['nivel_academico']); ?>"><br><br>
+    
+       <select name="status">
+    <option value="Activo" <?php echo ($estudiante['status'] == 'Activo') ? 'selected' : ''; ?>>Activo</option>
+    <option value="Inactivo" <?php echo ($estudiante['status'] == 'Inactivo') ? 'selected' : ''; ?>>Inactivo</option>
+    <option value="Egresado" <?php echo ($estudiante['status'] == 'Egresado') ? 'selected' : ''; ?>>Egresado</option>
+    <option value="Inhabilitado" <?php echo ($estudiante['status'] == 'Inhabilitado') ? 'selected' : ''; ?>>Inhabilitado</option>
+</select><br><br>
+
+        <button type="submit">Guardar Cambios</button>
         <a href="listar.php">Cancelar</a>
     </form>
 </body>
