@@ -3,7 +3,7 @@ require_once '../conexion.php';
 
 $conexion = $conexion ?? null; // el xq d esta variable esta en la carpeta de listar.php
 
-$nombre = $apellido =$cedula =$direccion = $email = $telefono = $nivel_academico = $estado_civil = $nivel_instruccion = $fecha_registro = "";
+$nombre = $apellido =$cedula =$direccion = $email = $telefono = $nivel_academico = $status = $nivel_instruccion = $fecha_registro = "";
 $error = "";
 $exito = "";
 
@@ -19,15 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono']);
     $nivel_academico = trim($_POST['nivel_academico']);
-    $estado_civil = trim($_POST['estado_civil']);
+    $status = trim($_POST['status']);
     $nivel_instruccion = trim($_POST['nivel_instruccion']);
     $fecha_registro = trim($_POST['fecha_registro']);
 
     if (empty($nombre) || empty($apellido)) {   // (empty) esta explicado en registrar_usuario.php
         $error = "Nombre y Apellido son obligatorios.";
     } else {
-        $sql = "INSERT INTO estudiantes (nombre, apellido,cedula, direccion, email, telefono, nivel_academico, estado_civil,nivel_instruccion, fecha_registro ) 
-                VALUES ('$nombre', '$apellido', '$cedula','$direccion','$email', '$telefono', '$nivel_academico', '$estado_civil', '$nivel_instruccion','$fecha_registro')";
+        $sql = "INSERT INTO estudiantes (nombre, apellido,cedula, direccion, email, telefono, nivel_academico,status,nivel_instruccion, fecha_registro ) 
+                VALUES ('$nombre', '$apellido', '$cedula','$direccion','$email', '$telefono', '$nivel_academico', '$status', '$nivel_instruccion','$fecha_registro')";
 
     # Esta es la q cree en conexion.php 
         if (ejecutarConsulta($conexion, $sql)) {
@@ -66,10 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="text" name="apellido" placeholder="Apellido" value="<?php echo htmlspecialchars($apellido); ?>" required ><br><br>
         <input type= "text" name="cedula" placeholder="Cedula" value="<?php echo htmlspecialchars($cedula);?>"required><br><br>
         <input type="text" name= "direccion" placeholder="Dirección" value="<?php echo htmlspecialchars($direccion);?>"required><br><br>
-        <input type="text" name="email" placeholder="Email" value="<?php echo htmlspecialchars($email); ?>"><br><br> 
+        <input type="text" name="email" placeholder="Correo Electronico" value="<?php echo htmlspecialchars($email); ?>"><br><br> 
         <input type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($telefono);?>"required><br><br>
        <input type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
-        <input type ="text" name="estado_civil" placeholder="Estado_civil" value="<?php echo htmlspecialchars($estado_civil);?>"required><br><br>
+       
+  <select name="status">
+    <option value="Activo" <?php echo ($status == 'Activo') ? 'selected' : ''; ?>>Activo</option>
+    <option value="Inactivo" <?php echo ($status == 'Inactivo') ? 'selected' : ''; ?>>Inactivo</option>
+    <option value="Egresado" <?php echo ($status == 'Egresado') ? 'selected' : ''; ?>>Egresado</option>
+    <option value="Inhabilitado" <?php echo ($status == 'Inhabilitado') ? 'selected' : ''; ?>>Inhabilitado</option>
+    </select><br><br>
+       
         <input type="date" name="fecha_registro" placeholder="Fecha de Registro" value="<?php echo htmlspecialchars($fecha_registro); ?>"><br><br>       
 
         <select name="nivel_instruccion">

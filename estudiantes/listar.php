@@ -41,7 +41,9 @@
                 <th>Email</th>
                 <th>Telefono</th>
                 <th>Nivel Académico</th>
+                <th>Status</th>
                 <th>Acciones</th>
+                
             </tr>    
          </thead>
          <tbody> <!-- Cuerpo de la tabla (donde van los datos)-->
@@ -67,7 +69,8 @@
             echo "<td>" . htmlspecialchars($fila['email']) . "</td>";
             echo "<td>" . htmlspecialchars($fila['telefono']) . "</td>";
             echo "<td>" . htmlspecialchars($fila['nivel_academico']) . "</td>";
-     // aca abajo viene el boton de EDITAR Y ELIMINAR, | SIGNIFICA UNA SEPARACION ENTRE LOS DOS BOTONES        
+            echo "<td>" . htmlspecialchars($fila['status']) . "</td>";
+     // aca abajo viene el boton de accion(EDITAR Y ELIMINAR(), | SIGNIFICA UNA SEPARACION ENTRE LOS DOS BOTONES        
              echo "<td> 
                       <a href='editar.php?id=" . $fila['id_estudiante'] . "'>Editar</a> |
                         <a href='eliminar.php?id=" . $fila['id_estudiante'] . "' onclick='return confirm(\"¿Eliminar este estudiante?\")'>Eliminar</a>
