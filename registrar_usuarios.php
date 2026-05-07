@@ -1,6 +1,6 @@
 <?php
  // Incluye el contenido del archivo conexion.php dentro de este archivo. 
-    include ("../conexion.php");
+    include ("conexion.php");
 
 // Recibir los datos del formulario
 

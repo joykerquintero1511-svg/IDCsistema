@@ -1,6 +1,6 @@
 <?php
 require_once '../conexion.php';
-require_once '../nav.php';
+
 $conexion=$conexion ?? null;
 
 // Verificar si llega un ID por la URL

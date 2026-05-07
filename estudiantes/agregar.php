@@ -1,6 +1,6 @@
 <?php
-require_once '../conexion.php';
-require_once '../nav.php';
+require_once 'conexion.php';
+
 $conexion = $conexion ?? null; // el xq d esta variable esta en la carpeta de listar.php
 
 $nombre = $apellido = $email = $telefono = $nivel = "";

@@ -1,6 +1,6 @@
 <?php
     require_once '../conexion.php'; // conexión a la BD (más seguro que include)
-    require_once '../nav.php';     // menú de navegación
+   
 
  $conexion = $conexion ?? null; 
 /* Significa:
