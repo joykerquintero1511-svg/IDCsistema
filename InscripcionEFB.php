@@ -6,7 +6,7 @@ include("Niveles.php");
 <html lang="en">
 <head>
     <title>Inscripción EFB</title>
-        <link rel="stylesheet" href="estilos/style.css">
+        <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
