@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input class="formulario-input" type="text" name= "direccion" placeholder="Dirección" value="<?php echo htmlspecialchars($direccion);?>"required><br><br>
         <input class="formulario-input" type="text" name="email" placeholder="Email" value="<?php echo htmlspecialchars($email); ?>"><br><br> 
         <input class="formulario-input" type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($telefono);?>"required><br><br>
-       <input class="formulario-input" type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
+        <input class="formulario-input" type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
         <select name="status">
         <option value="Activo" <?php echo ($status == 'Activo') ? 'selected' : ''; ?>>Activo</option>
         <option value="Inactivo" <?php echo ($status == 'Inactivo') ? 'selected' : ''; ?>>Inactivo</option>
