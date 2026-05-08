@@ -71,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     <form method="POST"> <!-- El formulario envía los datos ocultos (seguro) con POST-->
-<<<<<<< HEAD
         <input class="formulario-input" type="text" name="nombre" placeholder="Nombres" value="<?php echo htmlspecialchars($nombre); ?>" required><br><br>
         <input class="formulario-input" type="text" name="apellido" placeholder="Apellido" value="<?php echo htmlspecialchars($apellido); ?>" required ><br><br>
         <input class="formulario-input" type= "text" name="cedula" placeholder="Cedula" value="<?php echo htmlspecialchars($cedula);?>"required><br><br>
@@ -81,24 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
        <input class="formulario-input" type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
         <input class="formulario-input" type ="text" name="estado_civil" placeholder="Estado_civil" value="<?php echo htmlspecialchars($estado_civil);?>"required><br><br>
         <input class="formulario-input" type="date" name="fecha_registro" placeholder="Fecha de Registro" value="<?php echo htmlspecialchars($fecha_registro); ?>"><br><br>       
-=======
-        <input type="text" name="nombre" placeholder="Nombres" value="<?php echo htmlspecialchars($nombre); ?>" required><br><br>
-        <input type="text" name="apellido" placeholder="Apellido" value="<?php echo htmlspecialchars($apellido); ?>" required ><br><br>
-        <input type= "text" name="cedula" placeholder="Cedula" value="<?php echo htmlspecialchars($cedula);?>"required><br><br>
-        <input type="text" name= "direccion" placeholder="Dirección" value="<?php echo htmlspecialchars($direccion);?>"required><br><br>
-        <input type="text" name="email" placeholder="Correo Electronico" value="<?php echo htmlspecialchars($email); ?>"><br><br> 
-        <input type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($telefono);?>"required><br><br>
-       <input type="text" name="nivel_academico" placeholder="Nivel Académico (Ej: 1A, 2B, 3C)" value="<?php echo htmlspecialchars($nivel_academico); ?>" required><br><br>
-       
-  <select name="status">
-    <option value="Activo" <?php echo ($status == 'Activo') ? 'selected' : ''; ?>>Activo</option>
-    <option value="Inactivo" <?php echo ($status == 'Inactivo') ? 'selected' : ''; ?>>Inactivo</option>
-    <option value="Egresado" <?php echo ($status == 'Egresado') ? 'selected' : ''; ?>>Egresado</option>
-    <option value="Inhabilitado" <?php echo ($status == 'Inhabilitado') ? 'selected' : ''; ?>>Inhabilitado</option>
-    </select><br><br>
-       
-        <input type="date" name="fecha_registro" placeholder="Fecha de Registro" value="<?php echo htmlspecialchars($fecha_registro); ?>"><br><br>       
->>>>>>> 610430851cd8030ef81907da62e30224e75183ab
 
         <select class="inscripciones-input" name="nivel_instruccion">
             <option value="">Seleccione</option>
