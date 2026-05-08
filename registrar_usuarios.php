@@ -29,8 +29,16 @@
   va qué columnas voy a llenar. En VALUES van los datos que voy a 
   poner en esas columnas, en el mismo orden."      */
 
+  // **LA VALIDACIÓN DE LONGITUD DE LA CONTRASEÑA VA AQUÍ** 
+if (strlen($contraseña) < 6) {
+    die("Error: La contraseña debe tener al menos 6 caracteres.");
+}
+
+// Encriptar la contraseña
+$contraseña_encriptada = password_hash($contraseña, PASSWORD_DEFAULT);
+
     $sql = "INSERT INTO estudiantes (nombre, apellido, email, telefono, nivel_academico, contraseña) 
-        VALUES ('$nombre', '$apellido', '$email', '$telefono','$nivel_academico', '$contraseña')";
+        VALUES ('$nombre', '$apellido', '$email', '$telefono','$nivel_academico', '$contraseña_encriptada')";
 
     if (mysqli_query($conexion, $sql)) {
     echo "<h2> Registro exitoso</h2>"; // se puede colcocar etiqueta HTML ya q php trabaja con html sin problema
