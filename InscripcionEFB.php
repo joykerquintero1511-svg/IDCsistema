@@ -33,8 +33,11 @@ include("Niveles.php");
 
                 
                 <input class="formulario-input" type="text" id="telefono" name="telefono" placeholder="Número de Teléfono" required><br>
+                
                 <input class="formulario-input" type="password" name="contraseña" placeholder="Contraseña (mínimo 6 caracteres)" required>
-                    
+                 
+                <input class="formulario-input" type="text" name="cedula" placeholder="Cédula" required>
+
                 
                 <select class="inscripciones-input" name="nivel_academico">
                 <option value="">Seleccione el nivel</option>
