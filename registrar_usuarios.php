@@ -12,6 +12,7 @@
     $nombre = $_POST['nombre'];
     $apellido = $_POST['apellidos'];
     $email = $_POST['email'];
+    $cedula = $_POST['cedula'];
     $telefono = $_POST['telefono'];
     $nivel_academico = $_POST['nivel_academico']; 
     $contraseña = $_POST['contraseña']; // cree esta columna la base d datos q faltaba
@@ -20,7 +21,7 @@
 /* (empty) es una función de PHP que verifica si una variable está vacía,
  es decir, si no tiene un valor válido como texto, número o si es nula.
  */
-    if (empty($nombre) || empty($apellido) || empty($email) || empty($nivel_academico) || empty($contraseña)) {
+    if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($nivel_academico) || empty($contraseña)) {
         die("Error: Todos los campos son obligatorios.");
 }
 
@@ -37,8 +38,8 @@ if (strlen($contraseña) < 6) {
 // Encriptar la contraseña
 $contraseña_encriptada = password_hash($contraseña, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO estudiantes (nombre, apellido, email, telefono, nivel_academico, contraseña) 
-        VALUES ('$nombre', '$apellido', '$email', '$telefono','$nivel_academico', '$contraseña_encriptada')";
+    $sql = "INSERT INTO estudiantes (nombre, apellido, email, cedula, telefono, nivel_academico, contraseña) 
+        VALUES ('$nombre', '$apellido', '$email', '$cedula', '$telefono','$nivel_academico', '$contraseña_encriptada')";
 
     if (mysqli_query($conexion, $sql)) {
     echo "<h2> Registro exitoso</h2>"; // se puede colcocar etiqueta HTML ya q php trabaja con html sin problema
