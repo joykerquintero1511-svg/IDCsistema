@@ -1,15 +1,26 @@
 body {
+    /* Ruta de tu imagen (asegúrate de que el nombre sea exacto) */
+    background-image: url('imagenes/fondo_para_la_pagina.png');
+
+    /* Esto hace que la imagen cubra toda la pantalla sin deformarse */
+    background-size: cover;
+
+    /* Centra la imagen para que lo más importante siempre se vea */
+    background-position: center;
+
+    /* Evita que la imagen se repita como un mosaico */
+    background-repeat: no-repeat;
+
+    /* Hace que el fondo se quede fijo mientras el contenido se mueve */
+    background-attachment: fixed;
+
+    /* Color de respaldo por si la imagen tarda en cargar */
+    background-color: #1a1a1a; 
+
+    /* Reset de márgenes para que no queden bordes blancos */
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Evita que aparezca una barra de desplazamiento horizontal */
-}
-
-body{
-
-    background-color: #88b6cb9f;
-    font-family: Arial, sans-serif;
-    margin: auto;
-    padding: 20px;
+    height: 100vh;
 }
 
 /* 1. Fondo Azul (La franja de título) */
