@@ -80,15 +80,41 @@ body{
     height: auto;
 }
 
+.form-container {
+    display: flex; /* Convierte el contenedor en una fila */
+    flex-wrap: wrap; /* Por si en celulares quieres que se pongan uno abajo del otro */
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+form {
+    flex: 1; /* El formulario toma una parte del espacio */
+    max-width: 50%; /* Limita el formulario a la mitad de la pantalla */
+}
+
+.cuadro-imagen {
+    flex: 1;
+    max-width: 40%; /* La imagen toma la otra parte */
+    height: 500px; /* Ajusta según el largo de tu formulario */
+    background-image: url('imagenes/tu_imagen_iglesia.jpg'); /* Pon tu ruta aquí */
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    opacity: 0.8; /* La leve transparencia que pediste */
+    margin-top: 20px;
+}
+
 
 .formulario-input{ 
     background-color: rgba(255, 255, 255, 0.8);
     width: 100%;
-    height: auto;
-    padding: 30px 40% 30px 10px;
+    height: 80%;
+    padding: 10px 20px 10px 10px;
     margin-bottom: 20px;
-    margin-left: 15%;
-    margin-right: 17%;
+    margin-left: 5%;
+    margin-right: 30%;
     border-radius: 10px;
     max-width: 600px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.659);
@@ -98,31 +124,22 @@ body{
     text-decoration-color: #000000;
 }
 
-.inscripciones-input {
-    display: block; 
-    width: 100%; /* Ocupa todo el ancho disponible del contenedor */
-    max-width: 600px; /* Mantén el mismo valor que los otros inputs */
-    height: 65px; /* Ajusta este valor para que coincida con la altura de "Nombres" */
-    
-    /* Centrado */
-    margin-left: 15%;
-    margin-right: 17%;
-    margin-bottom: 25px;
+.contenedor-botones {
+    display: flex;
+    justify-content: space-between; /* Esto pone uno a la izquierda y otro a la derecha */
+    align-items: center;
+    width: 100%;
+    height: 20%;
+    max-width: 600px; /* El mismo ancho que tus inputs */
+    margin-left: 10%; /* Para que siga la misma alineación que los inputs */
+    margin-top: 20px;
+}
 
-    /* Estética */
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.659);
-    
-    /* Tipografía */
-    color: #000000;
-    font-family: serif;
-    font-size: 24px;
-    padding: 0 20px; /* Espacio interno a los lados */
-
-    /* CRUCIAL PARA EL ANCHO: */
-    box-sizing: border-box; 
+.boton-volver, .boton-input {
+    margin: 0; /* Quita márgenes que puedan estar estorbando */
+    flex: 1; /* Esto hace que ambos midan lo mismo si quieres, o puedes quitarlo */
+    max-width: 170px; /* Ajusta el tamaño a tu gusto */
+    text-align: center; /* Centra el texto dentro del botón */
 }
 
 .boton-input{

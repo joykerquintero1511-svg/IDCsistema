@@ -41,7 +41,7 @@ include("Niveles.php");
                 
 
                 
-                <select class="inscripciones-input" name="nivel_academico">
+                <select class="formulario-input" name="nivel_academico">
                 <option value="">Seleccione el nivel</option>
                 <?php foreach ($niveles as $codigo => $nombre): ?>
                 <option value="<?php echo $codigo; ?>"><?php echo $nombre; ?></option>
@@ -49,10 +49,13 @@ include("Niveles.php");
 
             </select>
 
-                <button class="boton-input" type="submit">Enviar Inscripción</button>
-
-                <a href="EFB.php" class="boton-volver">Volver</a>
+        
             </form>
+        </div>
+
+            <div class="contenedor-botones">
+            <a href="EFB.php" class="boton-volver">Volver</a>
+            <button class="boton-input" type="submit" class="boton-registrar">Registrar</button>
         </div>
 
     </body>
