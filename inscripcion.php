@@ -1,5 +1,16 @@
-<?php
-include("Niveles.php");
+<?php 
+    $niveles = [
+    "1A" => "1A-Escuela para Bautismo",
+    "1B" => "1B-Iglesia de Jesucristo",
+    "1C" => "1C-Autoridad y Santidad",
+    "2A" => "2A-Como Evangelizar",
+    "2B" => "2B-Formando Líderes con Proposito",
+    "2C" => "2C-Formando Carácter",
+    "3A" => "3A-Liderazgo",
+    "3B" => "3B-Consolidación y Consejería",
+    "3C" => "3C-Naturaleza de la Biblia",
+    "4A" => "4A-Historia de la Iglesia"
+];
 ?>
 
 <!DOCTYPE html>
@@ -80,6 +91,15 @@ include("Niveles.php");
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Contraseña (Mínimo 6 caracteres)</label>
                                 <input class="u-fullwidth" type="password" id="contraseña" name="contraseña" placeholder="••••••••" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
+                            <div style="margin-bottom: 2rem;">
+                            
+                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel Académico</label>
+                             <select name="nivel_academico" style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; width: 100%;">
+                             <?php foreach ($niveles as $codigo => $nombre): ?>
+                              <option value="<?php echo $codigo; ?>"><?php echo $nombre; ?></option>
+                             <?php endforeach; ?>
+                             </select>
+                             </div>
 
                             <button type="submit" class="btn btn--primary u-fullwidth" style="font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase; height: 5.5rem; line-height: 5.5rem;">
                                 Registrarse
