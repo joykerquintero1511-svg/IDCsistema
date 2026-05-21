@@ -46,7 +46,7 @@ $contraseña_encriptada = password_hash($contraseña, PASSWORD_DEFAULT);
 
     echo "<p>Gracias $nombre, tu registro ha sido completado.</p>";
     
-    echo "<a href='InscripcionEFB.php'>Volver al formulario</a>";
+    echo "<a href='inscripcion.php'>Volver al formulario</a>";;
     } else {
     echo "Error al registrar: " . mysqli_error($conexion);
 }
