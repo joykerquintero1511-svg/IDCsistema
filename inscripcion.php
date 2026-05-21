@@ -37,6 +37,8 @@ include("Niveles.php");
         <section class="container" style="padding: 10rem 0; text-align: center;">
             <div class="row">
                 <div class="column xl-12">
+
+                    <div style="margin-bottom: 2rem;"><img src="images/EFB.png" alt="Logo Escuela de Formación Bíblica" style="max-width: 160px; width: 100%; height: auto; display: inline-block;"></div>
                     
                     <h2 class="text-display-title" style="color: #ffffff; font-size: 4rem; margin-bottom: 1rem;">
                         Inscripción EFB
