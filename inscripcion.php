@@ -60,7 +60,7 @@
 
                     <div style="max-width: 600px; margin: 0 auto; background: rgba(255, 255, 255, 0.02); padding: 4rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
                         
-                        <form action="registrar_usuarios.php" method="POST" style="text-align: left;">
+                        <form action="registrar_estudiantes.php" method="POST" style="text-align: left;">
                             
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nombres</label>
