@@ -44,6 +44,9 @@
     $sql = "INSERT INTO estudiantes (nombre, apellido, email, cedula, telefono, contacto_emergencia, nivel_academico, nacionalidad, fecha_nacimiento, nivel_instruccion, genero, fecha_registro) 
         VALUES ('$nombre', '$apellido', '$email', '$cedula', '$telefono', '$contacto_emergencia', '$nivel_academico', '$nacionalidad', '$fecha_nacimiento', '$nivel_instruccion', '$genero', '$fecha_registro')";
 
+    $sql = "INSERT INTO inscripciones (nivel_academico) 
+        VALUES ('$nivel_academico')";
+
     if (mysqli_query($conexion, $sql)) {
         // Cerramos PHP temporalmente para inyectar la interfaz limpia
         ?>
