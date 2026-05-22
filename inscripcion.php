@@ -75,31 +75,81 @@
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Correo Electrónico</label>
                                 <input class="u-fullwidth" type="email" id="email" name="email" placeholder="nombre@correo.com" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
-                            </div>
+                            </div> 
 
                             <div style="margin-bottom: 2rem;">
-                                <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Cédula</label>
-                                <input class="u-fullwidth" type="text" name="cedula" placeholder="V-00000000" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
-                            </div>
+                                <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Dirección </label>
+                                <input class="u-fullwidth" type="text" id="direccion" name="direccion" placeholder="Ej. Calle Principal, Ciudad" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
+                            </div> 
+
+
+
+                    <div style="margin-bottom: 2rem;">
+                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Cédula / Documento de Identidad</label>
+    
+                        <div style="display: flex; gap: 10px;">
+        
+                            <select name="nacionalidad" style="width: 80px; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; font-weight: bold; cursor: pointer;">
+                            <option value="V" style="background: #142132; color: #ffffff;">V</option>
+                            <option value="E" style="background: #142132; color: #ffffff;">E</option>
+                            </select>
+        
+                            <input class="u-fullwidth" type="text" name="cedula" placeholder="00000000" required 
+                            style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
+               
+                    </div>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                        <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Fecha de Nacimiento</label>
+                        <input class="u-fullwidth" type="date" id="fecha_nacimiento" name="fecha_nacimiento" required 
+                        style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; height: 5.4rem;">
+                        </div>
+
+
+                        <div style="margin-bottom: 2rem;">
+                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Género</label>
+    
+                            <select name="genero" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
+                            <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu género</option>
+                            <option value="F" style="background: #142132; color: #fff;">F (Femenino)</option>
+                            <option value="M" style="background: #142132; color: #fff;">M (Masculino)</option>
+                            </select>
+                        </div>
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Número de Teléfono</label>
                                 <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
 
-                            <div style="margin-bottom: 4rem;">
-                                <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Contraseña (Mínimo 6 caracteres)</label>
-                                <input class="u-fullwidth" type="password" id="contraseña" name="contraseña" placeholder="••••••••" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
+                            <div style="margin-bottom: 2rem;">
+                                <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Contacto de Emergencia</label>
+                                <input class="u-fullwidth" type="text" id="contacto_emergencia" name="contacto_emergencia" placeholder="Número de contacto" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
+
+                                <div style="margin-bottom: 2rem;">
+                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel de Instrucción</label>
+    
+                            <select name="nivel_instruccion" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
+                            <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu nivel de estudio</option>
+                            <option value="Primaria" style="background: #142132; color: #fff;">Educación Primaria</option>
+                            <option value="Bachillerato" style="background: #142132; color: #fff;">Educación Media / Bachillerato</option>
+                            <option value="Técnico Medio" style="background: #142132; color: #fff;">Técnico Medio</option>
+                            <option value="TSU" style="background: #142132; color: #fff;">Técnico Superior Universitario (TSU)</option>
+                            <option value="Universitario" style="background: #142132; color: #fff;">Universitario / Licenciatura / Ingeniería</option>
+                            <option value="Postgrado" style="background: #142132; color: #fff;">Postgrado / Maestría / Doctorado</option>
+                            </select>
+                        </div>
+
                             <div style="margin-bottom: 2rem;">
                             
-                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel Académico</label>
-                             <select name="nivel_academico" style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; width: 100%;">
-                             <?php foreach ($niveles as $codigo => $nombre): ?>
-                              <option value="<?php echo $codigo; ?>"><?php echo $nombre; ?></option>
-                             <?php endforeach; ?>
-                             </select>
-                             </div>
+                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel a Cursar</label>
+                            <select name="nivel_academico" style="background: rgba(255,255,255,0.05); color: #fff; border-color: #142132; padding: 1.5rem; border-radius: 6px; width: 100%;">
+                            <?php foreach ($niveles as $codigo => $nombre): ?>
+                            <option value="<?php echo $codigo; ?>"><?php echo $nombre; ?></option>
+                            <?php endforeach; ?>
+                            </select>
+                            </div>
 
                             <button type="submit" class="btn btn--primary u-fullwidth" style="font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase; height: 5.5rem; line-height: 5.5rem;">
                                 Registrarse

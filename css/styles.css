@@ -5085,3 +5085,9 @@ td:last-child {
     background: rgba(255, 255, 255, 0.06);
     border-top-color: #ffffff;
 }
+
+/* Blanquear el icono del calendario nativo en inputs de fecha */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
