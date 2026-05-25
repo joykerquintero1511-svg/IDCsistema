@@ -27,26 +27,41 @@ if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || emp
     die("Error: Todos los campos son obligatorios.");
 }
 
+ // PASO 1: Insertar en la tabla personas
 
-$sql_estudiante = "INSERT INTO estudiantes (nombre, apellido, email, cedula, telefono, contacto_emergencia, nivel_academico, nacionalidad, fecha_nacimiento, nivel_instruccion, genero, fecha_registro) 
-        VALUES ('$nombre', '$apellido', '$email', '$cedula', '$telefono', '$contacto_emergencia', '$nivel_academico', '$nacionalidad', '$fecha_nacimiento', '$nivel_instruccion', '$genero', '$fecha_registro')";
+ $sql_persona = "INSERT INTO personas (tipo_documento, cedula, nacionalidad, nombre, apellido, fecha_nacimiento, genero, telefono, contacto_emergencia) 
+                VALUES ('Cédula', '$cedula', '$nacionalidad', '$nombre', '$apellido', '$fecha_nacimiento', '$genero', '$telefono', '$contacto_emergencia')";
+
+if (!mysqli_query($conexion, $sql_persona)) {
+    die("Error al guardar datos personales: " . mysqli_error($conexion));
+}
+
+
+// Obtener el ID del estudiante recién insertado
+$id_persona = mysqli_insert_id($conexion);
+
+
+// PASO 2: Insertar en la tabla estudiantes
+
+$sql_estudiante = "INSERT INTO estudiantes (id_persona, nivel_instruccion, fecha_registro, email, nivel_academico) 
+        VALUES ('$id_persona', '$nivel_instruccion', '$fecha_registro', '$email', '$nivel_academico')";
 
 if (!mysqli_query($conexion, $sql_estudiante)) {
     die("Error al guardar estudiante: " . mysqli_error($conexion));
 }
 
-// Obtener el ID del estudiante recién insertado
+// Obtener el ID del estudiante recién insertado para la inscripción
 $id_estudiante = mysqli_insert_id($conexion);
 
-// ==========================================
-// 2. Insertar en la tabla inscripciones
-// ==========================================
+  // PASO 3: Insertar en la tabla inscripciones
+
 $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, nivel_academico, fecha_inscripcion, periodo, estado) 
         VALUES ('$id_estudiante', '$nivel_academico', NOW(), '$periodo', '$estado_inscripcion')";
 
 if (!mysqli_query($conexion, $sql_inscripcion)) {
     die("Error al guardar inscripción: " . mysqli_error($conexion));
 }
+
 
 ?>
 <!DOCTYPE html>
