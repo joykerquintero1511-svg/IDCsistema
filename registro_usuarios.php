@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Personal</title>
+    <title>Registro</title>
+    <link rel="icon" type="image/png" href="images/EFB.png">
+
     <style>
         /* Mantenemos tus estilos base exactos */
         body { background-color: #0c0c0c; font-family: sans-serif; }
