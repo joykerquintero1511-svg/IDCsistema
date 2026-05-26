@@ -37,7 +37,7 @@
                 </button>
 
                 <div style="text-align: center; margin-top: 2.5rem;">
-                    <a href="registro_usuario.php" style="color: rgba(255, 255, 255, 0.4); font-size: 1.3rem; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255, 255, 255, 0.4)'">
+                    <a href="registro_usuarios.php" style="color: rgba(255, 255, 255, 0.4); font-size: 1.3rem; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255, 255, 255, 0.4)'">
                         ¿No tienes cuenta de personal? Regístrate aquí
                     </a>
                 </div>

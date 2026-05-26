@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_query($conexion, $sql)) {
         echo "<span style='color:green; font-family:sans-serif; font-weight:bold;'>¡Usuario registrado con éxito como " . ucfirst($rol) . "! Tu base de datos está perfectamente indexada. Ya puedes ir al Login.</span>";
+        echo "<br><br><a href='login.php' style='color:blue; font-family:sans-serif; text-decoration:none;'>Ir al Login</a>";
     } else {
         echo "Error al insertar el registro: " . mysqli_error($conexion);
     }
