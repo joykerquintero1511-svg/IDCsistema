@@ -66,6 +66,12 @@
 
                 <button type="submit" class="u-fullwidth btn-primary">Registrar Cuenta</button>
 
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a href="index.php" style="color: rgba(255, 255, 255, 0.4); font-size: 1.3rem; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255, 255, 255, 0.4)'">
+                        Volver a la Página Principal
+                    </a>
+                </div>
+
             </form>
         </div>
     </main>
