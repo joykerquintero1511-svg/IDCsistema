@@ -2,25 +2,39 @@
 session_start();
 include("../conexion.php");
 
-// CONTROL DE SEGURIDAD: Solo profesores autorizados
+// 1. CONTROL DE SEGURIDAD: Solo profesores
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
     header("Location: ../login.php");
     exit();
 }
 
+// 2. CAPTURAR DATOS DE LA SESIÓN
 $id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 
-// Capturar datos reales del profesor si existen en la tabla
-$query_prof = "SELECT id_profesor, nombre, apellido FROM profesores WHERE id_usuario = '$id_usuario'";
+// 3. CONSULTA: Obtener el ID real del profesor en la tabla profesores
+$query_prof = "SELECT id_profesor FROM profesores WHERE id_usuario = '$id_usuario'";
 $res_prof = mysqli_query($conexion, $query_prof);
+$id_profesor = 0;
+
 if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
     $id_profesor = $row_prof['id_profesor'];
-    $nombre_completo = $row_prof['nombre'] . " " . $row_prof['apellido'];
-} else {
-    $id_profesor = 0;
-    $nombre_completo = $nombre_profesor;
 }
+
+// 4. CONSULTA 1: Últimas asignaciones creadas por este profesor (Uniendo con niveles para ver a quién va dirigida)
+$query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nombre_nivel 
+                 FROM asignacion a
+                 INNER JOIN niveles n ON a.id_nivel = n.id_nivel
+                 ORDER BY a.id_asignacion DESC LIMIT 5"; 
+$result_tareas = mysqli_query($conexion, $query_tareas);
+
+// 5. CONSULTA 2: Clases/Encuentros que tiene asignados este profesor en el cronograma
+// (Nota: Ajusta 'id_profesor' si tu tabla cronograma_clases usa otra columna de enlace)
+$query_clases = "SELECT c.tema_clase, c.fecha, c.hora, c.lug_modalidad, n.nombre_nivel 
+                 FROM cronograma_clases c
+                 INNER JOIN niveles n ON c.id_nivel = n.id_nivel
+                 ORDER BY c.fecha ASC";
+$result_clases = mysqli_query($conexion, $query_clases);
 ?>
 
 <!DOCTYPE html>
@@ -103,11 +117,11 @@ if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
                 <h2>Profesor</h2>
             </div>
             <ul class="menu-links">
-                <li><a href="#" class="active">Inicio</a></li>
-                <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
-                <li><a href="#">Historial de Notas</a></li>
-                <li><a href="#">Horarios de Clase</a></li>
-            </ul>
+            <li><a href="index.php" class="active">Inicio</a></li>
+            <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
+            <li><a href="calificar_tareas.php">Calificar Tareas</a></li>
+            <li><a href="control_asistencia.php">Control de Asistencia</a></li>
+        </ul>
         </div>
         <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
     </aside>
@@ -119,82 +133,59 @@ if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
         </header>
 
         <div class="dashboard-grid">
+        
+        <div style="display: flex; flex-direction: column; gap: 2.5rem;">
             
-            <div style="display: flex; flex-direction: column; gap: 2.5rem;">
-                
-                <section class="info-card">
-                    <h3>Asignaciones y Tareas Pendientes</h3>
-                    <ul class="task-list">
-                        <?php if (mysqli_num_rows($result_tareas) > 0): ?>
-                            <?php while($tarea = mysqli_fetch_assoc($result_tareas)): ?>
-                                <li class="task-item">
-                                    <div class="item-info">
-                                        <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
-                                        <p>Tema Doctrinal: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
-                                        <p>Entrega límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
-                                    </div>
-                                    <a href="ver_tarea.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Ver Detalles</a>
-                                </li>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <p class="no-data">No tienes asignaciones pendientes para tu nivel en este momento.</p>
-                        <?php endif; ?>
-                    </ul>
-                </section>
-
-                <section class="info-card">
-                    <h3>Registro de Calificaciones</h3>
-                    <?php if (mysqli_num_rows($result_notas) > 0): ?>
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Asignación / Tema</th>
-                                    <th>Feedback del Profesor</th>
-                                    <th>Nota</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while($nota = mysqli_fetch_assoc($result_notas)): ?>
-                                    <tr>
-                                        <td>
-                                            <strong><?php echo htmlspecialchars($nota['titulo_tarea']); ?></strong><br>
-                                            <span style="font-size: 0.85rem; color: #555;"><?php echo htmlspecialchars($nota['tema']); ?></span>
-                                        </td>
-                                        <td style="color: #aaa; font-size: 0.9rem;"><?php echo htmlspecialchars($nota['observacion'] ?? 'Sin observaciones'); ?></td>
-                                        <td><span class="badge-nota"><?php echo $nota['nota']; ?> / 20</span></td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                        </table>
+            <section class="info-card">
+                <h3>Asignaciones Publicadas Recientemente</h3>
+                <ul class="task-list">
+                    <?php if ($result_tareas && mysqli_num_rows($result_tareas) > 0): ?>
+                        <?php while($tarea = mysqli_fetch_assoc($result_tareas)): ?>
+                            <li class="task-item">
+                                <div class="item-info">
+                                    <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
+                                    <p>Dirigido a: <span><?php echo htmlspecialchars($tarea['nombre_nivel']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
+                                    <p>Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
+                                </div>
+                                <a href="ver_respuestas.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Ver Entregas</a>
+                            </li>
+                        <?php endwhile; ?>
                     <?php else: ?>
-                        <p class="no-data">Aún no registras tareas calificadas.</p>
+                        <p class="no-data">No has publicado ninguna asignación académica todavía.</p>
                     <?php endif; ?>
-                </section>
-            </div>
+                </ul>
+            </section>
 
-            <div>
-                <section class="info-card">
-                    <h3>Próximas Clases y Fechas</h3>
-                    <ul class="class-list">
-                        <?php if (mysqli_num_rows($result_clases) > 0): ?>
-                            <?php while($clase = mysqli_fetch_assoc($result_clases)): ?>
-                                <li class="class-item">
-                                    <div class="item-info">
-                                        <h4><?php echo htmlspecialchars($clase['tema_clase']); ?></h4>
-                                        <p>Fecha: <span><?php echo date('d/m/Y', strtotime($clase['fecha'])); ?></span></p>
-                                        <p>Hora: <?php echo date('h:i A', strtotime($clase['hora'])); ?></p>
-                                        <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #3a7bc8;">📍 <?php echo htmlspecialchars($clase['lugar_modalidad']); ?></p>
-                                    </div>
-                                </li>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <p class="no-data">No hay encuentros programados en el cronograma.</p>
-                        <?php endif; ?>
-                    </ul>
-                </section>
-            </div>
+            <section class="info-card">
+                <h3>Resumen de Evaluaciones</h3>
+                <p class="no-data" style="padding: 1rem 0;">Utiliza el menú lateral para calificar los trabajos entregados por tus estudiantes.</p>
+            </section>
 
         </div>
-    </main>
+
+        <div>
+            <section class="info-card">
+                <h3>Tus Clases y Cronograma</h3>
+                <ul class="class-list">
+                    <?php if ($result_clases && mysqli_num_rows($result_clases) > 0): ?>
+                        <?php while($clase = mysqli_fetch_assoc($result_clases)): ?>
+                            <li class="class-item">
+                                <div class="item-info">
+                                    <h4><?php echo htmlspecialchars($clase['tema_clase']); ?></h4>
+                                    <p>Grupo: <span><?php echo htmlspecialchars($clase['nombre_nivel']); ?></span></p>
+                                    <p>Fecha: <?php echo date('d/m/Y', strtotime($clase['fecha'])); ?></p>
+                                    <p>Hora: <?php echo date('h:i A', strtotime($clase['hora'])); ?></p>
+                                    <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #3a7bc8;">Modalidad: <?php echo htmlspecialchars($clase['lug_modalidad'] ?? 'Presencial'); ?></p>
+                                </div>
+                            </li>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="no-data">No tienes encuentros programados en tu agenda.</p>
+                    <?php endif; ?>
+                </ul>
+            </section>
+        </div>
+
+    </div>
 </body>
 </html>
