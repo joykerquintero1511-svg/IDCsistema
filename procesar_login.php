@@ -30,33 +30,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['usuario']    = $usuario_datos['usuario'];
             $_SESSION['rol']        = $usuario_datos['rol'];
 
-            // 6. REDIRECCIÓN INTELIGENTE SEGÚN EL ROL
-            switch ($_SESSION['rol']) {
-                case 'estudiante':
-                case 'alumno':
-                    header("Location: estudiantes/index.php"); 
-                    exit();
-                
-                case 'profesor':
-                    header("Location: profesores/index.php"); 
-                    exit();
-                
-                case 'admin':
-                    header("Location: admin_panel.php"); 
-                    exit();
-                
-                default:
-                    header("Location: index.php");
-                    exit();
+            // ==========================================
+            // ANEXO: CAPTURAR ID DE ALUMNO Y SU NIVEL
+            // ==========================================
+            if ($_SESSION['rol'] === 'estudiante' || $_SESSION['rol'] === 'alumno') {
+            $id_user = $_SESSION['id_usuario'];
+            $query_alumno = "SELECT id_estudiante, id_nivel FROM estudiantes WHERE id_usuario = '$id_user'";
+            $res_alumno = mysqli_query($conexion, $query_alumno);
+            
+            if ($row_alumno = mysqli_fetch_assoc($res_alumno)) {
+                $_SESSION['id_estudiante'] = $row_alumno['id_estudiante'];
+                $_SESSION['id_nivel']      = $row_alumno['id_nivel'];
             }
-
-        } else {
-            die("<span style='color:red; font-family:sans-serif;'>Error: La contraseña introducida es incorrecta.</span><br><br><a href='login.php'>Volver a intentar</a>");
         }
-    } else {
-        die("<span style='color:red; font-family:sans-serif;'>Error: El correo electrónico no está registrado.</span><br><br><a href='login.php'>Volver a intentar</a>");
+        // ==========================================
+
+        // 6. REDIRECCIÓN INTELIGENTE SEGÚN EL ROL
+        switch ($_SESSION['rol']) {
+            case 'estudiante':
+            case 'alumno':
+                header("Location: estudiantes/index.php");
+                exit();
+
+            case 'profesor':
+                header("Location: profesores/index.php");
+                exit();
+
+            case 'admin':
+                header("Location: admin_panel.php");
+                exit();
+
+            default:
+                header("Location: index.php");
+                exit();
+        }
+} else {
+        // Manejo de contraseña incorrecta
+        die("<span style='color:red; font-family:sans-serif;'>Error: La contraseña introducida es incorrecta.</span><br><br><a href='login.php'>Volver</a>");
     }
+
+} else {
+    // Manejo de correo no registrado
+    die("<span style='color:red; font-family:sans-serif;'>Error: El correo electrónico no está registrado.</span><br><br><a href='login.php'>Volver</a>");
 }
+
+} // <-- ESTA ES LA LLAVE QUE FALTA. Cierra el if de la línea 6 ($_SERVER["REQUEST_METHOD"])
 
 mysqli_close($conexion);
 ?>
