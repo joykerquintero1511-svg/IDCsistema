@@ -22,7 +22,7 @@ if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
 }
 
 // 4. CONSULTA 1: Últimas asignaciones creadas por este profesor (Uniendo con niveles para ver a quién va dirigida)
-$query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nombre_nivel 
+$query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico #modifique nombre_nivel por nivel _academico q es la q esta en la BD
                  FROM asignacion a
                  INNER JOIN niveles n ON a.id_nivel = n.id_nivel
                  ORDER BY a.id_asignacion DESC LIMIT 5"; 
@@ -30,7 +30,8 @@ $result_tareas = mysqli_query($conexion, $query_tareas);
 
 // 5. CONSULTA 2: Clases/Encuentros que tiene asignados este profesor en el cronograma
 // (Nota: Ajusta 'id_profesor' si tu tabla cronograma_clases usa otra columna de enlace)
-$query_clases = "SELECT c.tema_clase, c.fecha, c.hora, c.lug_modalidad, n.nombre_nivel 
+$query_clases = "SELECT c.tema_clase, c.fecha, c.hora, c.lugar_modalidad, n.nivel_academico #modifique nombre_nivel por nivel _academico q es la q esta en la BD 
+                 #Estaba mal escrito lugar_modalidad colocaste lug_modalidad y daba error con la BD.
                  FROM cronograma_clases c
                  INNER JOIN niveles n ON c.id_nivel = n.id_nivel
                  ORDER BY c.fecha ASC";
@@ -144,7 +145,9 @@ $result_clases = mysqli_query($conexion, $query_clases);
                             <li class="task-item">
                                 <div class="item-info">
                                     <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
-                                    <p>Dirigido a: <span><?php echo htmlspecialchars($tarea['nombre_nivel']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
+
+                                     <!--ACA ABAJO modifique  [nombre_nivel] por nivel _academico q es la q esta en la BD-->
+                                    <p>Dirigido a: <span><?php echo htmlspecialchars($tarea['nivel_academico']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
                                     <p>Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
                                 </div>
                                 <a href="ver_respuestas.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Ver Entregas</a>
@@ -172,10 +175,12 @@ $result_clases = mysqli_query($conexion, $query_clases);
                             <li class="class-item">
                                 <div class="item-info">
                                     <h4><?php echo htmlspecialchars($clase['tema_clase']); ?></h4>
-                                    <p>Grupo: <span><?php echo htmlspecialchars($clase['nombre_nivel']); ?></span></p>
+                                    <p>Grupo: <span><?php echo htmlspecialchars($clase['nivel_academico']); ?></span></p>
                                     <p>Fecha: <?php echo date('d/m/Y', strtotime($clase['fecha'])); ?></p>
                                     <p>Hora: <?php echo date('h:i A', strtotime($clase['hora'])); ?></p>
-                                    <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #3a7bc8;">Modalidad: <?php echo htmlspecialchars($clase['lug_modalidad'] ?? 'Presencial'); ?></p>
+
+                                    <!-- Estaba mal escrito lugar_modalidad colocaste lug_modalidad y daba error con la BD-->
+                                    <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #3a7bc8;">Modalidad: <?php echo htmlspecialchars($clase['lugar_modalidad'] ?? 'Presencial'); ?></p>
                                 </div>
                             </li>
                         <?php endwhile; ?>
