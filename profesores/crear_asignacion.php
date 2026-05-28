@@ -39,7 +39,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Asignación - EFB</title>
+    <title>Panel de Profesor - EFB</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background-color: #0b0b0b; color: #e0e0e0; display: flex; min-height: 100vh; }
@@ -81,17 +81,21 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
 <body>
 
     <aside class="sidebar">
-        <div class="menu-group">
-            <div class="brand">Panel <span>EFB</span></div>
+        <div>
+            <div class="sidebar-brand">
+                <img src="../images/EFB.png" alt="Logo">
+                <h2>Profesor</h2>
+            </div>
             <ul class="menu-links">
-                <li><a href="index.php">Inicio</a></li>
-                <li><a href="crear_asignacion.php" class="active">Subir Asignación</a></li>
-                <li><a href="calificar_tareas.php">Calificar Tareas</a></li>
-                <li><a href="control_asistencia.php">Control de Asistencia</a></li>
-            </ul>
+            <li><a href="index.php" class="active">Inicio</a></li>
+            <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
+            <li><a href="calificar_tareas.php">Calificar Tareas</a></li>
+            <li><a href="control_asistencia.php">Control de Asistencia</a></li>
+        </ul>
         </div>
         <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
     </aside>
+
 
     <main class="main-content">
         <div class="info-card">
