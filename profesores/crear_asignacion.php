@@ -1,8 +1,7 @@
 <?php
 session_start();
-include("../conexion.php"); // Retrocedemos un nivel para conectar con la BD
+include("../conexion.php");
 
-// 1. CONTROL DE SEGURIDAD
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
     header("Location: ../login.php");
     exit();
@@ -11,19 +10,14 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 $mensaje = "";
 
-// 2. PROCESAR EL FORMULARIO CUANDO SE ENVÍE (POST)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Escapamos los datos para evitar inyecciones SQL básicas (Es muy importante para tu defensa)
     $id_nivel = mysqli_real_escape_string($conexion, $_POST['id_nivel']);
     $titulo_tarea = mysqli_real_escape_string($conexion, $_POST['titulo_tarea']);
     $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
     $tema = mysqli_real_escape_string($conexion, $_POST['tema']);
     $fecha_limite = mysqli_real_escape_string($conexion, $_POST['fecha_limite']);
 
-    // Validamos que los campos obligatorios no estén vacíos
     if (!empty($id_nivel) && !empty($titulo_tarea) && !empty($fecha_limite)) {
-        
-        // Query de inserción en la tabla asignacion
         $query_insertar = "INSERT INTO asignacion (id_nivel, titulo_tarea, descripcion, tema, fecha_limite) 
                            VALUES ('$id_nivel', '$titulo_tarea', '$descripcion', '$tema', '$fecha_limite')";
         
@@ -37,7 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// 3. CONSULTA RELACIONAL: Obtener los niveles académicos para el select dinámico
 $query_niveles = "SELECT id_nivel, nombre_nivel FROM niveles ORDER BY id_nivel ASC";
 $result_niveles = mysqli_query($conexion, $query_niveles);
 ?>
@@ -48,11 +41,9 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Asignación - EFB</title>
     <style>
-        /* ESTÉREOTIPO CLONADO DEL PANEL DE ESTUDIANTES */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background-color: #0b0b0b; color: #e0e0e0; display: flex; min-height: 100vh; }
 
-        /* BARRA LATERAL FIXED (Misma que usas) */
         .sidebar { width: 260px; background-color: #111111; padding: 30px 20px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #1a1a1a; position: fixed; height: 100vh; }
         .brand { font-size: 1.2rem; font-weight: 700; color: #ffffff; margin-bottom: 40px; }
         .brand span { color: #3a7bc8; }
@@ -65,27 +56,23 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
         .btn-logout { color: #ff4444; text-decoration: none; font-size: 0.95rem; font-weight: 600; padding: 10px 15px; transition: 0.2s; }
         .btn-logout:hover { background-color: #221111; border-radius: 6px; }
 
-        /* CONTENIDO PRINCIPAL */
-        .main-content { margin-left: 260px; flex-grow: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        .main-content { margin-left: 260px; flex-grow: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: calc(100% - 260px); }
         
-        /* TARJETA DEL FORMULARIO (Misma estética info-card) */
         .info-card { background-color: #121212; border: 1px solid #1c1c1c; border-radius: 8px; padding: 30px; width: 100%; max-width: 650px; }
         .info-card h3 { font-size: 1.1rem; font-weight: 700; color: #ffffff; margin-bottom: 25px; border-bottom: 1px solid #1c1c1c; padding-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* ELEMENTOS DEL FORMULARIO OSCURO */
         .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
         .form-group label { font-size: 0.85rem; color: #888888; font-weight: 500; }
         
+        /* CORRECCIÓN ESTÉTIQUE: Inputs oscuros premium */
         .form-control { background-color: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 11px 14px; color: #ffffff; font-size: 0.95rem; transition: border-color 0.2s; width: 100%; }
         .form-control:focus { outline: none; border-color: #58a6ff; }
-        select.form-control { cursor: pointer; }
+        select.form-control { cursor: pointer; color-scheme: dark; }
         textarea.form-control { resize: vertical; min-height: 110px; }
 
-        /* BOTONES PREMIUM */
-        .btn-submit { background-color: #238636; color: #ffffff; padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+        .btn-submit { background-color: #238636; color: #ffffff; padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; margin-top: 10px; width: 100%; }
         .btn-submit:hover { background-color: #2ea043; }
 
-        /* ALERTAS DE NOTIFICACIÓN */
         .alert-success { color: #2ea043; background: #161b22; padding: 12px; border: 1px solid #2ea043; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
         .alert-error { color: #f85149; background: #161b22; padding: 12px; border: 1px solid #f85149; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
         .alert-warning { color: #ff9e2c; background: #161b22; padding: 12px; border: 1px solid #ff9e2c; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
@@ -122,7 +109,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                             <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
                                 <option value="<?php echo $nivel['id_nivel']; ?>">
                                     <?php echo htmlspecialchars($nivel['nombre_nivel']); ?>
-                                option>
+                                </option>
                             <?php endwhile; ?>
                         <?php endif; ?>
                     </select>
