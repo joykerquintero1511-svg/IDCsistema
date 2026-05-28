@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // 3. CONSULTA DINÁMICA DE NIVELES (Intacta)
-$query_niveles = "SELECT id_nivel, nombre_nivel FROM niveles ORDER BY id_nivel ASC";
+$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles ORDER BY id_nivel ASC";
 $result_niveles = mysqli_query($conexion, $query_niveles);
 ?>
 <!DOCTYPE html>
@@ -263,7 +263,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                         <?php if ($result_niveles): ?>
                             <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
                                 <option value="<?php echo $nivel['id_nivel']; ?>">
-                                    <?php echo htmlspecialchars($nivel['nombre_nivel']); ?>
+                                    <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
                                 </option>
                             <?php endwhile; ?>
                         <?php endif; ?>
