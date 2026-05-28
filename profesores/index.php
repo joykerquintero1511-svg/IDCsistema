@@ -1,93 +1,200 @@
 <?php
 session_start();
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'profesor') {
+include("../conexion.php");
+
+// CONTROL DE SEGURIDAD: Solo profesores autorizados
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
     header("Location: ../login.php");
     exit();
 }
+
+$id_usuario = $_SESSION['id_usuario'];
+$nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
+
+// Capturar datos reales del profesor si existen en la tabla
+$query_prof = "SELECT id_profesor, nombre, apellido FROM profesores WHERE id_usuario = '$id_usuario'";
+$res_prof = mysqli_query($conexion, $query_prof);
+if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
+    $id_profesor = $row_prof['id_profesor'];
+    $nombre_completo = $row_prof['nombre'] . " " . $row_prof['apellido'];
+} else {
+    $id_profesor = 0;
+    $nombre_completo = $nombre_profesor;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Profesores</title>
-    <link rel="icon" type="image/png" href="images/EFB.png">
+    <title>Panel de Profesor - EFB</title>
+    <link rel="icon" type="image/png" href="../images/EFB.png">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background-color: #f8f9fa; color: #1a1a1a; display: flex; min-height: 100vh; }
-        
-        /* Sidebar Lateral Minimalista */
-        .sidebar { width: 260px; background-color: #111111; color: #ffffff; padding: 30px 20px; flex-shrink: 0; }
-        .brand { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 40px; color: #ffffff; }
-        .brand span { color: #0070f3; } /* El plus azul */
-        .menu-item { display: block; color: #a0a0a0; text-decoration: none; padding: 12px 15px; margin-bottom: 8px; border-radius: 6px; font-size: 0.95rem; transition: all 0.2s; }
-        .menu-item:hover, .menu-item.active { background-color: #222222; color: #ffffff; }
-        .menu-item.active { border-left: 4px solid #0070f3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #0c0c0c; color: #ffffff; display: flex; min-height: 100vh; }
 
-        /* Contenedor Principal */
-        .main-content { flex-grow: 1; padding: 40px; background-color: #fafdff; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { font-size: 1.75rem; font-weight: 700; color: #111111; }
+        /* BARRA LATERAL */
+        .sidebar { width: 260px; background-color: #111111; border-right: 1px solid rgba(255, 255, 255, 0.05); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar-brand { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+        .sidebar-brand img { max-width: 35px; height: auto; }
+        .sidebar-brand h2 { font-size: 1.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
         
-        /* Botón de Logout elegante */
-        .btn-logout { background-color: transparent; border: 1px solid #eaeaea; color: #666666; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
-        .btn-logout:hover { background-color: #000000; color: #ffffff; border-color: #000000; }
-
-        /* Tarjetas y Contenido */
-        .welcome-card { background: #ffffff; border: 1px solid #eaeaea; border-radius: 8px; padding: 30px; margin-bottom: 30px; }
-        .welcome-card p { color: #666666; margin-top: 8px; font-size: 1rem; }
-        .badge { display: inline-block; background-color: #e6f0ff; color: #0070f3; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-left: 10px; }
-
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: #ffffff; border: 1px solid #eaeaea; border-radius: 8px; padding: 24px; transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .card h3 { font-size: 1.1rem; font-weight: 600; color: #111111; margin-bottom: 10px; }
-        .card p { color: #666666; font-size: 0.9rem; line-height: 1.5; }
+        .menu-links { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+        .menu-links a { color: #a0a0a0; text-decoration: none; padding: 0.8rem 1.2rem; border-radius: 6px; display: block; font-size: 1rem; font-weight: 500; transition: all 0.3s ease; }
+        .menu-links a:hover, .menu-links a.active { background: rgba(36, 82, 133, 0.15); color: #3a7bc8; font-weight: bold; }
         
-        /* Enlace de acción en azul como acento */
-        .card-link { display: inline-block; margin-top: 15px; color: #0070f3; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-        .card-link:hover { text-decoration: underline; }
+        .btn-logout { color: #ff5555; text-decoration: none; padding: 0.8rem 1.2rem; font-weight: bold; border-radius: 6px; transition: background 0.3s; }
+        .btn-logout:hover { background: rgba(255, 85, 85, 0.1); }
+
+        /* CONTENEDOR PRINCIPAL REALINEADO */
+        .main-content { 
+            margin-left: 260px; 
+            width: calc(100% - 260px); 
+            padding: 3.5rem; 
+            flex-grow: 1;
+        }
+        
+        .welcome-header { margin-bottom: 3rem; }
+        .welcome-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .welcome-header p { color: #666; font-size: 1rem; }
+
+        /* REJILLA TOTALMENTE EXPANDIDA */
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 2.5rem; 
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-grid { 
+                grid-template-columns: 2fr 1fr; /* Columna izquierda grande, derecha agenda */
+            }
+        }
+
+        .info-card { background: #111111; border: 1px solid rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; width: 100%; }
+        .info-card h3 { font-size: 1.1rem; color: #a0a0a0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .task-list, .class-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .task-item, .class-item { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border-radius: 6px; border-left: 4px solid #245285; }
+        .class-item { border-left-color: #3a7bc8; }
+        
+        .item-info h4 { font-size: 1.05rem; margin-bottom: 0.3rem; color: #fff; }
+        .item-info p { color: #666; font-size: 0.9rem; }
+        .item-info span { color: #a0a0a0; font-weight: 500; }
+        
+        .btn-action { color: #3a7bc8; text-decoration: none; font-size: 0.95rem; font-weight: bold; }
+        .btn-action:hover { text-decoration: underline; }
+
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { color: #666; font-size: 0.85rem; text-transform: uppercase; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .data-table td { padding: 1rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); color: #e0e0e0; font-size: 0.95rem; }
+        .badge-nota { background: rgba(36, 82, 133, 0.2); color: #3a7bc8; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
+        .no-data { color: #555; font-style: italic; text-align: center; padding: 2rem 0; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="brand">IDC<span>sistema</span></div>
-        <a href="#" class="menu-item active">Inicio</a>
-        <a href="#" class="menu-item">Mis Secciones</a>
-        <a href="#" class="menu-item">Cargar Notas</a>
-        <a href="#" class="menu-item">Asistencias</a>
-    </div>
-
-    <div class="main-content">
-        <div class="header">
-            <h1>Panel de Control Docente</h1>
-            <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
+    <aside class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <img src="../images/EFB.png" alt="Logo">
+                <h2>Profesor</h2>
+            </div>
+            <ul class="menu-links">
+                <li><a href="#" class="active">Inicio</a></li>
+                <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
+                <li><a href="#">Historial de Notas</a></li>
+                <li><a href="#">Horarios de Clase</a></li>
+            </ul>
         </div>
+        <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
+    </aside>
 
-        <div class="welcome-card">
-            <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']); ?><span class="badge">Profesor</span></h2>
-            <p>Acceso autorizado al módulo de gestión académica institucional.</p>
-        </div>
+    <main class="main-content">
+        <header class="welcome-header">
+            <h1>Bienvenido, <?php echo htmlspecialchars($nombre_profesor); ?></h1>
+            <p>Escuela de Formación Bíblica • Estado de cuenta académico</p>
+        </header>
 
         <div class="dashboard-grid">
-            <div class="card">
-                <h3>Evaluaciones Activas</h3>
-                <p>Configura los porcentajes, asigna fechas y publica los cortes de notas para tus alumnos.</p>
-                <a href="#" class="card-link">Gestionar notas &rarr;</a>
-            </div>
-            <div class="card">
-                <h3>Listas de Asistencia</h3>
-                <p>Lleva el control diario de asistencia de las secciones asignadas para el periodo actual.</p>
-                <a href="#" class="card-link">Tomar asistencia &rarr;</a>
-            </div>
-            <div class="card">
-                <h3>Reportes del Lapso</h3>
-                <p>Genera archivos limpios y consolidados del rendimiento de tus estudiantes.</p>
-                <a href="#" class="card-link">Ver reportes &rarr;</a>
-            </div>
-        </div>
-    </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+                
+                <section class="info-card">
+                    <h3>Asignaciones y Tareas Pendientes</h3>
+                    <ul class="task-list">
+                        <?php if (mysqli_num_rows($result_tareas) > 0): ?>
+                            <?php while($tarea = mysqli_fetch_assoc($result_tareas)): ?>
+                                <li class="task-item">
+                                    <div class="item-info">
+                                        <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
+                                        <p>Tema Doctrinal: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
+                                        <p>Entrega límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
+                                    </div>
+                                    <a href="ver_tarea.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Ver Detalles</a>
+                                </li>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <p class="no-data">No tienes asignaciones pendientes para tu nivel en este momento.</p>
+                        <?php endif; ?>
+                    </ul>
+                </section>
 
+                <section class="info-card">
+                    <h3>Registro de Calificaciones</h3>
+                    <?php if (mysqli_num_rows($result_notas) > 0): ?>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Asignación / Tema</th>
+                                    <th>Feedback del Profesor</th>
+                                    <th>Nota</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while($nota = mysqli_fetch_assoc($result_notas)): ?>
+                                    <tr>
+                                        <td>
+                                            <strong><?php echo htmlspecialchars($nota['titulo_tarea']); ?></strong><br>
+                                            <span style="font-size: 0.85rem; color: #555;"><?php echo htmlspecialchars($nota['tema']); ?></span>
+                                        </td>
+                                        <td style="color: #aaa; font-size: 0.9rem;"><?php echo htmlspecialchars($nota['observacion'] ?? 'Sin observaciones'); ?></td>
+                                        <td><span class="badge-nota"><?php echo $nota['nota']; ?> / 20</span></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <p class="no-data">Aún no registras tareas calificadas.</p>
+                    <?php endif; ?>
+                </section>
+            </div>
+
+            <div>
+                <section class="info-card">
+                    <h3>Próximas Clases y Fechas</h3>
+                    <ul class="class-list">
+                        <?php if (mysqli_num_rows($result_clases) > 0): ?>
+                            <?php while($clase = mysqli_fetch_assoc($result_clases)): ?>
+                                <li class="class-item">
+                                    <div class="item-info">
+                                        <h4><?php echo htmlspecialchars($clase['tema_clase']); ?></h4>
+                                        <p>Fecha: <span><?php echo date('d/m/Y', strtotime($clase['fecha'])); ?></span></p>
+                                        <p>Hora: <?php echo date('h:i A', strtotime($clase['hora'])); ?></p>
+                                        <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #3a7bc8;">📍 <?php echo htmlspecialchars($clase['lugar_modalidad']); ?></p>
+                                    </div>
+                                </li>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <p class="no-data">No hay encuentros programados en el cronograma.</p>
+                        <?php endif; ?>
+                    </ul>
+                </section>
+            </div>
+
+        </div>
+    </main>
 </body>
 </html>

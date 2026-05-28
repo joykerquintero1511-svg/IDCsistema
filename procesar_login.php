@@ -38,10 +38,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $query_alumno = "SELECT id_estudiante, id_nivel FROM estudiantes WHERE id_usuario = '$id_user'";
             $res_alumno = mysqli_query($conexion, $query_alumno);
             
-            if ($row_alumno = mysqli_fetch_assoc($res_alumno)) {
-                $_SESSION['id_estudiante'] = $row_alumno['id_estudiante'];
-                $_SESSION['id_nivel']      = $row_alumno['id_nivel'];
-            }
+            // Línea 39 y 40 idénticas a como las tienes
+            $res_alumno = mysqli_query($conexion, $query_alumno);
+
+            // MODIFICACIÓN EN LÍNEA 41: Validamos que la consulta sea exitosa y tenga datos
+            if ($res_alumno && $row_alumno = mysqli_fetch_assoc($res_alumno)) {
+            $_SESSION['id_estudiante'] = $row_alumno['id_estudiante'];
+            $_SESSION['id_nivel']      = $row_alumno['id_nivel'];
+            } else {
+            // Si es un profesor, la consulta dará falso o vacía, así que asignamos ceros de forma segura
+            $_SESSION['id_estudiante'] = 0;
+            $_SESSION['id_nivel']      = 0;
+        }
         }
         // ==========================================
 
