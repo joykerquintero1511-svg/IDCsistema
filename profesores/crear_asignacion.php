@@ -248,8 +248,6 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
             <ul class="menu-links">
                 <li><a href="index.php">Inicio</a></li>
                 <li><a href="crear_asignacion.php" class="active">Nueva Asignación</a></li>
-                <li><a href="#">Calificar Tareas</a></li>
-                <li><a href="#">Control de Asistencia</a></li>
             </ul>
         </div>
         <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>

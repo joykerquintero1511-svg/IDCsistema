@@ -127,8 +127,6 @@ $result_clases = mysqli_query($conexion, $query_clases);
             <ul class="menu-links">
             <li><a href="index.php" class="active">Inicio</a></li>
             <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
-            <li><a href="#">Calificar Tareas</a></li>
-            <li><a href="#">Control de Asistencia</a></li>
         </ul>
         </div>
         <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>

@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_plana = $_POST['password'];
 
     // 3. CONSULTA LIMPIA Y ESTRUCTURADA (Usando 'id_usuario' en singular)
-    $sql = "SELECT id_usuario, usuario, contraseña, rol FROM usuarios WHERE email = '$email'";
+    $sql = "SELECT id_usuario, usuario, contraseña, rol, id_nivel FROM usuarios WHERE email = '$email'";
     $resultado = mysqli_query($conexion, $sql);
 
     if (!$resultado) {
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['id_usuario'] = $usuario_datos['id_usuario'];
             $_SESSION['usuario']    = $usuario_datos['usuario'];
             $_SESSION['rol']        = $usuario_datos['rol'];
-
+            $_SESSION['id_nivel']   = $usuario_datos['id_nivel'];
             // ==========================================
             // ANEXO: CAPTURAR ID DE ALUMNO Y SU NIVEL
             // ==========================================

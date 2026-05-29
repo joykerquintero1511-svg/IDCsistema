@@ -13,11 +13,14 @@ $id_estudiante = $_SESSION['id_estudiante'] ?? 0;
 $id_nivel = $_SESSION['id_nivel'] ?? 0;
 $nombre_estudiante = $_SESSION['usuario'] ?? 'Estudiante'; 
 
-// 3. CONSULTA 1: Tareas pendientes del nivel actual
-$query_tareas = "SELECT id_asignacion, titulo_tarea, descripcion, tema, fecha_limite 
-                 FROM asignacion 
-                 WHERE id_nivel = '$id_nivel' 
+/// 1. Obtenemos el nivel del estudiante desde la sesión
+$nivel_estudiante = $_SESSION['id_nivel']; 
+
+// 2. Consulta filtrada: Solo muestra tareas donde el id_nivel coincida con el del estudiante
+$query_tareas = "SELECT * FROM asignacion 
+                 WHERE id_nivel = '$nivel_estudiante' 
                  ORDER BY fecha_limite ASC";
+
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
 // 4. CONSULTA 2: Historial de Calificaciones
