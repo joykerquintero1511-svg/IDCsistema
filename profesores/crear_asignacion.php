@@ -228,6 +228,12 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
         .alert-success { color: #2ea043; background: #161b22; padding: 12px; border: 1px solid #2ea043; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
         .alert-error { color: #f85149; background: #161b22; padding: 12px; border: 1px solid #f85149; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
         .alert-warning { color: #ff9e2c; background: #161b22; padding: 12px; border: 1px solid #ff9e2c; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
+
+        /* Blanquear el icono del calendario nativo en inputs de fecha */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+}
     </style>
 </head>
 <body>

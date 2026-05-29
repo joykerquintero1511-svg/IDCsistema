@@ -107,6 +107,13 @@ $result_clases = mysqli_query($conexion, $query_clases);
         .data-table td { padding: 1rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); color: #e0e0e0; font-size: 0.95rem; }
         .badge-nota { background: rgba(36, 82, 133, 0.2); color: #3a7bc8; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
         .no-data { color: #555; font-style: italic; text-align: center; padding: 2rem 0; }
+
+        /* Blanquear el icono del calendario nativo en inputs de fecha */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+}
+
     </style>
 </head>
 <body>
