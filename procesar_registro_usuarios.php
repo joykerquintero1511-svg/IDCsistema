@@ -1,70 +1,58 @@
 <?php
-// 1. CONEXIÓN A LA BASE DE DATO
+// 1. CONEXIÓN Y SESIÓN
 include("conexion.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // 2. CAPTURA Y LIMPIEZA DE DATOS (Evita Inyección SQL)
-    // Nota: Usamos 'password' porque es como viaja desde tu HTML
-    $nombre         = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $email          = mysqli_real_escape_string($conexion, $_POST['email']);
-    $password_plana = $_POST['password']; 
-    $rol            = $_POST['rol']; 
-    $codigo         = isset($_POST['codigo_autorizacion']) ? $_POST['codigo_autorizacion'] : '';
 
-    // 3. CONTROL DE SEGURIDAD (Claves de la escuela)
-    $clave_secreta_profesor = "TITO_2_7-8";
-    $clave_secreta_admin    = "1PEDRO_4_10";
+    // 2. CAPTURA Y LIMPIEZA
+    $nombre    = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $email     = mysqli_real_escape_string($conexion, $_POST['email']);
+    $password_plana = $_POST['password'];
+    $rol       = $_POST['rol'];
+    $codigo    = isset($_POST['codigo_autorizacion']) ? $_POST['codigo_autorizacion'] : '';
+    $id_nivel  = isset($_POST['id_nivel']) ? $_POST['id_nivel'] : '';
 
+    // 3. CONTROL DE SEGURIDAD (Claves maestras únicas)
+    $clave_secreta_profesor    = "TITO_2_7-8";
+    $clave_secreta_admin       = "1PEDRO_4_10";
+    $clave_secreta_estudiante  = "ROMANOS_8_28"; // Tu clave maestra para estudiantes
+
+    // Validación por ROL (Lógica unificada y simple)
     if ($rol == 'profesor' && $codigo !== $clave_secreta_profesor) {
-        die("<span style='color:red; font-family:sans-serif;'>Error: La clave de autorización para Profesor es incorrecta.</span><br><br><a href='registro_usuarios.php'>Volver a intentar</a>");
+        die("Error: Clave de Profesor incorrecta. <a href='registro_usuarios.php'>Volver</a>");
     } elseif ($rol == 'admin' && $codigo !== $clave_secreta_admin) {
-        die("<span style='color:red; font-family:sans-serif;'>Error: La clave de autorización para Administrador es incorrecta.</span><br><br><a href='registro_usuarios.php'>Volver a intentar</a>");
+        die("Error: Clave de Administrador incorrecta. <a href='registro_usuarios.php'>Volver</a>");
+    } elseif ($rol == 'estudiante' && $codigo !== $clave_secreta_estudiante) {
+        // Aquí validamos que la clave sea la maestra, sin importar el nivel
+        die("Error: Clave de Estudiante incorrecta. <a href='registro_usuarios.php'>Volver</a>");
     }
 
-    // 4. VERIFICACIÓN DE DUPLICADOS (Estructurada con tu llave primaria 'id_usuario')
-    $buscar_usuario = "SELECT id_usuario FROM usuarios WHERE email = '$email'";
-    $resultado_busqueda = mysqli_query($conexion, $buscar_usuario);
-    
-    if (!$resultado_busqueda) {
-        die("Error técnico en la verificación: " . mysqli_error($conexion));
+    // 4. VERIFICAR DUPLICADOS
+    $check_email = mysqli_query($conexion, "SELECT id_usuario FROM usuarios WHERE email = '$email'");
+    if (mysqli_num_rows($check_email) > 0) {
+        die("Error: El correo ya está registrado. <a href='registro_usuarios.php'>Volver</a>");
     }
 
-    if (mysqli_num_rows($resultado_busqueda) > 0) {
-        die("<span style='color:red; font-family:sans-serif;'>Error: Este correo electrónico ya está registrado en el sistema.</span><br><br><a href='registro_usuarios.php'>Volver a intentar</a>");
-    }
+    // 5. ENCRIPTACIÓN
+    $password_hash = password_hash($password_plana, PASSWORD_BCRYPT);
 
-    // 5. ENCRIPTACIÓN SEGURA DE CONTRASEÑA
-    $password_encriptada = password_hash($password_plana, PASSWORD_BCRYPT);
+    // 6. INSERCIÓN
+    // Guardamos el usuario con su nivel asociado
+    $sql = "INSERT INTO usuarios (usuario, email, contraseña, rol, id_nivel) 
+            VALUES ('$nombre', '$email', '$password_hash', '$rol', " . ($id_nivel ? "'$id_nivel'" : "NULL") . ")";
 
-    // 6. INSERCIÓN LIMPIA EN LA BASE DE DATOS
-    // id_usuario no se coloca aquí porque al ser AUTO_INCREMENT, MySQL le asigna su número solo.
-    // Usamos las columnas exactas de tu phpMyAdmin: usuario, email, contraseña, rol.
-    $sql = "INSERT INTO usuarios (usuario, email, contraseña, rol) VALUES ('$nombre', '$email', '$password_encriptada', '$rol')";
-    //El error estaba xq estaba guardando solo en la tabla de registro y no guardaba en la de estudiantes 
-    
-    
     if (mysqli_query($conexion, $sql)) {
-        
-        # PASO A: con (mysqli_insert_id)vemos el ultimo nro de ID que la base de datos asignó
-        $nuevo_id = mysqli_insert_id($conexion);//adentro de los parentesis quiere decir  “Busca ese ID en NUESTRA base de datos del proyecto, no en otra”.
+        $nuevo_id = mysqli_insert_id($conexion);
 
-        // PASO B: Si es estudiante, guardamos también en la Caja 2
+        // Si es estudiante, vinculamos en la tabla estudiantes para la relación del panel
         if ($rol == 'estudiante') {
-            $sql_estudiante = "INSERT INTO estudiantes (id_persona) VALUES ('$nuevo_id')";
-            mysqli_query($conexion, $sql_estudiante);
+            $sql_est = "INSERT INTO estudiantes (id_usuario, id_nivel) VALUES ('$nuevo_id', '$id_nivel')";
+            mysqli_query($conexion, $sql_est);
         }
 
-        // PASO C: Mostramos el mensaje bonito con el estilo de tu compañero
-        echo "<span style='color:green; font-family:sans-serif; font-weight:bold;'>¡Usuario registrado con éxito como " . ucfirst($rol) . "! Tu base de datos está perfectamente ingresada. Ya puedes ir al Login.</span>";
-        echo "<br><br><a href='login.php' style='color:blue; font-family:sans-serif; text-decoration:none;'>Ir al Login</a>";
-        
+        echo "¡Registro exitoso! <br><a href='login.php'>Ir al Login</a>";
     } else {
-        // Si algo falla, muestra el error técnico en rojo
-        echo "<span style='color:red; font-family:sans-serif;'>Error al insertar el registro: " . mysqli_error($conexion) . "</span>";
+        echo "Error al insertar: " . mysqli_error($conexion);
     }
 }
-
-// 7. CIERRE DE CONEXIÓN
-mysqli_close($conexion);
 ?>
