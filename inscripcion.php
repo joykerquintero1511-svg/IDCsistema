@@ -1,16 +1,11 @@
 <?php 
-    $niveles = [
-    "1A" => "1A-Escuela para Bautismo",
-    "1B" => "1B-Iglesia de Jesucristo",
-    "1C" => "1C-Autoridad y Santidad",
-    "2A" => "2A-Como Evangelizar",
-    "2B" => "2B-Formando Líderes con Proposito",
-    "2C" => "2C-Formando Carácter",
-    "3A" => "3A-Liderazgo",
-    "3B" => "3B-Consolidación y Consejería",
-    "3C" => "3C-Naturaleza de la Biblia",
-    "4A" => "4A-Historia de la Iglesia"
-];
+   # Aca Conectaremos la BD con (conexion.php)
+require_once('conexion.php');
+
+# Consulta para TRAER todos los NIVELES DESDE LA TABLA "NIVELES"
+
+$sql = "SELECT * FROM niveles " ; // el * El comodín que significa "todas las columnas".
+$resultado = mysqli_query($conexion , $sql); // Ejecuta la consulta en la base de datos y guarda el resultado en $resultado.
 ?>
 
 <!DOCTYPE html>
@@ -147,10 +142,15 @@
                             
                             <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel a Cursar</label>
                             <select name="nivel_academico" style="background: rgba(255,255,255,0.05); color: #fff; border-color: #142132; padding: 1.5rem; border-radius: 6px; width: 100%;">
-                            <?php foreach ($niveles as $codigo => $nombre): ?>
-                            <option value="<?php echo $codigo; ?>"><?php echo $nombre; ?></option>
-                            <?php endforeach; ?>
-                            </select>
+                            
+                            <?php # cambio aca para q se vea mas dinamico
+                                while($fila = mysqli_fetch_assoc($resultado)): ?>
+                                 <option value="<?php echo $fila['nivel_academico'];?>">
+                                    <?php echo $fila ['nivel_academico']; ?>
+                                 </option>
+
+                                    <?php endwhile;?>
+                                </select>
                             </div>
 
                             <button type="submit" class="btn btn--primary u-fullwidth" style="font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase; height: 5.5rem; line-height: 5.5rem;">
