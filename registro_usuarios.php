@@ -61,6 +61,20 @@
                     </select>
                 </div>
 
+                <div class="form-group" id="bloque-nivel" style="display: none; margin-bottom: 3.5rem;">
+                <label style="font-weight: bold;">Nivel Académico</label>
+                <select name="id_nivel" class="u-full-width" style="height: 4.5rem;">
+                <option value="">-- Selecciona tu nivel --</option>
+                <?php
+                $query_niveles = "SELECT id_nivel, nombre_nivel FROM niveles";
+                $result_niveles = mysqli_query($conexion, $query_niveles);
+                while ($fila = mysqli_fetch_assoc($result_niveles)) {
+                echo "<option value='".$fila['id_nivel']."'>".$fila['nombre_nivel']."</option>";
+                }
+                ?>
+                </select>
+                </div>
+
                 <div id="bloque-codigo" class="form-group" style="display: none; margin-bottom: 3.5rem;">
                     <label style="font-weight: bold;">Clave de Autorización Especial</label>
                     <input class="u-fullwidth" type="password" name="codigo_autorizacion" id="codigo_autorizacion" placeholder="Introduce la clave de la escuela">
