@@ -84,7 +84,7 @@
             var bloqueCodigo = document.getElementById("bloque-codigo");
             var inputCodigo = document.getElementById("codigo_autorizacion");
 
-            if (rolSeleccionado === "profesor" || rolSeleccionado === "admin") {
+            if (rolSeleccionado === "profesor" || rolSeleccionado === "admin" || rolSeleccionado === "estudiante") {
                 bloqueCodigo.style.display = "block";
                 inputCodigo.required = true;
             } else {
