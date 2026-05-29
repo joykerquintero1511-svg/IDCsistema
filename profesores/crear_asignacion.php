@@ -43,6 +43,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Profesor - EFB</title>
+    <link rel="icon" type="image/png" href="images/EFB.png">
     <style>
         /* ESTÉTICA GENERAL E INTEGRACIÓN DE FONT-FAMILY DEL INDEX */
         * { 
