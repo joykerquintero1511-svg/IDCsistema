@@ -1,3 +1,9 @@
+<?php
+include("conexion.php"); // Asegúrate de tener esto al inicio
+$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles"; // Ajusta 'nivel_academico' al nombre real de tu columna
+$result_niveles = mysqli_query($conexion, $query_niveles);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -48,9 +54,24 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="id_nivel">Nivel Académico Destinatario *</label>
+                    <select name="id_nivel" id="id_nivel" class="form-control" required>
+                        <option value="">-- Seleccione el nivel --</option>
+                        <?php if ($result_niveles): ?>
+                            <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
+                                <option value="<?php echo $nivel['id_nivel']; ?>">
+                                    <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+                                </option>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Contraseña de Acceso</label>
                     <input class="u-fullwidth" type="password" name="password" required placeholder="••••••••">
                 </div>
+
 
                 <div class="form-group">
                     <label>Tipo de Cuenta</label>
@@ -61,19 +82,6 @@
                     </select>
                 </div>
 
-                <div class="form-group" id="bloque-nivel" style="display: none; margin-bottom: 3.5rem;">
-                <label style="font-weight: bold;">Nivel Académico</label>
-                <select name="id_nivel" class="u-full-width" style="height: 4.5rem;">
-                <option value="">-- Selecciona tu nivel --</option>
-                <?php
-                $query_niveles = "SELECT id_nivel, nombre_nivel FROM niveles";
-                $result_niveles = mysqli_query($conexion, $query_niveles);
-                while ($fila = mysqli_fetch_assoc($result_niveles)) {
-                echo "<option value='".$fila['id_nivel']."'>".$fila['nombre_nivel']."</option>";
-                }
-                ?>
-                </select>
-                </div>
 
                 <div id="bloque-codigo" class="form-group" style="display: none; margin-bottom: 3.5rem;">
                     <label style="font-weight: bold;">Clave de Autorización Especial</label>
