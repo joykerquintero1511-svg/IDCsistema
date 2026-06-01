@@ -43,8 +43,8 @@ $id_persona = mysqli_insert_id($conexion);
 
 // PASO 2: Insertar en la tabla estudiantes
 
-$sql_estudiante = "INSERT INTO estudiantes (id_persona, nivel_instruccion, fecha_registro, email, nivel_academico) 
-        VALUES ('$id_persona', '$nivel_instruccion', '$fecha_registro', '$email', '$nivel_academico')";
+$sql_estudiante = "INSERT INTO estudiantes (id_persona, nivel_instruccion, fecha_registro, email) 
+        VALUES ('$id_persona', '$nivel_instruccion', '$fecha_registro', '$email')";
 
 if (!mysqli_query($conexion, $sql_estudiante)) {
     die("Error al guardar estudiante: " . mysqli_error($conexion));
