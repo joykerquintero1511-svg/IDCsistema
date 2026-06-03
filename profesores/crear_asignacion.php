@@ -1,4 +1,11 @@
 <?php
+/** @var mysqli $conexion */
+include("conexion.php");
+// ... resto de tu código
+?>
+
+
+<?php
 session_start();
 include("../conexion.php");
 
@@ -262,7 +269,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
             <form action="crear_asignacion.php" method="POST">
                 
                 <div class="form-group">
-                    <label for="id_nivel">Nivel Académico Destinatario *</label>
+                    <label for="id_nivel">Nivel Académico Destinatario </label>
                     <select name="id_nivel" id="id_nivel" class="form-control" required>
                         <option value="">-- Seleccione el nivel --</option>
                         <?php if ($result_niveles): ?>

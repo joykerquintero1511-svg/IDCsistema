@@ -18,16 +18,52 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
         .s-content { padding: 5rem 0; }
         .main-card { max-width: 500px; margin: 0 auto; background: #111111; padding: 4rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* Ajuste milimétrico para que todo mida lo mismo dentro de la caja */
-        .form-group { margin-bottom: 2rem; }
-        .form-group label { color: #fff; display: block; margin-bottom: 0.8rem; font-size: 1.4rem; }
-        
         /* Forzamos a que tanto inputs como el select y el botón respeten el ancho interno */
         .u-fullwidth { width: 100%; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-size: 1.1rem; outline: none; box-sizing: border-box; }
         
         /* El botón con tu color azul original pero contenido */
         .btn-primary { background-color: #245285; border: none; cursor: pointer; font-weight: bold; height: 4.5rem; line-height: 4.5rem; padding: 0; }
         .btn-primary:hover { background-color: #1c426d; }
+
+        .form-group { 
+            margin-bottom: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        }
+        
+        .form-group label { 
+            font-size: 0.85rem; 
+            color: #888888; 
+            font-weight: 500; 
+        }
+        
+        .form-control { 
+            background-color: #161b22; 
+            border: 1px solid #30363d; 
+            border-radius: 6px; 
+            padding: 11px 14px; 
+            color: #ffffff; 
+            font-size: 0.95rem; 
+            transition: border-color 0.2s; 
+            width: 100%; 
+        }
+        
+        .form-control:focus { 
+            outline: none; 
+            border-color: #58a6ff; 
+        }
+        
+        select.form-control { 
+            cursor: pointer; 
+            color-scheme: dark; 
+        }
+        
+        textarea.form-control { 
+            resize: vertical; 
+            min-height: 110px; 
+        }
+
     </style>
 </head>
 <body>
@@ -54,7 +90,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                 </div>
 
                 <div class="form-group">
-                    <label for="id_nivel">Nivel Académico Destinatario *</label>
+                    <label for="id_nivel">Nivel Académico Cursando</label>
                     <select name="id_nivel" id="id_nivel" class="form-control" required>
                         <option value="">-- Seleccione el nivel --</option>
                         <?php if ($result_niveles): ?>
