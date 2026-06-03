@@ -10,15 +10,11 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] !== 'estudiante' && $_S
 
 // 2. CAPTURAR DATOS DE LA SESIÓN
 $id_estudiante = $_SESSION['id_estudiante'] ?? 0; 
-$id_nivel = $_SESSION['id_nivel'] ?? 0;
 $nombre_estudiante = $_SESSION['usuario'] ?? 'Estudiante'; 
 
-/// 1. Obtenemos el nivel del estudiante desde la sesión
-$nivel_estudiante = $_SESSION['id_nivel']; 
 
 // 2. Consulta filtrada: Solo muestra tareas donde el id_nivel coincida con el del estudiante
 $query_tareas = "SELECT * FROM asignacion 
-                 WHERE id_nivel = '$nivel_estudiante' 
                  ORDER BY fecha_limite ASC";
 
 $result_tareas = mysqli_query($conexion, $query_tareas);
@@ -34,7 +30,6 @@ $result_notas = mysqli_query($conexion, $query_notas);
 // 5. CONSULTA 3: Cronograma de clases de su nivel
 $query_clases = "SELECT tema_clase, fecha, hora, lugar_modalidad 
                  FROM cronograma_clases 
-                 WHERE id_nivel = '$id_nivel' 
                  ORDER BY fecha ASC";
 $result_clases = mysqli_query($conexion, $query_clases);
 ?>

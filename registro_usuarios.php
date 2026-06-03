@@ -89,19 +89,6 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                     <input class="u-fullwidth" type="email" name="email" required placeholder="correo@ejemplo.com">
                 </div>
 
-                <div class="form-group">
-                    <label for="id_nivel">Nivel Académico Cursando</label>
-                    <select name="id_nivel" id="id_nivel" class="form-control" required>
-                        <option value="">-- Seleccione el nivel --</option>
-                        <?php if ($result_niveles): ?>
-                            <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
-                                <option value="<?php echo $nivel['id_nivel']; ?>">
-                                    <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
-                                </option>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
-                    </select>
-                </div>
 
                 <div class="form-group">
                     <label>Contraseña de Acceso</label>
@@ -142,7 +129,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
             var bloqueCodigo = document.getElementById("bloque-codigo");
             var inputCodigo = document.getElementById("codigo_autorizacion");
 
-            if (rolSeleccionado === "profesor" || rolSeleccionado === "admin" || rolSeleccionado === "estudiante") {
+            if (rolSeleccionado === "profesor" || rolSeleccionado === "admin") {
                 bloqueCodigo.style.display = "block";
                 inputCodigo.required = true;
             } else {
