@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     die("Acceso no permitido. Por favor, envía el formulario desde la página de inscripción.");
 }
 
-// Recibir los datos del formulario
+
 $nombre = $_POST['nombre'];
 $apellido = $_POST['apellidos'];
 $email = $_POST['email'];
