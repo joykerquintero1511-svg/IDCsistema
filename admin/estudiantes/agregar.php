@@ -1,7 +1,15 @@
 <?php
-require_once '../conexion.php';
+session_start();
+if (!isset ($_SESSION['rol'])|| $_SESSION['rol']!=='admin'){
+    header("Location: ../../login.php");
+    exit();
+} //  Para que solo el administrador pueda agregar estudiantes.
 
-$conexion = $conexion ?? null; // el xq d esta variable esta en la carpeta de listar.php
+
+
+require_once '../../conexion.php';
+
+$conexion = $conexion ?? null; // el xq d esta variable esta en el archivo listar.php
 
 $nombre = $apellido =$cedula =$direccion = $email = $telefono = $nivel_academico = $status = $nivel_instruccion = $fecha_registro = "";
 $error = "";
@@ -45,14 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Agregar Estudiante</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../../estilos/style.css">
 </head>
 <body>
 
 <div class="background-titulo">
             <div class="header-container">
             
-            <img src="../imagenes/EFB.png" alt="Logo Escuela de Formación Bíblica" class="header-logo">
+            <img src="../../imagenes/EFB.png" alt="Logo Escuela de Formación Bíblica" class="header-logo">
     <h1 class="header-title">Agregar Estudiante</h1>
         </div>
 </div>

@@ -1,5 +1,12 @@
 <?php
-    require_once '../conexion.php'; // conexión a la BD (más seguro que include)
+
+session_start(); // Para poder leer la sesión del usuario.
+    if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin'){  // Verifica si es administrador.
+        header ("Location : ../../login.php"); // Si no es admin, lo saca.
+        exit();
+    }
+
+    require_once '../../conexion.php'; // conexión a la BD (más seguro que include)
    
 
  $conexion = $conexion ?? null; 
@@ -23,7 +30,8 @@
         <meta charset="UTF-8"> <!--	Asegura que los textos con tildes y la ñ se vean bien-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--Hace que la página sea responsive (se adapte a móviles)-->
         <title>Lista de Estudiantes</title>
-        <link rel="stylesheet" href="../estilos/style.css">
+        <link rel="stylesheet" href="../../estilos/style.css">
+        
     </head>
     <body>
         <h1> Lista de Estudiantes</h1>

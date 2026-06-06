@@ -1,5 +1,14 @@
 <?php
-require_once '../conexion.php';
+session_start();
+if (!isset ($_SESSION['rol'])|| $_SESSION['rol']!=='admin'){
+    header("Location: ../../login.php");
+    exit();
+} //  Para que solo el administrador pueda agregar estudiantes.
+
+
+
+
+require_once '../../conexion.php';
 
 $conexion=$conexion ?? null;
 

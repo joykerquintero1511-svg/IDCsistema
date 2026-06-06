@@ -1,5 +1,13 @@
 <?php
-require_once '../conexion.php';
+session_start();
+if(!isset($_SESSION['rol']) || $_SESSION['rol']!=='admin'  ){
+    header("Location: ../../login.php");
+exit;// Sin exit(), el script sigue ejecutándose aunque redirija.
+}
+
+
+
+require_once '../../conexion.php';
 
 $conexion= $conexion ?? null;
 $error = "";
@@ -15,7 +23,7 @@ $id = $_GET['id'];
 // Obtener los datos actuales del estudiante
 $sql = "SELECT * FROM estudiantes WHERE id_estudiante = $id";
 $resultado = ejecutarConsulta($conexion, $sql);
-$estudiante = mysqli_fetch_assoc($resultado);
+$estudiante = mysqli_fetch_assoc($resultado);// Sirve para extraer una fila de resultados,y convertirla en un formato fácil de usar.
 
 if (!$estudiante) {
     die("Estudiante no encontrado.");
@@ -62,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Editar Estudiante</title>
-    <link rel="stylesheet" href="../estilos/style.css">
+    <link rel="stylesheet" href="../../estilos/style.css">
 </head>
 <body>
     <h1> Editar Estudiante</h1>
