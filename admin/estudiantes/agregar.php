@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nivel_instruccion = trim($_POST['nivel_instruccion']);
     $fecha_registro = trim($_POST['fecha_registro']);
 
+
+
     if (empty($nombre) || empty($apellido)) {   // (empty) esta explicado en registrar_usuario.php
         $error = "Nombre y Apellido son obligatorios.";
     } else {
