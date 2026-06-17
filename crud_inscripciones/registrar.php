@@ -93,7 +93,7 @@
     <section class="container" style="padding: 4rem 2rem;">
         <div class="row">
             <div class="column xl-12">
-         <h1> Nueva Inscripción</h1>
+        <h1 style="text-align: center;">Nueva Inscripción</h1>
 
     <form action="guardar.php" method="POST" class="formulario-inscripcion">
         <label>ID Estudiante:</label>
