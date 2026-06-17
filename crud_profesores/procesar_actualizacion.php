@@ -1,7 +1,7 @@
 <?php
 require 'conexion.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $id_profesor = trim($_POST['id_profesor']);
     $cedula      = trim($_POST['cedula']);
@@ -13,25 +13,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Campos requeridos faltantes.");
     }
 
-    try {
-        // Sentencia UPDATE con marcadores
-        $sql = "UPDATE profesores SET cedula = ?, nombre = ?, apellido = ?, telefono = ? WHERE id_profesor = ?";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$cedula, $nombre, $apellido, $telefono, $id_profesor]);
+    // Sentencia UPDATE estructurada clásica
+    $sql = "UPDATE profesores SET 
+            cedula = '$cedula', 
+            nombre = '$nombre', 
+            apellido = '$apellido', 
+            telefono = '$telefono' 
+            WHERE id_profesor = '$id_profesor'";
+    
+    $ejecutar = mysqli_query($conexion, $sql);
 
-        // Redirección exitosa
+    if ($ejecutar) {
         header("Location: index.php?mensaje=actualizado");
         exit();
-
-    } catch (PDOException $e) {
-        if ($e->getCode() == 23000) {
+    } else {
+        if (mysqli_errno($conexion) == 1062) {
             echo "<script>
-                    alert('Error: La cédula introducida ya pertenece a otro profesor.');
+                    alert('Error: La cédula ya le pertenece a otro profesor.');
                     window.history.back();
                   </script>";
         } else {
-            echo "Error al actualizar: " . $e->getMessage();
+            echo "Error al actualizar: " . mysqli_error($conexion);
         }
     }
 } else {

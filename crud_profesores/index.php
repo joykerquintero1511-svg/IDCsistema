@@ -1,9 +1,9 @@
 <?php
 require 'conexion.php';
 
-// Operación: LISTAR (Ajustado a tu nueva tabla limpia)
-$stmt = $pdo->query("SELECT * FROM profesores ORDER BY id_profesor DESC");
-$profesores = $stmt->fetchAll();
+// Operación habitual: LISTAR
+$sql = "SELECT * FROM profesores ORDER BY id_profesor DESC";
+$resultado = mysqli_query($conexion, $sql);
 ?>
 
 <!DOCTYPE html>
@@ -21,10 +21,17 @@ $profesores = $stmt->fetchAll();
         <a href="registrar.php" class="btn btn-primary">Registrar Nuevo Profesor</a>
     </div>
 
-    <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] == 'registrado'): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            ¡Profesor registrado exitosamente!
-        </div>
+    <?php if (isset($_GET['mensaje'])): ?>
+        <?php if ($_GET['mensaje'] == 'registrado'): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ¡Profesor registrado exitosamente!
+            </div>
+        <?php echo "</div>"; endif; ?>
+        <?php if ($_GET['mensaje'] == 'actualizado'): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ¡Datos del profesor actualizados correctamente!
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <div class="card shadow-sm">
@@ -39,19 +46,25 @@ $profesores = $stmt->fetchAll();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($profesores) > 0): ?>
-                        <?php foreach ($profesores as $profesor): ?>
+                    <?php 
+                    // Si encontramos registros en la tabla profesores
+                    if (mysqli_num_rows($resultado) > 0): 
+                        // Recorremos fila por fila con el ciclo while tradicional
+                        while ($profesor = mysqli_fetch_assoc($resultado)): 
+                    ?>
                             <tr>
-                                <td><?= htmlspecialchars($profesor['cedula']) ?></td>
-                                <td><?= htmlspecialchars($profesor['nombre'] . ' ' . $profesor['apellido']) ?></td>
-                                <td><?= htmlspecialchars($profesor['telefono'] ?? 'No asignado') ?></td>
+                                <td><?php echo $profesor['cedula']; ?></td>
+                                <td><?php echo $profesor['nombre'] . ' ' . $profesor['apellido']; ?></td>
+                                <td><?php echo $profesor['telefono'] ? $profesor['telefono'] : 'No asignado'; ?></td>
                                 <td class="text-center">
-                                    <a href="consultar.php?id=<?= $profesor['id_profesor'] ?>" class="btn btn-info btn-sm text-white">Consultar</a>
-                                    <a href="actualizar.php?id=<?= $profesor['id_profesor'] ?>" class="btn btn-warning btn-sm">Actualizar</a>
+                                    <a href="consultar.php?id=<?php echo $profesor['id_profesor']; ?>" class="btn btn-info btn-sm text-white">Consultar</a>
+                                    <a href="actualizar.php?id=<?php echo $profesor['id_profesor']; ?>" class="btn btn-warning btn-sm">Actualizar</a>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                    <?php 
+                        endwhile; 
+                    else: 
+                    ?>
                         <tr>
                             <td colspan="4" class="text-center text-muted py-4">No hay profesores registrados.</td>
                         </tr>

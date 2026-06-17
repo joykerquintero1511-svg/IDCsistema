@@ -1,7 +1,6 @@
 <?php
 require 'conexion.php';
 
-// Verificamos que venga el ID por la URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: index.php");
     exit();
@@ -9,19 +8,15 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id_profesor = $_GET['id'];
 
-try {
-    // Buscamos al profesor de forma segura
-    $stmt = $pdo->prepare("SELECT * FROM profesores WHERE id_profesor = ?");
-    $stmt->execute([$id_profesor]);
-    $profesor = $stmt->fetch();
+// Consulta tradicional con filtro WHERE
+$sql = "SELECT * FROM profesores WHERE id_profesor = '$id_profesor'";
+$resultado = mysqli_query($conexion, $sql);
+$profesor = mysqli_fetch_assoc($resultado);
 
-    // Si no existe el profesor, redirigimos
-    if (!$profesor) {
-        header("Location: index.php");
-        exit();
-    }
-} catch (PDOException $e) {
-    die("Error en el sistema: " . $e->getMessage());
+// Si el profesor no existe en la BD
+if (!$profesor) {
+    header("Location: index.php");
+    exit();
 }
 ?>
 
@@ -37,29 +32,29 @@ try {
 <div class="container mt-5" style="max-width: 600px;">
     <div class="card shadow">
         <div class="card-header bg-info text-white">
-            <h4 class="mb-0">Ficha del Profesor</h4>
+            <h4 class="mb-0">Ficha del Profesor (Tradicional)</h4>
         </div>
         <div class="card-body">
             <table class="table table-bordered m-0">
                 <tr>
                     <th class="table-secondary" style="width: 35%;">Cédula:</th>
-                    <td><?= htmlspecialchars($profesor['cedula']) ?></td>
+                    <td><?php echo $profesor['cedula']; ?></td>
                 </tr>
                 <tr>
                     <th class="table-secondary">Nombre:</th>
-                    <td><?= htmlspecialchars($profesor['nombre']) ?></td>
+                    <td><?php echo $profesor['nombre']; ?></td>
                 </tr>
                 <tr>
                     <th class="table-secondary">Apellido:</th>
-                    <td><?= htmlspecialchars($profesor['apellido']) ?></td>
+                    <td><?php echo $profesor['apellido']; ?></td>
                 </tr>
                 <tr>
                     <th class="table-secondary">Teléfono:</th>
-                    <td><?= htmlspecialchars($profesor['telefono'] ?? 'No asignado') ?></td>
+                    <td><?php echo $profesor['telefono'] ? $profesor['telefono'] : 'No asignado'; ?></td>
                 </tr>
                 <tr>
                     <th class="table-secondary">Registrado el:</th>
-                    <td><?= htmlspecialchars($profesor['creado_en']) ?></td>
+                    <td><?php echo $profesor['creado_en']; ?></td>
                 </tr>
             </table>
             
