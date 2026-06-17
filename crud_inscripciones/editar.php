@@ -105,6 +105,10 @@ if (!$fila) {
             text-align: center;
             margin-bottom: 2rem;
         }
+        .formulario-inscripcion select option {
+    background: #1e1e1e;
+    color: #ffffff;
+}
     </style>
 </head>
 <body class="s-pagewrap ss-home">
@@ -143,7 +147,18 @@ if (!$fila) {
                 <h1>Editar Inscripción</h1>
                 <form method="POST" class="formulario-inscripcion">
                     <label>Nivel Académico:</label>
-                    <input type="text" name="nivel_academico" value="<?php echo htmlspecialchars($fila['nivel_academico']); ?>" required>
+                  <select name="nivel_academico" required>
+                    <?php
+                     $sql_niveles = "SELECT nivel_academico FROM niveles ORDER BY nivel_academico";
+                    $result_niveles = ejecutarConsulta($conexion, $sql_niveles);
+                    while($nivel = mysqli_fetch_assoc($result_niveles)):
+                    ?>
+        <option value="<?php echo $nivel['nivel_academico']; ?>" 
+            <?php echo ($nivel['nivel_academico'] == $fila['nivel_academico']) ? 'selected' : ''; ?>>
+            <?php echo $nivel['nivel_academico']; ?>
+        </option>
+    <?php endwhile; ?>
+</select>
 
                     <label>Fecha Inscripción:</label>
                     <input type="date" name="fecha_inscripcion" value="<?php echo $fila['fecha_inscripcion']; ?>" required>

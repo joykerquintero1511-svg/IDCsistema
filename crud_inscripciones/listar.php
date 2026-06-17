@@ -131,7 +131,7 @@ $resultado = ejecutarConsulta($conexion, $sql);
     <table class="tabla-inscripciones">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ID Inscripcion</th>
                 <th>ID Estudiante</th>
                 <th>Nivel Académico</th>
                 <th>Fecha Inscripción</th>

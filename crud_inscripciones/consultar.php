@@ -108,7 +108,7 @@ if (!$fila) {
                 <h1>🔍 Detalle de Inscripción</h1>
                 <div class="card">
                     <div class="campo">
-                        <span class="label">ID:</span>
+                        <span class="label">ID Inscripcion:</span>
                         <span class="valor"><?php echo $fila['id_inscripcion']; ?></span>
                     </div>
                     <div class="campo">

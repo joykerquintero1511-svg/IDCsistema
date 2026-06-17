@@ -57,6 +57,10 @@
     .btn-cancelar:hover {
         background: #5a6268;
     }
+    .formulario-inscripcion select option {
+    background: #1e1e1e;   /* fondo oscuro */
+    color: #ffffff;         /* texto blanco */
+}
 </style>
 </head>
 <body class="s-pagewrap ss-home">
@@ -93,16 +97,29 @@
 
     <form action="guardar.php" method="POST" class="formulario-inscripcion">
         <label>ID Estudiante:</label>
-        <input type="number" name="id_estudiante" required><br>
+        <input type="text" name="id_estudiante" placeholder="Ej: 18" required
+       inputmode="numeric" pattern="[0-9]*"
+       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         
         <label>Nivel Académico:</label>
-        <input type="text" name="nivel_academico" required><br>
+     <select name="nivel_academico" required>
+    <option value="">Seleccione un nivel</option>
+    <?php
+    $sql_niveles = "SELECT nivel_academico FROM niveles ORDER BY nivel_academico";
+    $result_niveles = ejecutarConsulta($conexion, $sql_niveles);
+    while($nivel = mysqli_fetch_assoc($result_niveles)):
+    ?>
+        <option value="<?php echo $nivel['nivel_academico']; ?>">
+            <?php echo $nivel['nivel_academico']; ?>
+        </option>
+    <?php endwhile; ?>
+</select>
         
         <label>Fecha Inscripción:</label>
         <input type="date" name="fecha_inscripcion" required><br>
         
         <label>Periodo:</label>
-        <input type="text" name="periodo" placeholder="Ej: 2026-1" required><br>
+        <input type="text" name="periodo" placeholder="Ej: 2026-1" required>
         
         <label>Estado:</label>
         <select name="estado">
