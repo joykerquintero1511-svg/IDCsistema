@@ -1,5 +1,4 @@
 
-
 <?php 
    # Aca Conectaremos la BD con (conexion.php)
 require_once('conexion.php');
@@ -61,6 +60,23 @@ $resultado = mysqli_query($conexion , $sql); // Ejecuta la consulta en la base d
                         
                         <form action="registrar_estudiantes.php" method="POST" style="text-align: left;">
                             
+                        <div style="margin-bottom: 2rem;">
+                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Cédula / Documento de Identidad</label>
+    
+                        <div style="display: flex; gap: 10px;">
+        
+                            <select name="nacionalidad" style="width: 80px; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; font-weight: bold; cursor: pointer;">
+                            <option value="V" style="background: #142132; color: #ffffff;">V</option>
+                            <option value="E" style="background: #142132; color: #ffffff;">E</option>
+                            </select>
+        
+                            <input class="u-fullwidth" type="text" name="cedula" placeholder="00000000" required 
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                            style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
+               
+                    </div>
+                        </div>
+
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nombres</label>
                                 <input class="u-fullwidth" type="text" id="nombre" name="nombre" placeholder="Ej. Joyker Alejandro" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
@@ -83,21 +99,7 @@ $resultado = mysqli_query($conexion , $sql); // Ejecuta la consulta en la base d
 
 
 
-                    <div style="margin-bottom: 2rem;">
-                            <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Cédula / Documento de Identidad</label>
-    
-                        <div style="display: flex; gap: 10px;">
-        
-                            <select name="nacionalidad" style="width: 80px; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; font-weight: bold; cursor: pointer;">
-                            <option value="V" style="background: #142132; color: #ffffff;">V</option>
-                            <option value="E" style="background: #142132; color: #ffffff;">E</option>
-                            </select>
-        
-                            <input class="u-fullwidth" type="text" name="cedula" placeholder="00000000" required 
-                            style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
-               
-                    </div>
-                        </div>
+                    
 
                         <div style="margin-bottom: 2rem;">
                         <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Fecha de Nacimiento</label>
@@ -118,7 +120,9 @@ $resultado = mysqli_query($conexion , $sql); // Ejecuta la consulta en la base d
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Número de Teléfono</label>
-                                <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
+                                <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                                
                             </div>
 
                             <div style="margin-bottom: 2rem;">
