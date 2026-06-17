@@ -1,20 +1,17 @@
 <?php
-$host = 'localhost';
-$db   = 'idcdatabase'; 
-$user = 'root';
-$pass = ''; 
-$charset = 'utf8mb4';
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "idcdatabase"; // Tu base de datos real
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+// Conexión tradicional / estructurada
+$conexion = mysqli_connect($host, $user, $pass, $db);
 
-try {
-     $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-     throw new \PDOException($e->getMessage(), (int)$e->getCode());
+// Verificamos si la conexión falló
+if (!$conexion) {
+    die("Error al conectar con la base de datos: " . mysqli_connect_error());
 }
+
+// Configurar los caracteres correctos para acentos y eñes
+mysqli_set_charset($conexion, "utf8");
 ?>

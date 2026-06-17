@@ -1,40 +1,39 @@
 <?php
 require 'conexion.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // Capturamos los datos limpios del formulario
+    // Captura tradicional de datos limpios de espacios
     $cedula   = trim($_POST['cedula']);
     $nombre   = trim($_POST['nombre']);
     $apellido = trim($_POST['apellido']);
     $telefono = trim($_POST['telefono']);
 
-    // Validación en el servidor
+    // Validación básica obligatoria
     if (empty($cedula) || empty($nombre) || empty($apellido)) {
         die("Por favor, rellene todos los campos obligatorios.");
     }
 
-    try {
-        // SQL limpio, directo y seguro contra Inyección SQL
-        $sql = "INSERT INTO profesores (cedula, nombre, apellido, telefono) 
-                VALUES (?, ?, ?, ?)";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$cedula, $nombre, $apellido, $telefono]);
+    // Consulta INSERT básica y tradicional de MySQL
+    $sql = "INSERT INTO profesores (cedula, nombre, apellido, telefono) 
+            VALUES ('$cedula', '$nombre', '$apellido', '$telefono')";
+    
+    // Ejecución de la consulta
+    $ejecutar = mysqli_query($conexion, $sql);
 
-        // Redirección exitosa al listado principal
+    if ($ejecutar) {
+        // Redirige al listado mandando el estado por la URL
         header("Location: index.php?mensaje=registrado");
         exit();
-
-    } catch (PDOException $e) {
-        // Control de cédula duplicada
-        if ($e->getCode() == 23000) {
+    } else {
+        // Si hay error (como por ejemplo cédula duplicada)
+        if (mysqli_errno($conexion) == 1062) {
             echo "<script>
-                    alert('Error: Ya existe un profesor registrado con esta cédula.');
+                    alert('Error: La cédula ya se encuentra registrada.');
                     window.history.back();
                   </script>";
         } else {
-            echo "Error en el sistema: " . $e->getMessage();
+            echo "Error al registrar en la base de datos: " . mysqli_error($conexion);
         }
     }
 } else {
