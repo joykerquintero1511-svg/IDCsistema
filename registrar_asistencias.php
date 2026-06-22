@@ -58,7 +58,8 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>IDC - Control de Asistencia</title>
+    <title>Control de Asistencias</title>
+     <link rel="icon" type="image/png" href="images/EFB.png">
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -114,10 +115,9 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 
 <header>
     <div class="logo-container">
-        <img src="logo.png" alt="IDC Logo">
-        <span>SISTEMA IDC</span>
+        <img src="images/EFB.png" alt="IDC Logo">
+        <span>Control de Asistencias</span>
     </div>
-    <div>Módulo: Asistencia</div>
 </header>
 
 <div class="container">
