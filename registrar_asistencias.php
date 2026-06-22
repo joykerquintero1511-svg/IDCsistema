@@ -124,7 +124,7 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
     <div class="card">
         <form action="registrar_asistencias.php" method="POST">
             <div class="form-header">
-                <h2>Control Diario</h2>
+                <h2>Asistencia</h2>
                 <input type="date" name="fecha_clase" value="<?php echo date('Y-m-d'); ?>" required>
             </div>
 
@@ -159,7 +159,7 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                 </tbody>
             </table>
 
-            <button type="submit" name="guardar_asistencia" class="btn-save">Guardar Registro de Hoy</button>
+            <button type="submit" name="guardar_asistencia" class="btn-save">Guardar</button>
         </form>
     </div>
 </div>
