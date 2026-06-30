@@ -19,18 +19,21 @@ $nivel_academico = $_POST['nivel_academico'];
 $fecha_nacimiento = $_POST['fecha_nacimiento'];
 $fecha_registro = date('Y-m-d');
 $genero = $_POST['genero'];
+// Pendiente definir si se usará período académico.
+// Por ahora se deja fijo para no romper el INSERT de inscripciones.
 $periodo = "2026-1";
-$estado_inscripcion = "Activo";
+$estado_inscripcion = 1;
+$direccion = $_POST['direccion'];
 
 // Validar campos obligatorios
-if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($nivel_academico) || empty($nacionalidad) || empty($fecha_nacimiento)) {
+if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($direccion)|| empty($nivel_academico) || empty($nacionalidad) || empty($fecha_nacimiento )) {
     die("Error: Todos los campos son obligatorios.");
 }
 
  // PASO 1: Insertar en la tabla personas
 
- $sql_persona = "INSERT INTO personas (tipo_documento, cedula, nacionalidad, nombre, apellido, fecha_nacimiento, genero, telefono, contacto_emergencia) 
-                VALUES ('Cédula', '$cedula', '$nacionalidad', '$nombre', '$apellido', '$fecha_nacimiento', '$genero', '$telefono', '$contacto_emergencia')";
+ $sql_persona = "INSERT INTO personas (tipo_documento, cedula, nacionalidad, nombre, apellido, fecha_nacimiento, genero, telefono, contacto_emergencia, direccion) 
+                VALUES ('Cédula', '$cedula', '$nacionalidad', '$nombre', '$apellido', '$fecha_nacimiento', '$genero', '$telefono', '$contacto_emergencia', '$direccion')";
 
 if (!mysqli_query($conexion, $sql_persona)) {
     die("Error al guardar datos personales: " . mysqli_error($conexion));
