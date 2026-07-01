@@ -52,6 +52,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
         <a href="#" class="menu-item">Control de Usuarios</a>
         <a href="#" class="menu-item">Ajustes Base de Datos</a>
         <a href="#" class="menu-item">Auditoría General</a>
+        <a href="admin/reportes/reporte_estudiantes.php" class="menu-item">Reporte de Estudiantes</a>
     </div>
 
     <div class="main-content">
