@@ -7,6 +7,11 @@ if (!isset($_GET['id_inscripcion'])) {
 }
 
 $id_inscripcion = intval($_GET['id_inscripcion']); // Convierte el dato recibido por URL a número entero.
+$estado = isset($_GET['estado']) ? $_GET['estado'] : "";
+$nivel = isset($_GET['nivel']) ? $_GET['nivel'] : "";
+$anio = isset($_GET['anio']) ? $_GET['anio'] : "";
+$mes = isset($_GET['mes']) ? $_GET['mes'] : "";
+
 
 $consulta = "
     SELECT
@@ -21,7 +26,6 @@ $consulta = "
         estudiantes.email,
         estudiantes.nivel_instruccion,
         inscripciones.nivel_academico,
-        inscripciones.periodo,
         inscripciones.estado,
         inscripciones.fecha_inscripcion
     FROM inscripciones
@@ -221,11 +225,6 @@ if (!$fila) {
         </div>
 
         <div class="dato">
-            <div class="etiqueta">Período:</div>
-            <div class="valor"><?php echo htmlspecialchars($fila['periodo']); ?></div>
-        </div>
-
-        <div class="dato">
             <div class="etiqueta">Estado:</div>
             <div class="valor">
                 <?php
@@ -238,7 +237,9 @@ if (!$fila) {
             </div>
         </div>
 
-        <a href="reporte_estudiantes.php" class="btn-volver"> ← Volver al reporte</a>
+        <a href="reporte_estudiantes.php?estado=<?php echo $estado; ?>&nivel=<?php echo urlencode($nivel); ?>&anio=<?php echo $anio; ?>&mes=<?php echo $mes; ?>" class="btn-volver">
+         ← Volver al reporte
+</a>
 
     </div>
 

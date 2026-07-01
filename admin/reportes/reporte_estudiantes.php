@@ -35,7 +35,6 @@ $consulta = "
         personas.nombre,
         personas.apellido,
         inscripciones.nivel_academico,
-        inscripciones.periodo,
         inscripciones.estado,
         estudiantes.id_estudiante
     FROM inscripciones
@@ -346,8 +345,50 @@ if (!$resultado) {
 
 </select>
 
-    <button type="submit">Buscar</button>
+<label for="mes">Mes de inscripción:</label>
 
+<select name="mes" id="mes">
+
+    <option value="">Todos</option>
+         <?php
+                $nombre_meses = [
+                    1 => "Enero",
+                    2 => "Febrero",
+                    3 => "Marzo",
+                    4 => "Abril",
+                    5 => "Mayo",
+                    6 => "Junio",
+                    7 => "Julio",
+                    8 => "Agosto",
+                    9 => "Septiembre",
+                    10 => "Octubre",
+                    11 => "Noviembre",
+                    12 => "Diciembre"
+                ]; ?>
+
+    <?php while($mes = $resultado_meses->fetch_assoc()) { ?>
+
+        <option
+            value="<?php echo $mes['mes']; ?>"
+
+            <?php
+            if($filtro_mes == $mes['mes']){
+                echo "selected";
+            }
+            ?>
+        >
+           
+        <?php echo $nombre_meses[$mes['mes']]; ?>
+            
+        </option>
+
+    <?php } ?>
+
+</select>
+
+<button type="submit">Buscar</button>
+
+        
 </form>
             <div class="resumen-card">
 
@@ -367,7 +408,6 @@ if (!$resultado) {
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Nivel</th>
-                    <th>Periodo</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -379,7 +419,7 @@ if (!$resultado) {
                         <td><?php echo htmlspecialchars(ucwords(strtolower($fila['nombre']))); ?></td>
                         <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
                         <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
-                        <td><?php echo htmlspecialchars($fila['periodo']); ?></td>
+                        
 
                         
                         
@@ -392,8 +432,8 @@ if (!$resultado) {
                             }
                             ?>
                         </td>
-                        <td>
-                         <a href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>">
+                        <td>  <!-- urlencode() es una función de PHP.Sirve para preparar un texto para que pueda viajar de forma segura por una URL.-->
+                         <a href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&estado=<?php echo $filtro_estado; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>"> 
                              Ver detalles
                         </a>
                              
