@@ -120,10 +120,10 @@
     --color-1-400         : #5b8fc0;
     --color-1-500         : #3b71a8; /* Azul principal: Cálido, serio y corporativo */
     --color-1-600         : #2b5787; /* El color de los botones en reposo */
-    --color-1-700         : #24466d; /* El color para los hovers (más oscuro) */
+    --color-1-700         : #446488; /* El color para los hovers (más oscuro) */
     --color-1-800         : #213d5b;
-    --color-1-900         : #1f354d;
-    --color-1-950         : #142132;
+    --color-1-900         : #32475d;
+    --color-1-950         : #222b36;
     --color-1             : var(--color-1-500);
     --color-2-50                  : #f9f7f3;
     --color-2-100                 : #f2ede2;
@@ -160,8 +160,8 @@
     --color-neutral-750           : #303231;
     --color-neutral-800           : #262827;
     --color-neutral-850           : #1c1e1d;
-    --color-neutral-900           : #131414;
-    --color-neutral-950           : #090a0a;
+    --color-neutral-900           : #202222;
+    --color-neutral-950           : #181a1a;
     --color-neutral               : var(--color-neutral-500);
 
     --color-white                 : var(--color-neutral-50);
