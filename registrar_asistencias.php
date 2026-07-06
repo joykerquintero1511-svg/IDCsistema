@@ -276,7 +276,7 @@ if ($nivel_seleccionado != "") {
 
     </div>
 </div>
-            <a href="index.php" style="display: block; text-align: center; margin-top: 30px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
+            <a href="profesores/index.php" style="display: block; text-align: center; margin-top: 30px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
 
 </body>
 </html>
