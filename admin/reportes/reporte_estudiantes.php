@@ -34,7 +34,7 @@ $consulta = "
         personas.cedula,
         personas.nombre,
         personas.apellido,
-        inscripciones.nivel_academico,
+        niveles.nivel_academico,
         inscripciones.estado,
         estudiantes.id_estudiante
     FROM inscripciones
@@ -42,11 +42,13 @@ $consulta = "
         ON inscripciones.id_estudiante = estudiantes.id_estudiante
     INNER JOIN personas 
         ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+    ON estudiantes.id_nivel = niveles.id_nivel    
 ";
 $consulta_niveles = "
-    SELECT DISTINCT nivel_academico
-    FROM inscripciones
-    ORDER BY nivel_academico ASC
+    SELECT id_nivel, nivel_academico
+    FROM niveles
+    ORDER BY id_nivel ASC
 ";
 $consulta_anios = "
     SELECT DISTINCT YEAR(fecha_inscripcion) AS anio
@@ -68,9 +70,8 @@ if ($filtro_estado !== "") {
 }
 
 if ($filtro_nivel !== "") {
-   $condiciones[] = "inscripciones.nivel_academico = '$filtro_nivel'";
+   $condiciones[] = "estudiantes.id_nivel = $filtro_nivel";
 }
-
 if ($filtro_anio !== "") {
    $condiciones[] = "YEAR(inscripciones.fecha_inscripcion) = $filtro_anio";
 }
@@ -304,17 +305,16 @@ if (!$resultado) {
     <?php while($nivel = $resultado_niveles->fetch_assoc()) { ?>
 
         <option
-            value="<?php echo $nivel['nivel_academico']; ?>"
+    value="<?php echo $nivel['id_nivel']; ?>"
 
-            <?php
-            if($filtro_nivel == $nivel['nivel_academico']){
-                echo "selected";
-            }
-            ?>
-
-        >
-            <?php echo $nivel['nivel_academico']; ?>
-        </option>
+    <?php
+    if($filtro_nivel == $nivel['id_nivel']){
+        echo "selected";
+    }
+    ?>
+>
+    <?php echo $nivel['nivel_academico']; ?>
+</option>
 
     <?php } ?>
 

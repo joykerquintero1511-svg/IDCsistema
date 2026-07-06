@@ -25,7 +25,7 @@ $consulta = "
         personas.contacto_emergencia,
         estudiantes.email,
         estudiantes.nivel_instruccion,
-        inscripciones.nivel_academico,
+        niveles.nivel_academico,
         inscripciones.estado,
         inscripciones.fecha_inscripcion
     FROM inscripciones
@@ -33,6 +33,8 @@ $consulta = "
         ON inscripciones.id_estudiante = estudiantes.id_estudiante
     INNER JOIN personas
         ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+        ON estudiantes.id_nivel = niveles.id_nivel    
     WHERE inscripciones.id_inscripcion = $id_inscripcion
 ";
 
