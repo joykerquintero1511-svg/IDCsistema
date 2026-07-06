@@ -2,6 +2,7 @@
 // 1. Conexión a la base de datos (Método tradicional)
 require_once 'conexion.php';
 
+
 $mensaje = "";
 $tipo_mensaje = "";
 
