@@ -1,10 +1,8 @@
 <?php
-session_start();
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    header("Location: login.php");
-    exit();
-}
+require_once 'auth_admin.php'; // este codigo esta sujeto a cambio ya q sigue sin funcionar 
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +10,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
     <link rel="icon" type="image/png" href="images/EFB.png">
-
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
         body { background-color: #f8f9fa; color: #1a1a1a; display: flex; min-height: 100vh; }

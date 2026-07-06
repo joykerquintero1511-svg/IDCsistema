@@ -1,100 +1,81 @@
 <?php
+session_start();
 
-session_start(); // Para poder leer la sesión del usuario.
-    if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin'){  // Verifica si es administrador.
-        header ("Location : ../../login.php"); // Si no es admin, lo saca.
-        exit();
-    }
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+    header("Location: ../../login.php");
+    exit();
+}
 
-    require_once '../../conexion.php'; // conexión a la BD (más seguro que include)
-   
+require_once '../../conexion.php';
 
- $conexion = $conexion ?? null; 
-/* Significa:
+$sql = "
+    SELECT 
+        estudiantes.id_estudiante,
+        personas.nombre,
+        personas.apellido,
+        estudiantes.email,
+        personas.telefono,
+        niveles.nivel_academico,
+        estudiantes.id_nivel
+    FROM estudiantes
+    INNER JOIN personas
+        ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+        ON estudiantes.id_nivel = niveles.id_nivel
+    ORDER BY personas.apellido ASC
+";
 
-“si $conexion no existe, créala como null”
+$resultado = mysqli_query($conexion, $sql);
 
- Para PHP → no cambia nada
- Para VS Code → deja de marcar error,xq se tildaba
- $conexion(linea 56) x la extension intelephense q pensaba no
- estaba declarada la variable igual corria el sistema
- pero no m gustaba cm se veia.y tambien xq se usa
- require_once,la variable viene de otro archivo y
- el codigo funciona bien.
-*/
+if (!$resultado) {
+    die("Error en la consulta: " . mysqli_error($conexion));
+}
+
 ?>
 
-    <!DOCTYPE html>
-    <html lang="es"> <!-- Coloco "es" xq la pag estara en español, "en"significa ingles-->
-    <head>
-        <meta charset="UTF-8"> <!--	Asegura que los textos con tildes y la ñ se vean bien-->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--Hace que la página sea responsive (se adapte a móviles)-->
-        <title>Lista de Estudiantes</title>
-        <link rel="stylesheet" href="../../estilos/style.css">
-        
-    </head>
-    <body>
-        <h1> Lista de Estudiantes</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Estudiantes</title>
+</head>
+<body>
 
-     <table border="1"> <!-- Crea tabla de Bordes visibles-->
-<!-- Border esta en rojo xq solo es una manera vieja d colocarlo,hay otra manera pero yo lo deje asi igual funciona-->
+<h1>Lista de Estudiantes</h1>
 
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Nivel Académico</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
 
-            <thead> <!-- Define la sección de encabezado de la tabla-->
-
-            <tr>  <!--Encabezado de cada columna (en negrita)-->
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Telefono</th>
-                <th>Nivel Académico</th>
-                <th>Status</th>
-                <th>Acciones</th>
-                
-            </tr>    
-         </thead>
-         <tbody> <!-- Cuerpo de la tabla (donde van los datos)-->
-
-          <?php
-          $sql = "SELECT * FROM estudiantes";  // Consulta SQL para seleccionar todos los estudiantes
-
-           
- /* Cree esta  global $conexion; para decirle 
- “hey PHP, esa variable que viene de otro archivo, úsala aquí también */
-
-
-       $resultado = ejecutarConsulta($conexion, $sql); // Nva funcion creada en conexion
- 
-
-    while ($fila= mysqli_fetch_assoc($resultado)){ // Recorre cada fila de resultados obtenidos
-           
-            echo "<tr>"; // Imprime una celda con el dato del estudiante
-
-            echo "<td>" . htmlspecialchars($fila['id_estudiante']) . "</td>";
-            echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
-            echo "<td>" . htmlspecialchars($fila['apellido']) . "</td>";
-            echo "<td>" . htmlspecialchars($fila['email']) . "</td>";
-            echo "<td>" . htmlspecialchars($fila['telefono']) . "</td>";
-            echo "<td>" . htmlspecialchars($fila['nivel_academico']) . "</td>";
-            echo "<td>" . htmlspecialchars($fila['status']) . "</td>";
-     // aca abajo viene el boton de accion(EDITAR Y ELIMINAR(), | SIGNIFICA UNA SEPARACION ENTRE LOS DOS BOTONES        
-             echo "<td> 
-                      <a href='editar.php?id=" . $fila['id_estudiante'] . "'>Editar</a> |
-                        <a href='eliminar.php?id=" . $fila['id_estudiante'] . "' onclick='return confirm(\"¿Eliminar este estudiante?\")'>Eliminar</a>
-                     </a>";
-
-            echo "</tr>";
-        }
-
-     /* htmlspecialchars Convierte caracteres 
-     especiales en texto seguro (evita problemas) */
-        
-     ?>
-  </tbody>
-
+    <tbody>
+        <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
+            <tr>
+                <td><?php echo htmlspecialchars($fila['id_estudiante']); ?></td>
+                <td><?php echo htmlspecialchars($fila['nombre']); ?></td>
+                <td><?php echo htmlspecialchars($fila['apellido']); ?></td>
+                <td><?php echo htmlspecialchars($fila['email']); ?></td>
+                <td><?php echo htmlspecialchars($fila['telefono']); ?></td>
+                <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
+                <td>
+                    <a href="editar.php?id=<?php echo $fila['id_estudiante']; ?>">Editar</a> |
+                    <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>">Eliminar</a>
+                </td>
+            </tr>
+        <?php } ?>
+    </tbody>
 </table>
-    <br>
-        <a href="agregar.php"> Agregar nuevo estudiante</a>
-    </body>
-    </html>
+
+<br>
+<a href="agregar.php">Agregar nuevo estudiante</a>
+
+</body>
+</html>

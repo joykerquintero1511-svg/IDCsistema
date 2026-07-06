@@ -15,18 +15,25 @@ $cedula = $_POST['cedula'];
 $telefono = $_POST['telefono'];
 $contacto_emergencia = $_POST['contacto_emergencia'];
 $nivel_instruccion = $_POST['nivel_instruccion'];
-$nivel_academico = $_POST['nivel_academico'];
+$id_nivel = $_POST['nivel_academico'];
 $fecha_nacimiento = $_POST['fecha_nacimiento'];
 $fecha_registro = date('Y-m-d');
 $genero = $_POST['genero'];
-// Pendiente definir si se usará período académico.
-// Por ahora se deja fijo para no romper el INSERT de inscripciones.
-$periodo = "2026-1";
 $estado_inscripcion = 1;
 $direccion = $_POST['direccion'];
 
+$consulta_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel'";
+$resultado_nivel = mysqli_query($conexion, $consulta_nivel);
+
+if (!$resultado_nivel || mysqli_num_rows($resultado_nivel) == 0) {
+    die("Error: El nivel seleccionado no existe.");
+}
+
+$fila_nivel = mysqli_fetch_assoc($resultado_nivel);
+$nivel_academico = $fila_nivel['nivel_academico'];
+
 // Validar campos obligatorios
-if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($direccion)|| empty($nivel_academico) || empty($nacionalidad) || empty($fecha_nacimiento )) {
+if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($direccion)|| empty($id_nivel) || empty($nacionalidad) || empty($fecha_nacimiento )) {
     die("Error: Todos los campos son obligatorios.");
 }
 
@@ -46,8 +53,8 @@ $id_persona = mysqli_insert_id($conexion);
 
 // PASO 2: Insertar en la tabla estudiantes
 
-$sql_estudiante = "INSERT INTO estudiantes (id_persona, nivel_instruccion, fecha_registro, email) 
-        VALUES ('$id_persona', '$nivel_instruccion', '$fecha_registro', '$email')";
+$sql_estudiante = "INSERT INTO estudiantes (id_persona, id_nivel, nivel_instruccion, fecha_registro, email) 
+        VALUES ('$id_persona', '$id_nivel' , '$nivel_instruccion', '$fecha_registro', '$email')";
 
 if (!mysqli_query($conexion, $sql_estudiante)) {
     die("Error al guardar estudiante: " . mysqli_error($conexion));
@@ -58,8 +65,8 @@ $id_estudiante = mysqli_insert_id($conexion);
 
   // PASO 3: Insertar en la tabla inscripciones
 
-$sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, nivel_academico, fecha_inscripcion, periodo, estado) 
-        VALUES ('$id_estudiante', '$nivel_academico', NOW(), '$periodo', '$estado_inscripcion')";
+$sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, nivel_academico, fecha_inscripcion, estado) 
+        VALUES ('$id_estudiante', '$nivel_academico', NOW(), '$estado_inscripcion')";
 
 if (!mysqli_query($conexion, $sql_inscripcion)) {
     die("Error al guardar inscripción: " . mysqli_error($conexion));

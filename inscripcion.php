@@ -135,7 +135,7 @@ $resultado = mysqli_query($conexion, $sql);
         
         <!-- Opciones generadas desde la Base de Datos -->
         <?php while($fila = mysqli_fetch_assoc($resultado)): ?>
-            <option value="<?php echo $fila['nivel_academico']; ?>" style="background: #142132; color: #fff;">
+            <option value="<?php echo $fila['id_nivel']; ?>" style="background: #142132; color: #fff;">
                 <?php echo $fila['nivel_academico']; ?>
             </option>
         <?php endwhile; ?>
