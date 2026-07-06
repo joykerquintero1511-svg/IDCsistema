@@ -36,6 +36,8 @@ $query_clases = "SELECT c.tema_clase, c.fecha, c.hora, c.lugar_modalidad, n.nive
                  INNER JOIN niveles n ON c.id_nivel = n.id_nivel
                  ORDER BY c.fecha ASC";
 $result_clases = mysqli_query($conexion, $query_clases);
+// Si entra al panel de profesor
+$_SESSION['panel_regreso'] = 'index.php';
 ?>
 
 <!DOCTYPE html>
@@ -126,6 +128,7 @@ $result_clases = mysqli_query($conexion, $query_clases);
             </div>
             <ul class="menu-links">
             <li><a href="index.php" class="active">Inicio</a></li>
+            <li><a href="../registrar_asistencias.php">Registrar Asistencias</a></li>
             <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
         </ul>
         </div>
@@ -197,5 +200,6 @@ $result_clases = mysqli_query($conexion, $query_clases);
         </div>
 
     </div>
+
 </body>
 </html>

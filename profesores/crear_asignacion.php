@@ -1,6 +1,6 @@
 <?php
 /** @var mysqli $conexion */
-include("conexion.php");
+include("../conexion.php");
 // ... resto de tu código
 ?>
 
