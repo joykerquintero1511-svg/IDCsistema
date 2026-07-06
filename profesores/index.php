@@ -167,11 +167,6 @@ $_SESSION['panel_regreso'] = 'index.php';
                 </ul>
             </section>
 
-            <section class="info-card">
-                <h3>Resumen de Evaluaciones</h3>
-                <p class="no-data" style="padding: 1rem 0;">Utiliza el menú lateral para calificar los trabajos entregados por tus estudiantes.</p>
-            </section>
-
         </div>
 
         <div>
