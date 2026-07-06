@@ -18,6 +18,7 @@
     ================================================== -->
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mystyle.css">
 
     <!-- favicons
     ================================================== -->
@@ -280,18 +281,18 @@
             <div class="gallery-items grid-cols grid-cols--wrap">
 
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-01.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-01.jpg" 
-                            srcset="images/gallery/gallery-01.jpg 1x, 
-                                    images/gallery/gallery-01@2x.jpg 2x" alt="">                                
+                    <a href="images/1a.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/1a.jpeg" 
+                            srcset="images/1a.jpeg 1x, 
+                                    images/1a.jpeg 2x" alt="">                                
                     </a>
                 </div> <!-- end gallery-items__item-->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-02.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-02.jpg" 
-                            srcset="images/gallery/gallery-02.jpg 1x, 
-                                    images/gallery/gallery-02@2x.jpg 2x" alt="">
+                    <a href="images/1b.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/1b.jpeg" 
+                            srcset="images/1b.jpeg 1x, 
+                                    images/1b.jpeg 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
     
