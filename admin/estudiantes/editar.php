@@ -21,13 +21,41 @@ if (!isset($_GET['id'])) {
 $id = $_GET['id'];
 
 // Obtener los datos actuales del estudiante
-$sql = "SELECT * FROM estudiantes WHERE id_estudiante = $id";
+$sql = "
+    SELECT 
+        estudiantes.id_estudiante,
+        estudiantes.id_persona,
+        estudiantes.id_nivel,
+        estudiantes.email,
+        estudiantes.nivel_instruccion,
+        estudiantes.fecha_registro,
+        inscripciones.estado,
+        personas.nombre,
+        personas.apellido,
+        personas.telefono,
+        niveles.nivel_academico
+    FROM estudiantes
+    INNER JOIN personas
+        ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+        ON estudiantes.id_nivel = niveles.id_nivel
+    INNER JOIN inscripciones
+    ON estudiantes.id_estudiante = inscripciones.id_estudiante
+    WHERE estudiantes.id_estudiante = $id
+";
+
 $resultado = ejecutarConsulta($conexion, $sql);
 $estudiante = mysqli_fetch_assoc($resultado);// Sirve para extraer una fila de resultados,y convertirla en un formato fácil de usar.
 
 if (!$estudiante) {
     die("Estudiante no encontrado.");
 }
+// Obtener todos los niveles para llenar el select
+$sql_niveles = "SELECT id_nivel, nivel_academico
+                FROM niveles
+                ORDER BY id_nivel";
+
+$resultado_niveles = ejecutarConsulta($conexion, $sql_niveles);
 
 // Procesar el formulario cuando se envía
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -35,29 +63,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $apellido = trim($_POST['apellido']);
     $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono']);
-    $nivel_academico = trim($_POST['nivel_academico']);
-    $status = trim ($_POST['status']); 
+    $id_nivel = trim($_POST['id_nivel']);
+    $estado = trim ($_POST['estado']); 
 
     if (empty($nombre) || empty($apellido)) {
         $error = " Nombre y Apellido son obligatorios.";
     } else {
-        $sql = "UPDATE estudiantes SET 
-                nombre = '$nombre',
-                apellido = '$apellido',
-                email = '$email',
-                telefono = '$telefono',
-                nivel_academico = '$nivel_academico',
-                status = '$status'
-                WHERE id_estudiante = $id";
+        $sql_personas = "UPDATE personas SET 
+        nombre = '$nombre',
+        apellido = '$apellido',
+        telefono = '$telefono'
+        WHERE id_persona = " . $estudiante['id_persona'];
 
-        if (ejecutarConsulta($conexion, $sql)) {
+    $sql_estudiantes = "UPDATE estudiantes SET 
+        email = '$email',
+        id_nivel = '$id_nivel'
+        WHERE id_estudiante = $id";
+
+    $sql_inscripciones = "UPDATE inscripciones SET 
+        estado = '$estado',
+        nivel_academico = (
+            SELECT nivel_academico 
+            FROM niveles 
+            WHERE id_nivel = '$id_nivel'
+        )
+        WHERE id_estudiante = $id";
+
+    if (
+    ejecutarConsulta($conexion, $sql_personas) &&
+    ejecutarConsulta($conexion, $sql_estudiantes) &&
+    ejecutarConsulta($conexion, $sql_inscripciones)
+    ) {
             $exito = " Estudiante actualizado correctamente.";
             // Actualizar los datos mostrados
             $estudiante['nombre'] = $nombre;
             $estudiante['apellido'] = $apellido;
             $estudiante['email'] = $email;
             $estudiante['telefono'] = $telefono;
-            $estudiante['nivel_academico'] = $nivel_academico;
+            $estudiante['estado'] = $estado;
+            $estudiante['id_nivel'] = $id_nivel;
         } else {
             $error = " Error al actualizar estudiante.";
         }
@@ -93,13 +137,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <input type="text" name="telefono" placeholder="Telefono" value="<?php echo htmlspecialchars($estudiante['telefono']); ?>"><br><br>
 
-       <input type="text" name="nivel_academico" placeholder="nivel_academico" value="<?php echo htmlspecialchars($estudiante['nivel_academico']); ?>"><br><br>
+        <select name="id_nivel">
+             <?php while ($nivel = mysqli_fetch_assoc($resultado_niveles)) { ?>
+        <option value="<?php echo $nivel['id_nivel']; ?>"
+             <?php echo ($nivel['id_nivel'] == $estudiante['id_nivel']) ? 'selected' : ''; ?>>
+             <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+        </option>
+    <?php } ?>
+</select><br><br>
     
-       <select name="status">
-    <option value="Activo" <?php echo ($estudiante['status'] == 'Activo') ? 'selected' : ''; ?>>Activo</option>
-    <option value="Inactivo" <?php echo ($estudiante['status'] == 'Inactivo') ? 'selected' : ''; ?>>Inactivo</option>
-    <option value="Egresado" <?php echo ($estudiante['status'] == 'Egresado') ? 'selected' : ''; ?>>Egresado</option>
-    <option value="Inhabilitado" <?php echo ($estudiante['status'] == 'Inhabilitado') ? 'selected' : ''; ?>>Inhabilitado</option>
+     <select name="estado">
+    <option value="1" <?php echo ($estudiante['estado'] == 1) ? 'selected' : ''; ?>>Activo</option>
+    <option value="0" <?php echo ($estudiante['estado'] == 0) ? 'selected' : ''; ?>>Inactivo</option>
 </select><br><br>
 
         <button type="submit">Guardar Cambios</button>
