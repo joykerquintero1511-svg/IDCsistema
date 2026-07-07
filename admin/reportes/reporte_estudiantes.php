@@ -111,8 +111,8 @@ if (!$resultado) {
         }
 
         body {
-            background-color: #f8f9fa;
-            color: #1a1a1a;
+            background-color: #00031fcf;
+            color: #000000;
             display: flex;
             min-height: 100vh;
         }
@@ -124,11 +124,15 @@ if (!$resultado) {
             padding: 30px 20px;
         }
 
+         .sidebar-brand { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+        .sidebar-brand img { max-width: 35px; height: auto; }
+        .sidebar-brand h2 { font-size: 1.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
+
         .brand {
             font-size: 1.3rem;
             font-weight: 700;
             margin-bottom: 40px;
-            color: #ffffff;
+            color: #0b0a0aa5;
         }
 
         .brand span {
@@ -181,7 +185,7 @@ if (!$resultado) {
         }
 
         .btn-logout:hover {
-            background-color: #000000;
+            background-color: #e21d1dcd;
             color: #ffffff;
         }
 
@@ -269,9 +273,16 @@ if (!$resultado) {
 
 <body>
 
+
     <div class="sidebar">
-        <div class="brand">IDC<span>sistema</span></div>
-        <a href="../../admin_panel.php" class="menu-item">Consola Central</a>
+
+    
+       <div class="sidebar-brand">
+        <img src="../../images/EFB.png" alt="Logo">
+        <h2>Administrador</h2>
+    </div>
+
+        <a href="../index.php" class="menu-item">Gestión Central</a>
         <a href="../estudiantes/listar.php" class="menu-item">Gestión de Estudiantes</a>
         <a href="reporte_estudiantes.php" class="menu-item active">Reporte de Estudiantes</a>
         <a href="../../logout.php" class="menu-item">Cerrar Sesión</a>

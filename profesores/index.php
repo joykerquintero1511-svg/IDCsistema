@@ -49,7 +49,7 @@ $_SESSION['panel_regreso'] = 'index.php';
     <link rel="icon" type="image/png" href="../images/EFB.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: #0c0c0c; color: #ffffff; display: flex; min-height: 100vh; }
+        body { background-color: #00031fcf; color: #ffffff; display: flex; min-height: 100vh; }
 
         /* BARRA LATERAL */
         .sidebar { width: 260px; background-color: #111111; border-right: 1px solid rgba(255, 255, 255, 0.05); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; position: fixed; height: 100vh; z-index: 10; }
