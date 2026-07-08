@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_hash = password_hash($password_plana, PASSWORD_BCRYPT);
 
     // 5. INSERCIÓN EN USUARIOS (Sin id_nivel)
-    $sql = "INSERT INTO usuarios (usuario, email, contraseña, rol) 
-            VALUES ('$nombre', '$email', '$password_hash', '$rol')";
+    $sql = "INSERT INTO usuarios (usuario, email, contraseña, rol, estado) 
+            VALUES ('$nombre', '$email', '$password_hash', '$rol', 1)";
 
     if (mysqli_query($conexion, $sql)) {
         $nuevo_id = mysqli_insert_id($conexion);
