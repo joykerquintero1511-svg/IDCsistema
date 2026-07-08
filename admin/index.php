@@ -18,7 +18,7 @@ include '../conexion.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - EFB</title>
-    <link rel="icon" type="image/png" href="../../images/EFB.png">
+    <link rel="icon" type="image/png" href="../images/EFB.png">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -100,7 +100,7 @@ include '../conexion.php';
     </div>
         <ul class="menu-links">
         <li><a href="index.php" class=" active">Gestión Central</a></li>
-        <li><a href="../estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
+        <li><a href="estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
         <li><a href="reportes/reporte_estudiantes.php" class="active">Reporte de Estudiantes</a></li>
          <li><a href="../logout.php" class="btn-logout">Cerrar Sesión</a></li>
     </div>
