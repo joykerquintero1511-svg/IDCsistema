@@ -166,7 +166,7 @@ if (!$resultado) {
         <li><a href="../index.php" class=" active">Gestión Central</a></li>
         <li><a href="estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
         <li><a href="../reportes/reporte_estudiantes.php" class="active">Reporte de Estudiantes</a></li>
-         <li><a href="../logout.php" class="btn-logout">Cerrar Sesión</a></li>
+         <li><a href="../../logout.php" class="btn-logout">Cerrar Sesión</a></li>
     </div>
      </aside>
     
