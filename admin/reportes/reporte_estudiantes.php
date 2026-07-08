@@ -159,7 +159,7 @@ if (!$resultado) {
         .main-content {
             flex-grow: 1;
             padding: 40px;
-            background-color: #fafdff;
+            background-color: #090909e3;
         }
 
         .header {
@@ -173,7 +173,7 @@ if (!$resultado) {
 
         .header h1 {
             font-size: 1.75rem;
-            color: #111111;
+            color: #ffffff;
         }
 
         .btn-logout {

@@ -22,7 +22,7 @@ include '../conexion.php';
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: #090909d9; color: #ffffff; display: flex; min-height: 100vh; }
+        body { background-color: #ffffff; color: #000000; display: flex; min-height: 100vh; }
 
         /* BARRA LATERAL */
         .sidebar { width: 260px; background-color: #111111; border-right: 1px solid rgba(255, 255, 255, 0.05); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; justify-content: flex-start; position: fixed; height: 100vh; z-index: 10; }
@@ -63,8 +63,10 @@ include '../conexion.php';
             }
         }
 
-        .info-card { background: #02172fcc; border: 1px solid rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; width: 100%; }
-        .info-card h3 { font-size: 1.1rem; color: #a0a0a0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-card { background: #021326da; border: 1px solid rgba(56, 55, 55, 0.05); padding: 2rem; border-radius: 8px; width: 100%; }
+        .info-card h3 { font-size: 1.1rem; color: #ffffff; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }0
+
+        .card-link { color: #f6f8f9; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1rem; }
 
         .task-list, .class-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
         .task-item, .class-item { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border-radius: 6px; border-left: 4px solid #245285; }
@@ -98,6 +100,7 @@ include '../conexion.php';
     </div>
         <ul class="menu-links">
         <li><a href="index.php" class=" active">Gestión Central</a></li>
+        <li><a href="../estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
         <li><a href="reportes/reporte_estudiantes.php" class="active">Reporte de Estudiantes</a></li>
          <li><a href="../logout.php" class="btn-logout">Cerrar Sesión</a></li>
     </div>
