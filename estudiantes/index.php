@@ -20,9 +20,8 @@ $query_tareas = "SELECT * FROM asignacion
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
 // 4. CONSULTA 2: Historial de Calificaciones
-$query_notas = "SELECT a.titulo_tarea, a.tema, c.nota, c.observacion 
+$query_notas = "SELECT c.evaluacion, c.nota_1, c.nota_2, c.nota_final, c.observacion 
                 FROM calificaciones c
-                INNER JOIN asignacion a ON c.id_asignacion = a.id_asignacion
                 WHERE c.id_estudiante = '$id_estudiante'
                 ORDER BY c.fecha_calificado DESC";
 $result_notas = mysqli_query($conexion, $query_notas);
@@ -167,10 +166,13 @@ $result_clases = mysqli_query($conexion, $query_clases);
                                 <?php while($nota = mysqli_fetch_assoc($result_notas)): ?>
                                     <tr>
                                         <td>
-                                            <strong><?php echo htmlspecialchars($nota['titulo_tarea']); ?></strong><br>
-                                            <span style="font-size: 0.85rem; color: #555;"><?php echo htmlspecialchars($nota['tema']); ?></span>
+                                            <strong><?php echo htmlspecialchars($nota['evaluacion']); ?></strong>
                                         </td>
-                                        <td style="color: #aaa; font-size: 0.9rem;"><?php echo htmlspecialchars($nota['observacion'] ?? 'Sin observaciones'); ?></td>
+                                        <td>
+                                            Nota 1: <?php echo htmlspecialchars($nota['nota_1']); ?><br>
+                                            Nota 2: <?php echo htmlspecialchars($nota['nota_2'] ?? ''); ?><br>
+                                            Final: <span class="badge-nota"><?php echo htmlspecialchars($nota['nota_final']); ?> / 20</span>
+                                        </td>
                                         <td><span class="badge-nota"><?php echo $nota['nota']; ?> / 20</span></td>
                                     </tr>
                                 <?php endwhile; ?>
