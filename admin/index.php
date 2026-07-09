@@ -102,6 +102,7 @@ include '../conexion.php';
         <li><a href="index.php" class=" active">Gestión Central</a></li>
         <li><a href="estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
         <li><a href="reportes/reporte_estudiantes.php" class="active">Reporte de Estudiantes</a></li>
+
          <li><a href="../logout.php" class="btn-logout">Cerrar Sesión</a></li>
     </div>
      </aside>
@@ -122,14 +123,14 @@ include '../conexion.php';
                 <a href="#" class="card-link">Administrar cuentas &rarr;</a>
             </div>
             <div class="info-card">
-                <h3>Seguridad y Logins ⚙️ </h3>
+                <h3>Seguridad y Logins ⚙️</h3>
                 <p>Supervisa los accesos recientes, bloqueos automáticos y el estado de la base de datos.</p>
                 <a href="#" class="card-link">Ver logs de acceso &rarr;</a>
             </div>
             <div class="info-card">
                 <h3>Periodo Académico 📅</h3>
                 <p>Abre o cierra lapsos para la carga de notas o habilita procesos globales de inscripción.</p>
-                <a href="#" class="card-link">Configurar periodos &rarr;</a>
+                <a href="periodos.php" class="card-link">Configurar periodos &rarr;</a>
             </div>
         </div>
     </div>
