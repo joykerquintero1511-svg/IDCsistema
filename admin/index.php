@@ -22,7 +22,7 @@ include '../conexion.php';
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: #ffffff; color: #000000; display: flex; min-height: 100vh; }
+        body { background-color: #161616f4; color: #f9f8f8; display: flex; min-height: 100vh; }
 
         /* BARRA LATERAL */
         .sidebar { width: 260px; background-color: #111111; border-right: 1px solid rgba(255, 255, 255, 0.05); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; justify-content: flex-start; position: fixed; height: 100vh; z-index: 10; }
@@ -63,13 +63,13 @@ include '../conexion.php';
             }
         }
 
-        .info-card { background: #021326da; border: 1px solid rgba(56, 55, 55, 0.05); padding: 2rem; border-radius: 8px; width: 100%; }
+        .info-card { background: #011d3de0; box-shadow: 0 4px 6px rgba(255, 255, 255, 0.23); padding: 2rem; border-radius: 8px; width: 100%; }
         .info-card h3 { font-size: 1.1rem; color: #ffffff; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }0
 
-        .card-link { color: #f6f8f9; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1rem; }
+        .card-link { color: #d7d7d7; text-decoration: underline; font-weight: bold; display: inline-block; margin-top: 1rem; }
 
         .task-list, .class-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
-        .task-item, .class-item { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border-radius: 6px; border-left: 4px solid #245285; }
+        .task-item, .class-item { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border-radius: 6px; border-left: 4px solid #fefeff; }
         .class-item { border-left-color: #3a7bc8; }
         
         .item-info h4 { font-size: 1.05rem; margin-bottom: 0.3rem; color: #fff; }
@@ -84,6 +84,8 @@ include '../conexion.php';
         .data-table td { padding: 1rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); color: #e0e0e0; font-size: 0.95rem; }
         .badge-nota { background: rgba(36, 82, 133, 0.2); color: #3a7bc8; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
         .no-data { color: #555; font-style: italic; text-align: center; padding: 2rem 0; }
+
+        .link { color: #888888; text-decoration: underline; font-weight: lighter ; }
 
         /* Blanquear el icono del calendario nativo en inputs de fecha */
         input[type="date"]::-webkit-calendar-picker-indicator {
@@ -120,17 +122,17 @@ include '../conexion.php';
             <div class="info-card">
                 <h3>Gestión de Personal 👤</h3>
                 <p>Audita, aprueba, suspende o da de alta cuentas tanto de docentes como de estudiantes.</p>
-                <a href="#" class="card-link">Administrar cuentas &rarr;</a>
+                <a href="#" class="link">Administrar cuentas &rarr;</a>
             </div>
             <div class="info-card">
                 <h3>Seguridad y Logins ⚙️</h3>
                 <p>Supervisa los accesos recientes, bloqueos automáticos y el estado de la base de datos.</p>
-                <a href="#" class="card-link">Ver logs de acceso &rarr;</a>
+                <a href="#" class="link">Ver logs de acceso &rarr;</a>
             </div>
             <div class="info-card">
                 <h3>Periodo Académico 📅</h3>
                 <p>Abre o cierra lapsos para la carga de notas o habilita procesos globales de inscripción.</p>
-                <a href="periodos.php" class="card-link">Configurar periodos &rarr;</a>
+                <a href="periodos.php" class="link">Configurar periodos academicos &rarr;</a>
             </div>
         </div>
     </div>
