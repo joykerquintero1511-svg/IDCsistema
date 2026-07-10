@@ -12,3 +12,294 @@ div.card-img-top img {
     height: auto !important;
     object-fit: contain !important;
 }
+
+/* ==========================================
+   RESET & VARIABLES GLOBALES
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: #090a0f; /* Un fondo negro con un tinte azul medianoche ultra sutil */
+    color: #f8fafc; /* Blanco limpio pero suave para no cansar la vista */
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ==========================================
+   BARRA LATERAL (SIDEBAR)
+   ========================================== */
+.sidebar {
+    width: 260px;
+    background-color: #11131a; /* Un tono más claro que el fondo para dar elevación */
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+    padding: 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: fixed;
+    height: 100vh;
+    z-index: 10;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.sidebar-brand img {
+    max-width: 35px;
+    height: auto;
+}
+
+.sidebar-brand h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.menu-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.menu-links a {
+    color: #94a3b8; /* Gris slate elegante */
+    text-decoration: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Hover refinado con un sutil destello azul */
+.menu-links a:hover, 
+.menu-links a.active {
+    background: rgba(59, 130, 246, 0.1); 
+    color: #3b82f6; /* Azul eléctrico premium */
+    font-weight: 600;
+}
+
+.btn-logout {
+    color: #f43f5e;
+    text-decoration: none;
+    padding: 0.8rem 1.2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-top: auto; /* Empuja el botón al fondo del sidebar */
+    transition: background 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(244, 63, 94, 0.1);
+}
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL REALINEADO
+   ========================================== */
+.main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    padding: 3.5rem;
+    flex-grow: 1;
+}
+
+.welcome-header {
+    margin-bottom: 3rem;
+}
+
+.welcome-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.welcome-header p {
+    color: #64748b; /* Corregido: antes era #666 (demasiado oscuro sobre negro) */
+    font-size: 1rem;
+}
+
+/* ==========================================
+   REJILLA TOTALMENTE EXPANDIDA & CARDS
+   ========================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr; /* Columna izquierda grande, derecha agenda */
+    }
+}
+
+/* LA CLAVE DE LA ARMONÍA: Tarjetas oscuras con acentos de luz */
+.info-card {
+    background: #11131a; /* Mismo tono elevado del sidebar */
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-top: 3px solid #3b82f6; /* Línea superior azul que le da la identidad premium */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -5px rgba(59, 130, 246, 0.08); /* Glow azul sutil al pasar el mouse */
+}
+
+.info-card h3 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-top: 1.5rem;
+    transition: color 0.2s;
+}
+
+.card-link:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+/* ==========================================
+   LISTAS Y ELEMENTOS INTERNOS
+   ========================================== */
+.task-list, .class-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.task-item, .class-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border-left: 4px solid #ffffff;
+}
+
+.class-item {
+    border-left-color: #3b82f6; /* Detalle azul en listas de clases */
+}
+
+.item-info h4 {
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+    color: #ffffff;
+}
+
+.item-info p {
+    color: #64748b; /* Texto secundario legible */
+    font-size: 0.9rem;
+}
+
+.item-info span {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.btn-action {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.btn-action:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+/* ==========================================
+   TABLAS DE DATOS
+   ========================================== */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 1rem 0.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.data-table td {
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+/* Componentes pequeños */
+.badge-nota {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.no-data {
+    color: #475569;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.link {
+    color: #64748b;
+    text-decoration: underline;
+    font-weight: 400;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: #94a3b8;
+}
+
+/* Icono del calendario nativo en inputs */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
