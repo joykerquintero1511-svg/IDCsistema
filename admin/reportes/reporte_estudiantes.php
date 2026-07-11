@@ -1,5 +1,5 @@
 <?php
-include '../../seguridad.php';
+include '../../session-start.php';
 
 require_once '../../conexion.php';
 $filtro_estado = "";
