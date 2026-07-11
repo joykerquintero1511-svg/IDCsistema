@@ -303,3 +303,114 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
 }
+
+/* ==========================================
+   ESTILOS PARA EL CRONOGRAMA Y FORMULARIOS
+   ========================================== */
+
+/* Rejilla exclusiva para la asimetría del cronograma */
+.cronograma-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    align-items: start; 
+}
+
+/* Espaciado y orden del formulario */
+.form-group {
+    margin-bottom: 1.4rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #94a3b8; /* Gris suave para descansar la vista */
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Inputs oscuros integrados perfectamente al modo oscuro */
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #1a1a1a; /* Fondo oscuro idéntico a tus tarjetas */
+    border: 1px solid #333333;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Fila para agrupar Hora de Entrada y Salida en la misma línea */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+/* Botón adaptado para ocupar todo el ancho del formulario */
+.btn-submit-full {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.5rem;
+    justify-content: center;
+    background-color: transparent;
+    box-shadow: 0 0 0 2px #3b84fa43;
+}
+
+/* Badges de estado para los períodos */
+.badge-activo {
+    background-color: rgba(40, 167, 69, 0.2); 
+    color: #28a745; 
+    border: 1px solid rgba(40, 167, 69, 0.4); 
+    font-weight: 600;
+}
+
+.badge-inactivo {
+    background-color: rgba(220, 53, 69, 0.2); 
+    color: #dc3545; 
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+/* Enfoque de los inputs (Focus) */
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Compatibilidad con opciones internas de selects e iconos nativos */
+select.form-control option {
+    background-color: #111111;
+    color: #ffffff;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Pone los iconos de calendario/reloj en blanco */
+    cursor: pointer;
+}
+
+/* Contenedor responsivo para la tabla */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+/* Detalles para textos dentro de la tabla */
+.text-highlight {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.text-muted-dark {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.alert-no-margin {
+    margin-bottom: 0;
+}
