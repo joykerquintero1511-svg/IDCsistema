@@ -1,11 +1,5 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    header("Location: ../../login.php");
-    exit();
-}
-
+include '../../seguridad.php';
 require_once '../../conexion.php';
 
 $sql = "
@@ -211,5 +205,6 @@ if (!$resultado) {
     </table>
 
 </main>
+<?php include '../../script-seguridad.php'; ?>
 </body>
 </html>

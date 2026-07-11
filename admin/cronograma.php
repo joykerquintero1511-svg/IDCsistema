@@ -1,4 +1,5 @@
 <?php
+include('../session-start.php');
 include '../conexion.php'; // Ajusta la ruta según tu estructura de archivos
 
 // 1. OBTENER EL PERÍODO ACADÉMICO ACTIVO ACTUALMENTE
@@ -194,6 +195,8 @@ if ($periodo_activo) {
 
     </div>
 </main>
+
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

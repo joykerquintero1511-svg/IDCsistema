@@ -1,4 +1,5 @@
 <?php
+include('../session-start.php');
 include '../conexion.php'; // Ajusta la ruta según tu estructura de carpetas
 
 // 1. LÓGICA PARA REGISTRAR UN NUEVO PERÍODO
@@ -59,7 +60,6 @@ $resultado_periodos = mysqli_query($conexion, "SELECT * FROM periodos_academicos
         <li><a href="cronograma.php">Cronograma</a></li>
         <li><a href="index.php">Volver al Inicio</a></li>
     </ul>
-    <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
 </div>
 
 <!-- CONTENEDOR PRINCIPAL -->
@@ -150,6 +150,8 @@ $resultado_periodos = mysqli_query($conexion, "SELECT * FROM periodos_academicos
 
     </div>
 </main>
+
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

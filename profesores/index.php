@@ -1,5 +1,5 @@
 <?php
-session_start();
+include('../session-start.php');
 include("../conexion.php");
 
 // 1. CONTROL DE SEGURIDAD: Solo profesores
@@ -57,7 +57,7 @@ $_SESSION['panel_regreso'] = 'index.php';
             </div>
             <ul class="menu-links">
             <li><a href="index.php" class="active">Inicio</a></li>
-            <li><a href="../registrar_asistencias.php">Registrar Asistencias</a></li>
+            <li><a href="registrar_asistencias.php">Registrar Asistencias</a></li>
             <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
         </ul>
         </div>
@@ -124,6 +124,8 @@ $_SESSION['panel_regreso'] = 'index.php';
         </div>
 
     </div>
+    </main>
+     <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

@@ -1,4 +1,5 @@
 <?php
+include '../../seguridad.php';
 
 require_once '../../conexion.php';
 $filtro_estado = "";
@@ -456,6 +457,7 @@ if (!$resultado) {
         </div>
 
     </div>
+    <?php include '../../script-seguridad.php'; ?>
 
 </body>
 </html>
