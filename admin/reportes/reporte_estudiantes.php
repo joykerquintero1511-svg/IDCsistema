@@ -292,7 +292,6 @@ if (!$resultado) {
 
         <div class="header">
             <h1>Reporte de Estudiantes</h1>
-            <a href="../../logout.php" class="btn-logout">Cerrar Sesión</a>
         </div>
 
  <div class="card">
