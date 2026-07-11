@@ -1,13 +1,11 @@
 <?php
-/** @var mysqli $conexion */
-include("../conexion.php");
+include '../session-start.php';
+require_once("../conexion.php");
 // ... resto de tu código
-?>
 
 
-<?php
-session_start();
-include("../conexion.php");
+
+
 
 // 1. LOGICA DE SEGURIDAD (Intacta)
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
@@ -257,7 +255,6 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                 <li><a href="crear_asignacion.php" class="active">Nueva Asignación</a></li>
             </ul>
         </div>
-        <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
     </aside>
 
     <main class="main-content">
