@@ -1,14 +1,11 @@
 <?php
 session_start();
-
 // Si no existe la sesión "usuario", redirige al login de una vez
 if (!isset($_SESSION['usuario'])) {
-    header("Location: ../login.php"); // Ajusta la ruta a tu archivo de login real
+    echo '<script>window.location.replace("../login.php");</script>';
     exit();
 }
-
 include '../conexion.php';
-
 ?>
 
 
@@ -63,6 +60,10 @@ include '../conexion.php';
             </div>
         </div>
     </div>
+        </main>
+
+        <!-- AQUÍ LLAMAS A TU SCRIPT MATA-FANTASMAS -->
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>
