@@ -55,9 +55,9 @@ $resultado_periodos = mysqli_query($conexion, "SELECT * FROM periodos_academicos
         <h2>Administrador</h2>
     </div>
     <ul class="menu-links">
-        <li><a href="index.php">Volver al Inicio</a></li>
-        <li><a href="cronograma.php">Cronograma</a></li>
         <li><a href="periodos.php" class="active">Períodos Académicos</a></li>
+        <li><a href="cronograma.php">Cronograma</a></li>
+        <li><a href="index.php">Volver al Inicio</a></li>
     </ul>
     <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
 </div>

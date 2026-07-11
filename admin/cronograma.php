@@ -64,11 +64,10 @@ if ($periodo_activo) {
         <h2>Administrador</h2>
     </div>
     <ul class="menu-links">
-        <li><a href="index.php">Volver al Inicio</a></li>
         <li><a href="cronograma.php" class="active">Cronograma</a></li>
         <li><a href="periodos.php">Períodos Académicos</a></li>
+        <li><a href="index.php">Volver al Inicio</a></li>
     </ul>
-    <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
 </div>
 
 <!-- CONTENEDOR PRINCIPAL -->
