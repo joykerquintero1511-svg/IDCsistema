@@ -50,6 +50,13 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
     <link rel="stylesheet" href="../css/mystyle.css">
 </head>
 <body>
+    <h2>Registrar Calificaciones</h2>
+    <?php
+        if (isset($_GET['guardado']) && $_GET['guardado'] == 1) {
+            echo "<p>Las notas fueron guardadas correctamente.</p>";
+        }
+        ?>
+    <form method="GET">
 
 <main class="main-content-class">
     
