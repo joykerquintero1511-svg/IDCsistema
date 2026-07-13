@@ -26,7 +26,7 @@ if ($id_nivel > 0) {
 
 
 /// 2. Consulta filtrada: Tareas vigentes
-$query_tareas = "SELECT * FROM asignacion WHERE id_nivel = '$id_nivel' ORDER BY fecha_limite ASC";
+$query_tareas = "SELECT * FROM asignacion WHERE id_nivel = '$id_nivel' AND fecha_limite >= CURDATE() ORDER BY fecha_limite ASC";
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
 // 4. CONSULTA 2: Historial de Calificaciones (Unido con asignaciones para traer el nombre del tema/tarea)
