@@ -23,6 +23,7 @@ include '../conexion.php';
         <li><a href="index.php" class=" active">Gestión Central</a></li>
         <li><a href="estudiantes/listar.php">Gestión de Estudiantes</a></li>
         <li><a href="reportes/reporte_estudiantes.php" >Reporte de Estudiantes</a></li>
+        <li><a href="crear_nivel.php" >Crear Nivel Académico</a></li>
         <li><a href="../logout.php" class="closed">Cerrar Sesión</a></li>
     </div>
      </aside>
