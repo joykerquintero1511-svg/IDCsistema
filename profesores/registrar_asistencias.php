@@ -1,6 +1,7 @@
 <?php
 // 1. Conexión a la base de datos (Método tradicional)
-require_once 'conexion.php';
+include('../session-start.php');
+require_once '../conexion.php';
 
 
 $mensaje = "";
@@ -91,7 +92,7 @@ if ($nivel_seleccionado != "") {
 <head>
     <meta charset="UTF-8">
     <title>Control de Asistencias</title>
-    <link rel="icon" type="image/png" href="images/EFB.png">
+    <link rel="icon" type="image/png" href="../images/EFB.png">
     <style>
         /* MANTENEMOS TU DISEÑO EXACTAMENTE IGUAL */
         :root {
@@ -181,7 +182,7 @@ if ($nivel_seleccionado != "") {
 
 <header>
     <div class="logo-container">
-        <img src="images/EFB.png" alt="Logo">
+        <img src="../images/EFB.png" alt="Logo">
         <span>Control de Asistencias</span>
     </div>
 </header>
@@ -276,7 +277,7 @@ if ($nivel_seleccionado != "") {
 
     </div>
 </div>
-            <a href="profesores/index.php" style="display: block; text-align: center; margin-top: 30px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
-
+            <a href="index.php" style="display: block; text-align: center; margin-top: 30px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
+    <?php include '../script-seguridad.php'; ?>
 </body>
 </html>

@@ -1,7 +1,6 @@
 <?php
-
-
-require_once '../conexion.php';
+include '../session-start.php';
+include '../conexion.php';
 
 $sql =" SELECT id_nivel,nivel_academico 
         FROM niveles";
@@ -41,11 +40,14 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Calificaciones</title>
+    <link rel="icon" href="../images/EFB.png" type="image/png">
+    <!-- TU CSS GLOBAL -->
+    <link rel="stylesheet" href="../css/mystyle.css">
 </head>
 <body>
     <h2>Registrar Calificaciones</h2>
@@ -56,107 +58,108 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
         ?>
     <form method="GET">
 
-        <label>Nivel:</label>
-        <select name="id_nivel" required>
-
-            <option value="">Seleccione un nivel</option>
-
-    <?php while($fila = mysqli_fetch_assoc($resultado)) { ?>
-
-    <option value="<?php echo $fila['id_nivel']; ?>"
-             <?php
-                if (isset($id_nivel) && $id_nivel == $fila['id_nivel']) {
-                 echo "selected";
-             }
-    ?>
->
-    <?php echo $fila['nivel_academico']; ?>
-</option>
-<?php } ?>
-
-        </select>
-        
-<br><br>
-
-    <label>Nombre de la evaluacion</label>
-    <?php 
-    $textoEvaluacion ="";
-
-    if(isset($evaluacion)){
-        $textoEvaluacion = htmlspecialchars(ucwords(strtolower($evaluacion)));
-
-    }
-?>
-      <input type="text" name="evaluacion" value="<?php echo $textoEvaluacion;?>"required>
-       
-
-<br><br>
-    <button type="submit">Buscar estudiantes</button>
-
-    </form>
-<?php if (isset($resultado_estudiantes)) { ?>
-
-    <h3>Estudiantes encontrados</h3>
-    <p>
-    <strong>Nivel:</strong>
-    <?php echo htmlspecialchars($nombre_nivel); ?>
-</p>
-
-<p>
-    <strong>Evaluación:</strong>
-    <?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?>
-</p>
-
-    <form method="POST" action="guardar_notas.php">
-
-        <input type="hidden" name="id_nivel" value="<?php echo $id_nivel; ?>">
-        <input type="hidden" name="evaluacion" value="<?php echo htmlspecialchars($evaluacion); ?>">
-
-        <table border="1">
-            <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Nota 1</th>
-                <th>Nota 2</th>
-                <th>Nota Final</th>
-                <th>Observación</th>
-            </tr>
-
-            <?php while($estudiante = mysqli_fetch_assoc($resultado_estudiantes)) { ?>
-
-                <tr>
-                    <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
-                    <td><?php echo htmlspecialchars($estudiante['apellido']); ?></td>
-
-                    <td>
-                        <input type="number" name="nota_1[<?php echo $estudiante['id_estudiante']; ?>]" min="0" max="20" step="0.01" required>
-                    </td>
-
-                    <td>
-                        <input type="number" name="nota_2[<?php echo $estudiante['id_estudiante']; ?>]" min="0" max="20" step="0.01">
-                    </td>
-
-                    <td>
-                        <input type="number" name="nota_final[<?php echo $estudiante['id_estudiante']; ?>]" min="0" max="20" step="0.01" required>
-                    </td>
-
-                    <td>
-                        <input type="text" name="observacion[<?php echo $estudiante['id_estudiante']; ?>]">
-                    </td>
-                </tr>
-
-            <?php } ?>
-
-        </table>
-
-        <br>
-
-        <button type="submit">Guardar notas</button>
-
-    </form>
-
-<?php } ?>
+<main class="main-content-class">
     
+    <!-- CONTENEDOR MAESTRO QUE CENTRA TODO -->
+    <div class="calificaciones-wrapper">
+
+        <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
+        <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h1 style="margin: 0; font-size: 1.8rem;">📝 Registrar Calificaciones</h1>
+        <a href="../admin/index.php" style="color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver al Panel</a>
+        </div>
+        <!-- TARJETA 1: FILTRO DE BÚSQUEDA (AHORA ALINEADA AL ANCHO TOTAL) -->
+        <div class="info-card">
+            <h3>Buscar Grupo y Evaluación</h3>
+            <br>
+            <form method="GET" action="">
+                <div class="form-group">
+                    <label for="id_nivel">Nivel Académico:</label>
+                    <select name="id_nivel" id="id_nivel" class="form-control" required>
+                        <option value="">-- Seleccione un nivel --</option>
+                        <?php while($fila = mysqli_fetch_assoc($resultado)) { ?>
+                            <option value="<?php echo $fila['id_nivel']; ?>" <?php if (isset($id_nivel) && $id_nivel == $fila['id_nivel']) { echo "selected"; } ?>>
+                                <?php echo htmlspecialchars($fila['nivel_academico']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluacion">Nombre de la Evaluación:</label>
+                    <?php
+                    $textoEvaluacion = "";
+                    if(isset($evaluacion)){
+                        $textoEvaluacion = htmlspecialchars(ucwords(strtolower($evaluacion)));
+                    }
+                    ?>
+                    <input type="text" name="evaluacion" id="evaluacion" class="form-control" value="<?php echo $textoEvaluacion; ?>" placeholder="Ej: Primer Parcial" required>
+                </div>
+
+                <button type="submit" class="btn-block">Buscar estudiantes</button>
+            </form>
+        </div>
+
+        <!-- TARJETA 2: LISTADO DE ESTUDIANTES (MISMA CUADRATURA Y BORDES) -->
+        <?php if (isset($resultado_estudiantes)) { ?>
+            <div class="info-card">
+                <h3>Estudiantes Encontrados</h3>
+                
+                <!-- Resumen Informativo Superior -->
+                <div class="info-resumen">
+                    <p><strong>Nivel:</strong> <span class="text-highlight"><?php echo htmlspecialchars($nombre_nivel); ?></span></p>
+                    <p><strong>Evaluación:</strong> <span class="text-highlight"><?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?></span></p>
+                </div>
+
+                <!-- Formulario de Carga de Notas -->
+                <form method="POST" action="guardar_notas.php">
+                    <input type="hidden" name="id_nivel" value="<?php echo $id_nivel; ?>">
+                    <input type="hidden" name="evaluacion" value="<?php echo htmlspecialchars($evaluacion); ?>">
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Nota 1</th>
+                                    <th>Nota 2</th>
+                                    <th>Nota Final</th>
+                                    <th>Observación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while($estudiante = mysqli_fetch_assoc($resultado_estudiantes)) { ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
+                                        <td><?php echo htmlspecialchars($estudiante['apellido']); ?></td>
+                                        
+                                        <td>
+                                            <input type="number" name="nota_1[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control table-input" min="0" max="20" step="0.1" required>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="nota_2[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control table-input" min="0" max="20" step="0.1" required>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="nota_final[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control table-input" min="0" max="20" step="0.1" required>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="observacion[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control" style="padding: 0.4rem 0.6rem;" placeholder="Ej: Ninguna">
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" class="btn-block" style="margin-top: 1.5rem;">Guardar notas</button>
+                </form>
+            </div>
+        <?php } ?>
+
+    </div> <!-- FIN DEL WRAPPER -->
+</main>
+<?php include '../script-seguridad.php'; ?>
+
 </body>
 </html>
-

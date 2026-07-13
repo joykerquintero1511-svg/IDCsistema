@@ -1,11 +1,5 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    header("Location: ../../login.php");
-    exit();
-}
-
+include '../../session-start.php';
 require_once '../../conexion.php';
 
 $sql = "
@@ -164,9 +158,8 @@ if (!$resultado) {
     </div>
         <ul class="menu-links">
         <li><a href="../index.php" class=" active">Gestión Central</a></li>
-        <li><a href="estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
+        <li><a href="listar.php" class="active">Gestión de Estudiantes</a></li>
         <li><a href="../reportes/reporte_estudiantes.php" class="active">Reporte de Estudiantes</a></li>
-         <li><a href="../../logout.php" class="btn-logout">Cerrar Sesión</a></li>
     </div>
      </aside>
     
@@ -212,5 +205,6 @@ if (!$resultado) {
     </table>
 
 </main>
+<?php include '../../script-seguridad.php'; ?>
 </body>
 </html>

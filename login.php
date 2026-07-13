@@ -16,8 +16,8 @@
             
             <div style="text-align: center; margin-bottom: 3.5rem;">
                 <img src="images/EFB.png" alt="Logo EFB" style="max-width: 140px; margin-bottom: 1.5rem;">
-                <h2 style="color: #ffffff; margin: 0; font-size: 2.8rem; letter-spacing: 0.5px;">Acceso al Sistema</h2>
-                <p style="color: rgba(255,255,255,0.4); margin: 0.5rem 0 0 0; font-size: 1.4rem;">Panel Administrativo / Docente</p>
+                <h2 style="color: #ffffff; margin: 0; font-size: 2.8rem; letter-spacing: 0.5px;">Iniciar Sesión</h2>
+                <p style="color: rgba(255,255,255,0.4); margin: 0.5rem 0 0 0; font-size: 1.4rem;">Panel Administrativo / Docente / Estudiante</p>
             </div>
 
             <form action="procesar_login.php" method="POST">

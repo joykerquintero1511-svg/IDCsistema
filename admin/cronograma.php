@@ -1,4 +1,5 @@
 <?php
+include('../session-start.php');
 include '../conexion.php'; // Ajusta la ruta según tu estructura de archivos
 
 // 1. OBTENER EL PERÍODO ACADÉMICO ACTIVO ACTUALMENTE
@@ -51,60 +52,63 @@ if ($periodo_activo) {
 <head>
     <meta charset="UTF-8">
     <title>Cronograma de Clases - Administrador</title>
-    <link rel="stylesheet" href="../estilos/style.css">
-    <style>
-        body { background-color: #0c0c0c; color: #ffffff; font-family: 'Segoe UI', sans-serif; margin: 0; }
-        .main-content { margin-left: 260px; padding: 2.5rem; box-sizing: border-box; }
-        .header-title { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .subtitle { color: #888888; margin-top: 0; margin-bottom: 2rem; font-size: 1rem; }
-        .periodo-tag { background-color: rgba(40, 167, 69, 0.2); color: #28a745; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; }
-        
-        .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
-        .card { background-color: #111111; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); height: fit-content; }
-        .card h3 { margin-top: 0; margin-bottom: 1.5rem; color: #3a7bc8; }
-        
-        /* Formulario */
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: #aaaaaa; font-size: 0.9rem; }
-        .form-control { width: 100%; padding: 0.7rem; background-color: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; box-sizing: border-box; font-family: inherit; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .btn-submit { background-color: #3a7bc8; color: #fff; border: none; padding: 0.7rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; }
-        .btn-submit:hover { background-color: #2e62a1; }
-        
-        /* Tablas */
-        .table-custom { width: 100%; border-collapse: collapse; text-align: left; }
-        .table-custom th { padding: 0.8rem; background-color: #1a1a1a; color: #888; font-size: 0.85rem; text-transform: uppercase; }
-        .table-custom td { padding: 1rem 0.8rem; border-bottom: 1px solid #222; font-size: 0.95rem; }
-        
-        .alert { padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 0.95rem; }
-        .alert-success { background-color: rgba(40, 167, 69, 0.15); color: #28a745; border: 1px solid #28a745; }
-        .alert-danger { background-color: rgba(255, 85, 85, 0.15); color: #ff5555; border: 1px solid #ff5555; }
-        .alert-warning { background-color: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid #ffc107; }
-    </style>
+    <link rel="icon" type="image/png" href="../images/EFB.png">
+    <!-- UNICA LLAMADA A TUS ESTILOS -->
+    <link rel="stylesheet" href="../css/mystyle.css">
 </head>
 <body>
 
+<!-- BARRA LATERAL ADMINISTRATIVA (SIDEBAR) -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <img src="../images/EFB.png" alt="EFB Logo" onerror="this.style.display='none'">
+        <h2>Administrador</h2>
+    </div>
+    <ul class="menu-links">
+        <li><a href="cronograma.php" class="active">Cronograma</a></li>
+        <li><a href="periodos.php">Períodos Académicos</a></li>
+        <li><a href="index.php">Volver al Inicio</a></li>
+    </ul>
+</div>
+
+<!-- CONTENEDOR PRINCIPAL -->
 <main class="main-content">
-    <h1 class="header-title">📅 Cronograma Global de Clases</h1>
-    <p class="subtitle">
-        Período del Sistema: 
-        <?php if ($periodo_activo): ?>
-            <span class="periodo-tag">✨ <?php echo htmlspecialchars($periodo_activo['nombre_periodo']); ?></span>
-        <?php else: ?>
-            <span class="alert-danger" style="padding: 0.2rem 0.5rem; border-radius:4px;">⚠️ NINGUNO ACTIVO</span>
-        <?php endif; ?>
-    </p>
+    
+    <!-- CABECERA -->
+    <div class="welcome-header">
+        <h1>🗓️ Cronograma Global de Clases</h1>
+        <p>
+            Período del Sistema: 
+            <?php if ($periodo_activo): ?>
+                <span class="badge-nota badge-activo">
+                    ✨ <?php echo htmlspecialchars($periodo_activo['nombre_periodo']); ?>
+                </span>
+            <?php else: ?>
+                <span class="badge-nota badge-inactivo">
+                    ⚠️ NINGUNO ACTIVO
+                </span>
+            <?php endif; ?>
+        </p>
+    </div>
 
+    <!-- SECCIÓN DE ALERTAS PHP -->
     <?php if (isset($_GET['msg'])): ?>
-        <div class="alert alert-success">✔️ <?php echo htmlspecialchars($_GET['msg']); ?></div>
-    <?php endif; ?>
-    <?php if (isset($error)): ?>
-        <div class="alert alert-danger">❌ <?php echo $error; ?></div>
+        <div class="alert alert-success">
+            ✔️ <?php echo htmlspecialchars($_GET['msg']); ?>
+        </div>
     <?php endif; ?>
 
-    <div class="grid-layout">
-        <!-- FORMULARIO PARA REGISTRAR CLASE -->
-        <div class="card">
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger">
+            ❌ <?php echo htmlspecialchars($error); ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- REJILLA ASIMÉTRICA LIMPIA -->
+    <div class="cronograma-grid">
+        
+        <!-- CUADRO 1 (IZQUIERDO): FORMULARIO VERTICAL COMPACTO -->
+        <div class="info-card">
             <h3>Programar Nueva Clase</h3>
             <form action="cronograma.php" method="POST">
                 
@@ -130,6 +134,7 @@ if ($periodo_activo) {
                     <input type="date" id="fecha" name="fecha" class="form-control" required>
                 </div>
 
+                <!-- FILA DOBLE ENTRADA Y SALIDA CON CLASE PROPIA -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="hora_inicio">Hora de Entrada</label>
@@ -141,44 +146,57 @@ if ($periodo_activo) {
                     </div>
                 </div>
 
-                <button type="submit" name="guardar_clase" class="btn-submit">Publicar en Cronograma</button>
+                <button type="submit" name="guardar_clase" class="btn-action btn-submit-full">
+                    Publicar en Cronograma
+                </button>
             </form>
         </div>
 
-        <!-- TABLA CON LA AGENDA ACTUAL -->
-        <div class="card">
+        <!-- CUADRO 2 (DERECHO): HISTORIAL AMPLIO -->
+        <div class="info-card">
             <h3>Clases Programadas en este Lapso</h3>
-            <?php if ($clases_programadas && mysqli_num_rows($clases_programadas) > 0): ?>
-                <table class="table-custom">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Nivel</th>
-                            <th>Materia / Tema</th>
-                            <th>Horario</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($clase = mysqli_fetch_assoc($clases_programadas)): ?>
+            <div class="table-responsive">
+                <?php if (isset($clases_programadas) && mysqli_num_rows($clases_programadas) > 0): ?>
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td><strong><?php echo date("d/m/Y", strtotime($clase['fecha'])); ?></strong></td>
-                                <td><span style="color: #3a7bc8; font-weight:600;"><?php echo htmlspecialchars($clase['nivel_academico']); ?></span></td>
-                                <td><?php echo htmlspecialchars($clase['materia_tema']); ?></td>
-                                <td>
-                                    <?php 
-                                        echo date("g:i A", strtotime($clase['hora_inicio'])) . " - " . date("g:i A", strtotime($clase['hora_fin'])); 
-                                    ?>
-                                </td>
+                                <th>FECHA</th>
+                                <th>NIVEL</th>
+                                <th>MATERIA / TEMA</th>
+                                <th>HORARIO</th>
                             </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <div class="alert alert-warning" style="margin-bottom:0;">Formulario listo. Aún no hay clases agendadas para este período.</div>
-            <?php endif; ?>
+                        </thead>
+                        <tbody>
+                            <?php while ($clase = mysqli_fetch_assoc($clases_programadas)): ?>
+                                <tr>
+                                    <td><strong><?php echo date("d/m/Y", strtotime($clase['fecha'])); ?></strong></td>
+                                    <td>
+                                        <span class="text-highlight">
+                                            <?php echo htmlspecialchars($clase['nivel_academico']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($clase['materia_tema']); ?></td>
+                                    <td class="text-muted-dark">
+                                        <?php 
+                                            echo date("g:i A", strtotime($clase['hora_inicio'])) . " - " . date("g:i A", strtotime($clase['hora_fin'])); 
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <div class="alert alert-danger alert-no-margin">
+                        ⚠️ Formulario listo. Aún no hay clases agendadas para este período.
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
+
     </div>
 </main>
+
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

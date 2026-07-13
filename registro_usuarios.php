@@ -74,7 +74,7 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
             <div style="text-align: center; margin-bottom: 3rem;">
                 <img src="images/EFB.png" alt="Logo EFB" style="max-width: 100px; height: auto; margin-bottom: 1.5rem;">
                 <h2 style="color: #fff; margin: 0; font-size: 2rem;">Registro de Personal</h2>
-                <p style="color: #666; margin-top: 0.5rem; font-size: 1.1rem;">Profesores y Administradores</p>
+                <p style="color: #666; margin-top: 0.5rem; font-size: 1.1rem;">Profesores, Administradores y Estudiantes</p>
             </div>
 
             <form action="procesar_registro_usuarios.php" method="POST">
@@ -88,6 +88,20 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                     <label>Correo Electrónico</label>
                     <input class="u-fullwidth" type="email" name="email" required placeholder="correo@ejemplo.com">
                 </div>
+
+                <div class="form-group">
+                <label>Nivel Académico</label>
+                <select class="form-control" name="id_nivel">
+                <option value="">-- Seleccione el nivel --</option>
+                <?php if ($result_niveles): ?>
+                <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
+                <option value="<?php echo $nivel['id_nivel']; ?>">
+                    <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+                </option>
+            <?php endwhile; ?>
+        <?php endif; ?>
+    </select>
+</div>
 
 
                 <div class="form-group">

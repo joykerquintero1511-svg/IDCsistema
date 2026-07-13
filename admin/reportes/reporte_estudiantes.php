@@ -1,4 +1,5 @@
 <?php
+include '../../session-start.php';
 
 require_once '../../conexion.php';
 $filtro_estado = "";
@@ -286,14 +287,12 @@ if (!$resultado) {
         <a href="../index.php" class="menu-item">Gestión Central</a>
         <a href="../estudiantes/listar.php" class="menu-item">Gestión de Estudiantes</a>
         <a href="reporte_estudiantes.php" class="menu-item active">Reporte de Estudiantes</a>
-        <a href="../../logout.php" class="menu-item">Cerrar Sesión</a>
     </div>
 
     <div class="main-content">
 
         <div class="header">
             <h1>Reporte de Estudiantes</h1>
-            <a href="../../logout.php" class="btn-logout">Cerrar Sesión</a>
         </div>
 
  <div class="card">
@@ -458,6 +457,7 @@ if (!$resultado) {
         </div>
 
     </div>
+    <?php include '../../script-seguridad.php'; ?>
 
 </body>
 </html>
