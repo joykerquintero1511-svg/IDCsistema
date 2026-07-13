@@ -66,13 +66,13 @@ $_SESSION['panel_regreso'] = 'index.php';
 
     <main class="main-content">
         <header class="welcome-header">
-            <h1>Bienvenido, <?php echo htmlspecialchars($nombre_profesor); ?></h1>
+            <h1>Bienvenido Profesor, <?php echo htmlspecialchars($nombre_profesor); ?></h1>
             <p>Escuela de Formación Bíblica • Estado de cuenta académico</p>
         </header>
 
         <div class="dashboard-grid">
         
-        <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+        <div style="display: flex; flex-direction: column; gap: 2.0rem;">
             
             <section class="info-card">
                 <h3>Asignaciones Publicadas Recientemente</h3>
