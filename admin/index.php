@@ -21,10 +21,9 @@ include '../conexion.php';
     </div>
         <ul class="menu-links">
         <li><a href="index.php" class=" active">Gestión Central</a></li>
-        <li><a href="estudiantes/listar.php" class="active">Gestión de Estudiantes</a></li>
-        <li><a href="reportes/reporte_estudiantes.php" class="active">Reporte de Estudiantes</a></li>
-
-         <li><a href="../logout.php" class="btn-logout">Cerrar Sesión</a></li>
+        <li><a href="estudiantes/listar.php">Gestión de Estudiantes</a></li>
+        <li><a href="reportes/reporte_estudiantes.php" >Reporte de Estudiantes</a></li>
+        <li><a href="../logout.php" class="closed">Cerrar Sesión</a></li>
     </div>
      </aside>
 
@@ -39,9 +38,9 @@ include '../conexion.php';
         <div style="display: flex; flex-direction: column; gap: 2.5rem;">
             
             <div class="info-card">
-                <h3>Gestión de Personal 👤</h3>
-                <p>Audita, aprueba, suspende o da de alta cuentas tanto de docentes como de estudiantes.</p>
-                <a href="#" class="link">Administrar cuentas &rarr;</a>
+                <h3>Administrar Calificaciones 📝</h3>
+                <p>Edita y administra las calificaciones de los estudiantes por período académico.</p>
+                <a href="../calificaciones/index.php" class="link">Administrar calificaciones &rarr;</a>
             </div>
             <div class="info-card">
                 <h3>Seguridad y Logins ⚙️</h3>

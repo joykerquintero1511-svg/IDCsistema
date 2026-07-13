@@ -90,6 +90,11 @@ body {
     color: #3b82f6; /* Azul eléctrico premium */
     font-weight: 600;
 }
+.menu-links a.closed {
+    background: rgba(108, 30, 30, 0.15);
+    color: #d51a1a;
+    font-weight: 600;
+}
 
 .btn-logout {
     color: #f43f5e;
@@ -102,7 +107,7 @@ body {
 }
 
 .btn-logout:hover {
-    background: rgba(244, 63, 94, 0.1);
+    background: rgba(252, 40, 75, 0.1);
 }
 
 /* ==========================================
@@ -413,4 +418,93 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 .alert-no-margin {
     margin-bottom: 0;
+}
+
+/* ==========================================
+   ESTILOS PARA EL MÓDULO DE CALIFICACIONES
+   ========================================== */
+
+/* Contenedor de datos informativos arriba de la tabla */
+.info-resumen {
+    background-color: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+    margin-bottom: 1.5rem;
+}
+
+.info-resumen p {
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+    color: #94a3b8;
+}
+
+/* Inputs especiales y compactos para las celdas de la tabla */
+.table-input {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.9rem !important;
+    text-align: center;
+    max-width: 90px; /* Tamaño ideal para que no estire la columna */
+    margin: 0 auto;
+}
+
+/* Ocultar las flechitas nativas de subir/bajar número para mantener la simetría */
+input[type=number].table-input::-webkit-inner-spin-button, 
+input[type=number].table-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+
+input[type=number].table-input {
+    -moz-appearance: textfield; /* Compatibilidad con Firefox */
+}
+
+/* ==========================================
+   ESTILOS PREMIUM PARA EL MÓDULO DE NOTAS
+   (Estructura Compacta e Inmune al Zoom)
+   ========================================== */
+
+/* El contenedor padre que creaste en el <main> */
+.main-content-class {
+    width: 100%;
+    min-height: 100vh;
+    padding: 4rem 1.5rem; /* Más espacio arriba para que respire el diseño */
+    box-sizing: border-box;
+    
+    /* Mantiene todo magnéticamente centrado */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+}
+
+/* El contenedor de las tarjetas (¡Ahora más compacto!) */
+.main-content-class .calificaciones-wrapper {
+    width: 100%;
+    max-width: 650px; /* Reducido de 1000px a 650px para que no cubra toda la pantalla */
+    box-sizing: border-box;
+}
+
+/* Forzar que las tarjetas internas se adapten al nuevo ancho compacto */
+.main-content-class .info-card {
+    width: 100% !important;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+}
+
+/* Botón estilizado */
+.btn-block {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #3b82f6; 
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-block:hover {
+    background-color: #2563eb;
 }
