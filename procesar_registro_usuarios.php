@@ -9,6 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_plana = $_POST['password'];
     $rol = $_POST['rol'];
     $codigo = isset($_POST['codigo_autorizacion']) ? $_POST['codigo_autorizacion'] : '';
+    $id_nivel = isset($_POST['id_nivel']) ? intval($_POST['id_nivel']) : null;
 
     // 2. SEGURIDAD (Solo para Profesores y Admin)
     $clave_secreta_profesor = "TITO_2_7-8";
@@ -29,16 +30,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 4. ENCRIPTACIÓN
     $password_hash = password_hash($password_plana, PASSWORD_BCRYPT);
 
-    // 5. INSERCIÓN EN USUARIOS (Sin id_nivel)
+    // 5. INSERCIÓN EN USUARIOS (Con id_nivel)
     $sql = "INSERT INTO usuarios (usuario, email, contraseña, rol, estado) 
             VALUES ('$nombre', '$email', '$password_hash', '$rol', 1)";
 
     if (mysqli_query($conexion, $sql)) {
         $nuevo_id = mysqli_insert_id($conexion);
 
-        // Si es estudiante, lo registramos en su tabla (sin nivel por ahora)
-        if ($rol == 'estudiante') {
-            $sql_est = "INSERT INTO estudiantes (id_persona) VALUES ('$nuevo_id')";
+// // 6. REGISTRO ESPECÍFICO DEL ESTUDIANTE (¡Aquí sí guardamos el nivel!)
+        if ($rol === 'estudiante' || $rol === 'alumno') {
+            $sql_est = "INSERT INTO estudiantes (id_persona, id_nivel, fecha_registro) 
+                        VALUES ('$nuevo_id', '$id_nivel', NOW())";
             mysqli_query($conexion, $sql_est);
         }
         

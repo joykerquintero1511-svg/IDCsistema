@@ -13,6 +13,17 @@ $id_estudiante = $_SESSION['id_estudiante'] ?? 0;
 $nombre_estudiante = $_SESSION['usuario'] ?? 'Estudiante';
 $id_nivel = $_SESSION['id_nivel'] ?? 0; 
 
+// Buscar el nombre descriptivo del nivel académico
+$nombre_nivel = "Tu Nivel"; // Nombre por defecto por si acaso
+if ($id_nivel > 0) {
+    $query_nombre_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel'";
+    $res_nombre_nivel = mysqli_query($conexion, $query_nombre_nivel);
+    
+    if ($res_nombre_nivel && $row_nivel = mysqli_fetch_assoc($res_nombre_nivel)) {
+        $nombre_nivel = $row_nivel['nivel_academico'];
+    }
+}
+
 
 /// 2. Consulta filtrada: Tareas vigentes
 $query_tareas = "SELECT * FROM asignacion WHERE id_nivel = '$id_nivel' ORDER BY fecha_limite ASC";
@@ -61,7 +72,7 @@ $result_clases = mysqli_query($conexion, $query_clases);
     
     <!-- CABECERA DE BIENVENIDA -->
     <div class="welcome-header">
-        <h1>Bienvenido, <?php echo htmlspecialchars($nombre_estudiante); ?></h1>
+        <h1>Bienvenido a <?php echo htmlspecialchars($nombre_nivel); ?>, <?php echo htmlspecialchars($nombre_estudiante); ?></h1>
         <p>Escuela de Formación Bíblica • Tu espacio de crecimiento espiritual y académico</p>
     </div>
 
