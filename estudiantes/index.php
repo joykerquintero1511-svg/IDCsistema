@@ -30,10 +30,9 @@ $query_tareas = "SELECT * FROM asignacion WHERE id_nivel = '$id_nivel' AND fecha
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
 // 4. CONSULTA 2: Historial de Calificaciones (Unido con asignaciones para traer el nombre del tema/tarea)
-$query_notas = "SELECT c.nota, c.observacion, a.titulo_tarea 
-                FROM calificaciones c 
-                INNER JOIN asignacion a ON c.id_asignacion = a.id_asignacion 
-                WHERE c.id_estudiante = '$id_estudiante' 
+$query_notas = "SELECT c.evaluacion, c.nota_1, c.nota_2, c.nota_final, c.observacion, c.fecha_calificado
+                FROM calificaciones c
+                WHERE c.id_estudiante = '$id_estudiante'
                 ORDER BY c.fecha_calificado DESC";
 $result_notas = mysqli_query($conexion, $query_notas);
 // 5. CONSULTA 3: Cronograma de clases corregido con tus campos reales
@@ -112,6 +111,7 @@ $result_clases = mysqli_query($conexion, $query_clases);
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>Evaluación</th>
                                 <th>Nota 1</th>
                                 <th>Nota 2</th>
                                 <th>Nota Final</th>
@@ -121,11 +121,36 @@ $result_clases = mysqli_query($conexion, $query_clases);
                         <tbody>
                             <?php while ($nota = mysqli_fetch_assoc($result_notas)): ?>
                                 <tr>
+                                    <td>
+                                    <?php
+                                    if ($nota['evaluacion'] === null || $nota['evaluacion'] === "") {
+                                        echo "No especificada";
+                                    } else {
+                                        echo htmlspecialchars(ucwords(strtolower($nota['evaluacion'])));
+                                    }
+                                    ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars($nota['nota_1']); ?></td>
-                                    <td><?php echo htmlspecialchars($nota['nota_2']); ?></td>
+                                    <td>
+                                        <?php
+                                        if ($nota['nota_2'] === null || $nota['nota_2'] === "") {
+                                            echo "No registrada";
+                                        } else {
+                                            echo htmlspecialchars($nota['nota_2']);
+                                        }
+                                        ?>
+                                    </td>
                                     <td><span class="badge-nota"><?php echo htmlspecialchars($nota['nota_final']); ?></span></td>
-                                    <td style="color: #94a3b8; font-size: 0.9rem;"><?php echo htmlspecialchars($nota['observacion']); ?></td>
-                                </tr>
+                                    <td style="color: #94a3b8; font-size: 0.9rem;">
+                                     <?php
+                                        if ($nota['observacion'] === null || $nota['observacion'] === "") {
+                                            echo "Sin observación";
+                                        } else {
+                                            echo htmlspecialchars(ucwords(strtolower($nota['observacion'])));
+                                        }
+                                        ?>
+                                </td>
+                            </tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
