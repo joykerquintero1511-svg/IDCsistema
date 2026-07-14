@@ -187,6 +187,7 @@ $result_clases = mysqli_query($conexion, $query_clases);
 
     </div>
 </main>
+<?php include("../script-seguridad.php"); ?>
 
 </body>
 </html>

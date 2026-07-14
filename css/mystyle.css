@@ -508,3 +508,34 @@ input[type=number].table-input {
 .btn-block:hover {
     background-color: #2563eb;
 }
+
+/* ==========================================================================
+   MÓDULO: REGISTRO DE NIVELES
+   ========================================================================== */
+
+/* Estilo para los títulos de guía arriba de cada input */
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+/* Estilo moderno para el botón de enviar */
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.85rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}

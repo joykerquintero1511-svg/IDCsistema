@@ -1,6 +1,6 @@
 <?php
-    session_start();// Es como una "llave". Sin esto, el sistema no sabe quién está entrando y no te dejaría guardar nada por seguridad.
-include("conexion.php"); // este comando l dice a crear_nivel.php , Oye, usa la configuración de conexión que ya existe para que podamos guardar cosas en la base de datos".
+include("../session-start.php");
+include("../conexion.php"); // este comando l dice a crear_nivel.php , Oye, usa la configuración de conexión que ya existe para que podamos guardar cosas en la base de datos".
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){ // Esto es como una puerta de seguridad.Solo deja que el código de adentro se ejecute si realmente se presionó un botón de "Enviar" o "Guardar" en el formulario.
     // Aqui capturamos los datos q vienen del formulario
@@ -31,22 +31,43 @@ if(!empty($nombre_nivel) && !empty($codigo_nivel)){
 }
  ?>
  <!DOCTYPE html>
- <html lang="es">
- <head>
+<html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
- </head>
- <body>
-    <h1> Registro de Niveles</h1>
+    <title>Registro de Niveles</title>
+    <link rel="icon" type="image/png" href="../images/EFB.png">
+    <!-- Mantenemos la ruta absoluta que sí te funcionó para conectar -->
+    <link rel="stylesheet" href="../css/mystyle.css">
+</head>
+<body>
 
-    <form action= "crear_nivel.php" method="POST">
-    <input type="text" name="nombre_nivel" placeholder="Nombre del Nivel" required>
-    <input type="text" name="codigo_nivel" placeholder="Codigo del Nivel" required>
-     <input type="text" name="nivel_academico" placeholder="Nivel_Academico" required>
-    <button type="submit">Guardar</button> 
-  
-  </form>
-    
- </body>
- </html>   
+<main class="main-content">
+    <div class="main-card">
+        
+        <h1 class="welcome-header">Registro de Niveles</h1>
+        
+        <form action="crear_nivel.php" method="POST">
+            
+            <div class="form-group">
+                <label>Nombre del Nivel</label>
+                <input class="form-control" type="text" name="nombre_nivel" placeholder="Ej. Escuela para Bautismo" required>
+            </div>
+
+            <div class="form-group">
+                <label>Código del Nivel</label>
+                <input class="form-control" type="text" name="codigo_nivel" placeholder="Ej. 1A" required>
+            </div>
+
+            <div class="form-group">
+                <label>Nivel Académico</label>
+                <input class="form-control" type="text" name="nivel_academico" placeholder="Ej. 1A-Escuela para Bautismo" required>
+            </div>
+
+            <button type="submit" href="index.php" class="btn-primary">Guardar Nivel</button>
+            
+        </form>
+    </div>
+</main>
+
+</body>
