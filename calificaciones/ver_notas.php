@@ -67,10 +67,7 @@ $resultado = mysqli_query($conexion, $sql);
         }
      ?>
 
-        <input
-            type="text"
-            name="evaluacion"
-            value="<?php echo $textoEvaluacion; ?>"required>
+        <input type="text" name="evaluacion" value="<?php echo $textoEvaluacion; ?>">
 
         <br><br>
 
@@ -104,13 +101,15 @@ $resultado = mysqli_query($conexion, $sql);
             INNER JOIN personas
                 ON estudiantes.id_persona = personas.id_persona
 
-            WHERE calificaciones.id_nivel = '$id_nivel'
-
-            AND calificaciones.evaluacion = '$evaluacion'
-
-            ORDER BY personas.apellido ASC
+           WHERE calificaciones.id_nivel = '$id_nivel'
         ";
 
+        if ($evaluacion !== "") {
+            $sql_calificaciones .= " AND calificaciones.evaluacion = '$evaluacion'";
+        }
+        
+        $sql_calificaciones .= " ORDER BY personas.apellido ASC";
+    
         $resultado_calificaciones = mysqli_query($conexion,$sql_calificaciones);
 
         if (!$resultado_calificaciones) {

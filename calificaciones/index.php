@@ -22,21 +22,34 @@ $resultado_nivel = mysqli_query($conexion, $sql_nivel_seleccionado);
 $nombre_nivel = $fila_nivel['nivel_academico'];
 
 
-        $sql_estudiantes = "
-            SELECT 
-                estudiantes.id_estudiante,
-                personas.nombre,
-                personas.apellido
-            FROM estudiantes
-            INNER JOIN personas
-                ON estudiantes.id_persona = personas.id_persona
-            WHERE estudiantes.id_nivel = $id_nivel
-            ORDER BY personas.apellido ASC
-";
+       $sql_estudiantes = "
+    SELECT 
+        estudiantes.id_estudiante,
+        personas.nombre,
+        personas.apellido,
+        calificaciones.nota_1,
+        calificaciones.nota_2,
+        calificaciones.nota_final,
+        calificaciones.observacion
 
+    FROM estudiantes
+
+    INNER JOIN personas
+        ON estudiantes.id_persona = personas.id_persona
+
+    LEFT JOIN calificaciones
+        ON estudiantes.id_estudiante = calificaciones.id_estudiante
+        AND calificaciones.id_nivel = '$id_nivel'
+        AND calificaciones.evaluacion = '$evaluacion'
+
+    WHERE estudiantes.id_nivel = '$id_nivel'
+
+    ORDER BY personas.apellido ASC
+";
+          
 $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 
-    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -93,7 +106,7 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                         $textoEvaluacion = htmlspecialchars(ucwords(strtolower($evaluacion)));
                     }
                     ?>
-                    <input type="text" name="evaluacion" id="evaluacion" class="form-control" value="<?php echo $textoEvaluacion; ?>" placeholder="Ej: Primer Parcial" required>
+                    <input type="text" name="evaluacion" id="evaluacion" class="form-control" value="<?php echo $textoEvaluacion; ?>" placeholder="Ej: Primer Parcial">
                 </div>
 
                 <button type="submit" class="btn-block">Buscar estudiantes</button>
@@ -135,16 +148,16 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                                         <td><?php echo htmlspecialchars($estudiante['apellido']); ?></td>
                                         
                                         <td>
-                                            <input type="number" name="nota_1[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control table-input" min="0" max="20" step="0.1" required>
+                                            <input type="number" name="nota_1[<?php echo $estudiante['id_estudiante']; ?>]" value="<?php if (isset($estudiante['nota_1'])) { echo htmlspecialchars($estudiante['nota_1']); } ?>" class="form-control table-input" min="0" max="20" step="0.1">
                                         </td>
                                         <td>
-                                            <input type="number" name="nota_2[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control table-input" min="0" max="20" step="0.1" required>
+                                            <input type="number" name="nota_2[<?php echo $estudiante['id_estudiante']; ?>]" value="<?php if (isset($estudiante['nota_2'])) { echo htmlspecialchars($estudiante['nota_2']); } ?>" class="form-control table-input" min="0" max="20" step="0.1">
                                         </td>
                                         <td>
-                                            <input type="number" name="nota_final[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control table-input" min="0" max="20" step="0.1" required>
+                                            <input type="number" name="nota_final[<?php echo $estudiante['id_estudiante']; ?>]" value="<?php if (isset($estudiante['nota_final'])) { echo htmlspecialchars($estudiante['nota_final']); } ?>"class="form-control table-input" min="0" max="20" step="0.1">
                                         </td>
                                         <td>
-                                            <input type="text" name="observacion[<?php echo $estudiante['id_estudiante']; ?>]" class="form-control" style="padding: 0.4rem 0.6rem;" placeholder="Ej: Ninguna">
+                                            <input type="text" name="observacion[<?php echo $estudiante['id_estudiante']; ?>]" value="<?php if (isset($estudiante['observacion'])) { echo htmlspecialchars($estudiante['observacion']); } ?>"class="form-control" style="padding: 0.4rem 0.6rem;" placeholder="Ej: Ninguna">
                                         </td>
                                     </tr>
                                 <?php } ?>
