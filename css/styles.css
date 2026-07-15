@@ -3304,6 +3304,7 @@ td:last-child {
     flex-flow : row nowrap;
     margin    : 0;
     padding   : 0 var(--vspace-1_25);
+    padding-bottom: 0%;
 }
 
 .header-nav__links li {
@@ -3362,6 +3363,7 @@ td:last-child {
  * ## mobile menu toggle
  * -------------------------------------------------------------------- */
 .header-menu-toggle {
+    display             : none!important;
     --toggle-block-width: 44px;
     --toggle-line-width : 28px;
     --toggle-line-height: 1px;
@@ -3375,7 +3377,7 @@ td:last-child {
 }
 
 .header-menu-toggle span {
-    display         : block;
+    display         : none;
     background-color: var(--color-white);
     width           : var(--toggle-line-width);
     height          : var(--toggle-line-height);
@@ -3565,12 +3567,12 @@ td:last-child {
  *
  * ------------------------------------------------------------------- */
 .s-intro {
-    --content-padding-top   : max(13.6rem, 24vh);
+    --content-padding-top   : 6rem;
     --content-padding-bottom: var(--vspace-2_5);
     --content-min-height    : calc(var(--vspace-1) * 27);
 
     z-index                 : 2;
-    height                  : max(var(--content-min-height), 100vh);
+    height                  : 100vh;
     overflow                : hidden;
     position                : relative;
 }
@@ -5091,4 +5093,227 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
 }
-       
+
+/* ==========================================================================
+   AJUSTE DE PORTADA Y CONTROL DE DESBORDE (SOLUCIÓN ESTRUCTURAL)
+   ========================================================================== */
+
+/* 1. Eliminamos el desborde horizontal de raíz en el contenedor principal */
+#page, .s-pagewrap {
+    overflow-x: hidden !important; /* Corta cualquier elemento rebelde que quiera salirse a la derecha */
+    width: 100% !important;
+}
+
+/* 2. Corregimos la sección de portada para que se ajuste al ancho real de la pantalla */
+#etapasdeformacion.s-intro {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important; /* Centra la sección perfectamente */
+    padding-left: 20px !important;  /* Colchón de seguridad a la izquierda */
+    padding-right: 20px !important; /* Colchón de seguridad a la derecha */
+    box-sizing: border-box !important;
+}
+
+/* 3. Evitamos que el texto se meta debajo del Header */
+#etapasdeformacion.s-intro {
+    /* Le damos un espacio arriba equivalente al alto del menú para empujar el contenido hacia abajo */
+    padding-top: 120px !important; 
+}
+
+/* Ajuste específico para cuando el zoom es muy alto o la pantalla es pequeña */
+@media (max-width: 1100px) {
+    #etapasdeformacion.s-intro {
+        padding-top: 180px !important; /* Más espacio arriba si el menú se vuelve más alto */
+    }
+}
+
+/* ==========================================================================
+   BREATHING ROOM: ESPACIADO Y SIMETRÍA PARA EL HEADER
+   ========================================================================== */
+
+/* 1. Le damos aire al Header por arriba y por abajo */
+header.s-header {
+    height: auto !important;             /* Permite que el contenedor respire */
+    padding-top: 28px !important;        /* Espacio elegante arriba */
+    padding-bottom: 20px !important;     /* Espacio abajo para equilibrar visualmente */
+    box-sizing: border-box !important;
+}
+
+
+/* 3. Ajuste adaptativo para pantallas más compactas o zooms agresivos */
+@media (max-width: 1100px) {
+    header.s-header {
+        padding-top: 20px !important;    /* Un poco más compacto en pantallas chicas */
+        padding-bottom: 15px !important;
+    }
+
+
+/* 4. Mantenemos el Header con su espacio */
+header.s-header {
+    padding-top: 25px !important;
+    padding-bottom: 25px !important;
+}
+/* ==========================================================================
+   PORTADA PERFECTA EN PC (Ajuste para pantalla completa sin scroll forzado)
+   ========================================================================== */
+
+/* 1. Forzamos a la sección de inicio a medir exactamente el alto de la pantalla */
+.s-intro {
+    padding-top: 80px !important; /* Espacio mínimo para el menú superior */
+    padding-bottom: 20px !important;
+    height: 100vh !important; /* Altura exacta del monitor del usuario */
+    min-height: 600px !important; /* Altura mínima de seguridad para pantallas muy pequeñas */
+    display: flex !important;
+    align-items: center !important; /* Centra todo el contenido verticalmente */
+    justify-content: center !important;
+    overflow: hidden !important; /* Evita que elementos desbordados generen scroll */
+    position: relative !important;
+}
+
+/* 2. Ajustamos la fila interna para que use todo el ancho y se distribuya bien */
+.s-intro__content {
+    display: grid !important;
+    grid-template-columns: 1.2fr 1fr 1fr !important; /* Creamos 3 columnas: Título | Imagen 1 | Imagen 2 */
+    align-items: center !important;
+    gap: 30px !important;
+    width: 100% !important;
+    max-width: 1200px !important; /* Centra el contenido en pantallas ultra anchas */
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+}
+
+/* 3. Limpiamos los bloques de texto para que no empujen hacia abajo */
+.intro-header {
+    text-align: left !important;
+    margin: 0 !important;
+}
+
+.intro-header__big-type {
+    font-size: 4.8rem !important; /* Ajustamos el tamaño para que sea legible y no gigante */
+    line-height: 1.1 !important;
+    margin-bottom: 15px !important;
+}
+
+/* 4. Quitamos el posicionamiento absoluto que rompe el diseño de las imágenes */
+.intro-pic-primary, 
+.intro-block-content__pic {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 360px !important; /* Controlamos el ancho máximo para que no se pisen */
+    margin: 0 auto !important;
+}
+
+.intro-pic-primary img, 
+.intro-block-content__pic img {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 12px !important; /* Bordes redondeados estéticos */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important; /* Sombra elegante */
+}
+
+/* 5. Ajustes para el bloque de texto descriptivo y redes (columna derecha) */
+.intro-block-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+}
+
+.intro-block-content__text {
+    font-size: 1.4rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 20px !important;
+}
+
+/* Redes sociales en fila horizontal */
+.intro-block-content__social {
+    display: flex !important;
+    gap: 15px !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* ==========================================================================
+   2. AJUSTES EXCLUSIVOS PARA MÓVIL (Dentro de tu Media Query)
+   ========================================================================== */
+@media screen and (max-width: 800px) {
+
+    .s-intro {
+        padding-top: 90px !important; /* Aún más compacto en celulares */
+        padding-bottom: 40px !important;
+        height: auto !important; /* En móviles muy pequeños evitamos colapsos */
+        min-height: calc(100vh - 90px) !important; 
+    }
+
+    .s-intro__content {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 100% !important;
+    }
+
+    /* Reducimos márgenes innecesarios en los textos para compactar */
+    .intro-header__big-type {
+        font-size: 2.8rem !important; 
+        margin-top: 5px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Ajuste para el botón de scroll si está muy abajo */
+    .intro-scroll {
+        position: relative !important;
+        bottom: auto !important;
+        margin-top: 20px !important;
+        display: inline-block !important;
+    }
+}
+
+/* ELIMINAR ESPACIO NEGRO SUPERIOR EN PC */
+.s-intro {
+    padding-top: 0 !important; /* Resetea la sección a cero */
+}
+
+.s-intro__content {
+    padding-top: 80px !important; /* Reduce el vacío interno de 220px a solo 80px (lo justo para el menú) */
+    margin-top: 0 !important;
+}
+
+.s-header {
+    position: absolute !important; /* Obliga al menú a flotar y no empujar físicamente el contenido */
+}
+
+/* ==========================================================================
+   CONTROL INFALIBLE DEL MENÚ HAMBURGUESA (PC vs MÓVIL)
+   ========================================================================== */
+
+/* 1. PARA PC (Pantallas de 801px en adelante): SE OCULTA POR COMPLETO */
+@media screen and (min-width: 801px) {
+    .header-menu-toggle {
+        display: none !important;
+    }
+}
+
+/* 2. PARA MÓVIL (Pantallas de 800px hacia abajo): SE MUESTRA EN BLANCO */
+@media screen and (max-width: 800px) {
+    .header-menu-toggle {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 9999 !important;
+    }
+    
+    /* Forzamos a que las tres líneas internas sean blancas */
+    .header-menu-toggle span,
+    .header-menu-toggle span::before,
+    .header-menu-toggle span::after {
+        background-color: #ffffff !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}

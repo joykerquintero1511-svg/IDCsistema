@@ -5,7 +5,7 @@
     <!--- basic page needs
     ================================================== -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escuela de Formación Básica</title>
     <link rel="icon" type="image/png" href="images/EFB.png">
 
@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mystyle.css">
+    <link rel="stylesheet" href="css/movil.css">
+
 
     <!-- favicons
     ================================================== -->
@@ -26,6 +28,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="site.webmanifest">
+    <!-- Librería de iconos Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
@@ -85,14 +89,6 @@
                 
                 
                 </ul> <!-- end header-nav__links -->
-                    
-                    <div class="header-contact">
-                        <a href="tel:+584125438885" class="header-contact__num btn">
-                            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-6376396cc3a86d32eae6f0dc-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-6376396cc3a86d32eae6f0dc-1" d="M19.64,21.25c-2.54,2.55-8.38.83-13-3.84S.2,6.9,2.75,4.36L5.53,1.57,10.9,6.94l-2,2A2.18,2.18,0,0,0,8.9,12L12,15.1a2.18,2.18,0,0,0,3.07,0l2-2,5.37,5.37Z"></path></svg>
-                            +58 412-543-8885
-                        </a>
-                    </div> <!-- end header-contact -->
-                </nav> <!-- end header-nav -->         
             
             </div> <!-- end s-header__content -->
 
@@ -106,7 +102,7 @@
             <div class="grid-block s-intro__content">
 
                 <div class="intro-header">
-                    <div class="intro-header__overline">Bienvenidos a la Escuela </div>
+                    <div class="intro-header__overline">Bienvenidos a la Escuela de </div>
                     <h2 class="intro-header__big-type">
                         Formación<br>
                         Bíblica
@@ -131,19 +127,18 @@
                         <p class="intro-block-content__text">
                             "La Escuela de Formación Bíblica (EFB) es una institución educativa que tiene como objetivo formar líderes cristianos"
                         </p>
-                        
-                        <ul class="intro-block-content__social">
-                            <li><a href="https://www.facebook.com/IDCSEDEPPALCARACAS">FB</a></li>
-                            <li><a href="https://www.instagram.com/idcccs?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">IG</a></li>
-                            <li><a href="#0">WH</a></li>
-                            <li><a href="https://youtube.com/@idc-caracassedeprincipal5451?si=_gYbUP3rl6BDbWhZ">YT</a></li>
-                        </ul>
-                    </div> <!-- end intro-block-content__social -->   
 
-                </div> <!-- end intro-block-content -->
+        <ul class="intro-block-content__social">
+        <li><a href="https://www.facebook.com/IDCSEDEPPALCARACAS" target="_blank"><i class="fa-brands fa-facebook" style="margin-right: 15px; font-size: 2rem;"></i></a></li>
+        <li><a href="https://www.instagram.com/idcccs" target="_blank"><i class="fa-brands fa-instagram" style="margin-right: 15px; font-size: 2rem;"></i></a></li>
+        <li><a href="https://wa.me/1234567890" target="_blank"><i class="fa-brands fa-whatsapp" style="margin-right: 15px; font-size: 2rem;"></i></a></li>
+        <li><a href="https://youtube.com/@idc-caracassedeprincipal5451" target="_blank"><i class="fa-brands fa-youtube" style="font-size: 2rem;"></i></a></li>
+        </div> <!-- end intro-block-content__text-wrap -->
+
+
 
                 <div class="intro-scroll">
-                    <a class="smoothscroll" href="#nosotros">                            
+                    <a class="smoothscroll" href="#programas">                            
                         <span class="intro-scroll__circle-text"></span>
                         <span class="intro-scroll__text u-screen-reader-text">Palabra de Dios</span>
                         <div class="intro-scroll__icon">

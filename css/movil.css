@@ -1,0 +1,164 @@
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS PARA DISPOSITIVOS MÓVILES (Pantallas de hasta 800px)
+   ========================================================================== */
+
+@media screen and (max-width: 800px) {
+
+    /* 1. AJUSTES GENERALES DE CONTENEDORES
+       Evitamos desbordamientos laterales (scroll horizontal molesto) */
+    .container, .row, .grid-block {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* ==========================================
+       2. SECCIÓN INTRO (BIENVENIDA) - CORREGIDA
+       ========================================== */
+    .s-intro__content {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        padding-top: 10px !important;
+        position: relative !important;
+        height: auto !important; /* Resetea alturas fijas que tenga la plantilla */
+        min-height: auto !important;
+    }
+
+    /* Ajustamos el título para que no quede encima de nada */
+    .intro-header {
+        position: relative !important;
+        width: 100% !important;
+        margin-bottom: 20px !important;
+        text-align: center !important;
+        z-index: 2 !important;
+    }
+
+    .intro-header__big-type {
+        font-size: 5rem !important; 
+        line-height: 1.1 !important;
+        margin-bottom: 0px !important;
+        margin-top: 0px !important;
+    }
+
+    .intro-header__overline {
+        font-size: 2.5rem !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* --- GESTIÓN DE IMÁGENES EN MÓVIL --- */
+
+    /* OCULTAMOS la imagen secundaria para evitar desorden visual */
+    .intro-block-content__pic {
+        display: none !important;
+    }
+
+    /* AJUSTAMOS la imagen primaria para que actúe en el flujo normal */
+    .intro-pic-primary {
+        position: relative !important; /* Rompe el position: absolute de la plantilla */
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 100% !important;
+        max-width: 320px !important; /* Limita el ancho en móviles */
+        margin: 20px auto !important; /* La centra automáticamente */
+        display: block !important;
+        transform: none !important; /* Desactiva desfases en el eje X o Y */
+    }
+
+    .intro-pic-primary img {
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 8px !important; /* Le da un toque estético con bordes redondeados */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important; /* Añade profundidad */
+    }
+
+    /* --- BLOQUE DE TEXTO --- */
+    .intro-block-content {
+        position: relative !important;
+        width: 100% !important;
+        margin-top: 15px !important;
+        padding: 0 !important;
+    }
+
+    .intro-block-content__text-wrap {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .intro-block-content__text {
+        font-size: 1.6rem !important;
+        line-height: 1.5 !important;
+        color: #e0e0e0 !important;
+        margin-bottom: 25px !important;
+    }
+    }
+
+    /* 3. SECCIÓN HISTORIA (NOSOTROS)
+       Pasamos de columnas a una sola fila vertical */
+    .s-about__content {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .s-about__content-start, 
+    .s-about__content-end {
+        width: 100% !important;
+        float: none !important;
+        padding: 0 !important;
+    }
+
+    .about-pic-primary {
+        max-width: 280px !important;
+        margin: 20px auto !important;
+    }
+
+    /* 4. SECCIÓN ETAPAS DE FORMACIÓN
+       Forzamos a que las tres etapas se muestren una debajo de la otra */
+    .custom-programs-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
+
+    .s-programs__block {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. GALERÍA DE MOMENTOS
+       Hacemos una cuadrícula de 2 columnas en móvil en lugar de las que tenga en PC */
+    .gallery-items {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+        padding: 0 !important;
+    }
+
+    .gallery-items__item {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Centrar el botón circular de scroll */
+    .intro-scroll {
+        position: relative !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        display: inline-block !important;
+        margin-top: 40px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .intro-block-content__social{
+    align-items: center !important;
+    }
