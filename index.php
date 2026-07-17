@@ -164,12 +164,12 @@
                         <h2 class="text-display-title">Nuestra Historia</h2>
                     </div>  
 
-                    <figure class="about-pic-primary">
-                        <img src="images/lineadetime.png" 
-                             srcset="images/lineadetime.png 1x, 
-                             images/lineadetime.png 2x" alt=""> 
-                    </figure>
-
+                <div class="about-video-wrapper">
+            <video autoplay loop muted playsinline class="about-video-element">
+            <source src="images/historia.mp4" type="video/mp4">
+        Tu navegador no soporta la reproducción de videos.
+            </video>
+        </div>
                 </div> <!-- end s-about__content-start -->
 
                 <div class="column xl-12 lg-12 md-12 s-about__content-end">                  

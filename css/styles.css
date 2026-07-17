@@ -4027,6 +4027,7 @@ td:last-child {
 .about-pic-primary {
     width: 100%;
     max-width: 1400px; /* <--- Esto define qué tan gigante puede llegar a ser en PC */
+    height: auto;
     margin: 0 auto 30px auto; /* Centra la imagen y le da espacio con el texto de abajo */
 }
 
@@ -5322,14 +5323,34 @@ header.s-header {
     }
 }
 
-/* FORCE-OVERRIDE: Asegura el ancho completo de la línea de tiempo */
-.about-pic-primary {
+/* ==========================================================================
+   SECCIÓN NUESTRA HISTORIA: CONTENEDOR DE VIDEO PREMIUM
+   ========================================================================== */
+
+/* Contenedor del video: controla el tamaño máximo y el centrado */
+.about-video-wrapper {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 780px !important; /* Evita que el video se vuelva gigantesco en pantallas grandes */
+    margin: 30px auto !important; /* Le da una separación elegante arriba y abajo */
+    border-radius: 12px !important; /* Bordes redondeados finos y profesionales */
+    overflow: hidden !important; /* Obliga al video a respetar las esquinas redondeadas */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important; /* Sombra suave para darle profundidad */
+    background-color: #000000 !important;
 }
 
-.about-pic-primary img {
+/* El elemento de video: se adapta fluidamente al tamaño de la pantalla */
+.about-video-element {
     width: 100% !important;
-    max-width: 100% !important;
     height: auto !important;
+    display: block !important;
+    object-fit: cover !important; /* Asegura que llene el espacio elegantemente */
+}
+
+/* Ajuste para pantallas móviles (teléfonos) */
+@media (max-width: 768px) {
+    .about-video-wrapper {
+        max-width: 100% !important; /* En teléfonos toma todo el ancho disponible */
+        margin: 20px 0 !important;
+        border-radius: 8px !important;
+    }
 }
