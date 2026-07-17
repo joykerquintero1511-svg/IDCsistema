@@ -110,9 +110,9 @@
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
-                    <img src="images/vr1.png" 
-                         srcset="images/vr1.png 1x, 
-                         images/vr1.png 2x" alt="">  
+                    <img src="images/iprl.png" 
+                         srcset="images/iprl.png 1x, 
+                         images/iprl.png 2x" alt="">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
@@ -158,38 +158,24 @@
 
             <div class="row s-about__content">
 
-                <div class="column xl-4 lg-5 md-12 s-about__content-start">
+                <div class="column xl-12 lg-12 md-12 s-about__content-start">
 
                     <div class="section-header" data-num="01">
                         <h2 class="text-display-title">Nuestra Historia</h2>
                     </div>  
 
                     <figure class="about-pic-primary">
-                        <img src="images/vr2.png" 
-                             srcset="images/vr2.png 1x, 
-                             images/vr2.png 2x" alt=""> 
+                        <img src="images/lineadetime.png" 
+                             srcset="images/lineadetime.png 1x, 
+                             images/lineadetime.png 2x" alt=""> 
                     </figure>
 
                 </div> <!-- end s-about__content-start -->
 
-                <div class="column xl-6 lg-6 md-12 s-about__content-end">                   
+                <div class="column xl-12 lg-12 md-12 s-about__content-end">                  
 
                     <p>
-                     La historia de la Escuela Bíblica Dominical de la Iglesia Fuente de Salvación Misionera, ubicada en El Paraíso, Caracas, encuentra sus raíces institucionales en el año 1985, deducción que se obtiene al registrarse la celebración de su decimosegundo aniversario el 7 de diciembre de 1997
-                    . A finales de la década de los 90, la institución atravesó un periodo de intensa organización administrativa y crecimiento espiritual. Durante el año 1997, bajo el liderazgo de Mariela de Guerra (Superintendente), Yasmin de Peñaloza (Secretaria) y Nery Soriano (Tesorera), se establecieron normativas estrictas para garantizar el orden, tales como horarios de clase de 60 minutos y un sistema de control de asistencia donde los maestros marcaban "P" por presente, "T" por tarde o "A" por ausente según la hora de llegada.
-                    </p>
-
-                    <p>
-                    Este esfuerzo se tradujo en un crecimiento numérico significativo: la escuela comenzó el año con 56 miembros y lo cerró con un total de 84 integrantes.                    
-                    </p>
-
-                    <p>Al iniciar 1998, la escuela se renovó con la elección y ungimiento de nuevos maestros el 21 de enero, organizando las clases por rangos de edad específicos desde Párvulos (2 a 7 años) hasta Adultos (31 años en adelante)
-                    . En esta etapa, se puso un énfasis especial en la modernización de la enseñanza, proponiendo el uso de mapas, visuales y proyectores, además de la fabricación artesanal de borradores de madera para las pizarras
-                    .</p>
-
-                    <p>
-                    El currículo se profundizó con el estudio de las Epístolas Paulinas (1 Tesalonicenses y Romanos) y temas de apoyo social como la prevención de drogas para los adolescentes
-                . A pesar de enfrentar retos logísticos, principalmente la falta de espacio físico para las dinámicas de las clases infantiles, la institución se mantuvo firme en su propósito de edificar a cada hermano a través de la Palabra de Dios, consolidando una estructura que servía de ejemplo para toda la iglesia.
+                     "Fundada en 1985 en El Paraíso, Caracas, la Escuela de Formación Bíblica (EFB) nació con el propósito firme de edificar a cada creyente a través de la Palabra de Dios. Tras una profunda reorganización a finales de los 90 que modernizó su enseñanza y estructuró las clases por rangos de edad, la institución se ha consolidado como un pilar fundamental de crecimiento espiritual, superando retos logísticos para continuar con su misión: formar líderes cristianos comprometidos."
                     </p>
 
                 </div> <!--end column -->

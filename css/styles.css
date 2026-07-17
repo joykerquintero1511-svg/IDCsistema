@@ -3629,6 +3629,7 @@ td:last-child {
     font-size  : clamp(var(--text-display), var(--text-3xl) + 10vw, 18.4rem);
     line-height: 1;
     margin-top : 0;
+    text-shadow   : #000000d1 0px 0px 2px, rgba(0, 0, 0, 0.872) 0px 8px 12px;
 }
 
 .intro-pic-primary {
@@ -4025,16 +4026,19 @@ td:last-child {
  * -------------------------------------------------------------------- */
 .about-pic-primary {
     width: 100%;
+    max-width: 1400px; /* <--- Esto define qué tan gigante puede llegar a ser en PC */
+    margin: 0 auto 30px auto; /* Centra la imagen y le da espacio con el texto de abajo */
 }
 
 .about-pic-primary img {
-    padding           : 0;
-    margin            : 0;
-    -o-object-fit     : cover;
-    object-fit        : cover;
-    -o-object-position: center;
-    object-position   : center;
-    aspect-ratio      : 2000/2000;
+    padding             : 0;
+    margin              : 0;
+    width               : 100%;
+    max-width           : 1400px; /* <--- Esto define qué tan gigante puede llegar a ser en PC */
+    height              : auto;
+    -o-object-fit       : contain;
+    object-fit          : contain;
+    aspect-ratio        : auto;
 }
 
 /* ------------------------------------------------------------------- 
@@ -5316,4 +5320,16 @@ header.s-header {
         visibility: visible !important;
         opacity: 1 !important;
     }
+}
+
+/* FORCE-OVERRIDE: Asegura el ancho completo de la línea de tiempo */
+.about-pic-primary {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.about-pic-primary img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
 }
