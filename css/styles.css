@@ -3567,8 +3567,8 @@ td:last-child {
  *
  * ------------------------------------------------------------------- */
 .s-intro {
-    --content-padding-top   : 6rem;
-    --content-padding-bottom: var(--vspace-2_5);
+    --content-padding-top   : 2rem;
+    --content-padding-bottom: 2rem;
     --content-min-height    : calc(var(--vspace-1) * 27);
 
     z-index                 : 2;
@@ -3631,6 +3631,14 @@ td:last-child {
     margin-top : 0;
     text-shadow   : #000000d1 0px 0px 2px, rgba(0, 0, 0, 0.872) 0px 8px 12px;
 }
+@media screen and (max-width: 1200px) {
+.intro-header__big-type {
+    font-size  : clamp(var(--text-display), var(--text-3xl) + 10vw, 12.4rem);
+    line-height: 1;
+    margin-top : 0;
+    text-shadow   : #000000d1 0px 0px 2px, rgba(0, 0, 0, 0.872) 0px 8px 12px;
+}
+}
 
 .intro-pic-primary {
     --pic-primary-width: calc((100 / (12/4)) * 1%);
@@ -3675,6 +3683,7 @@ td:last-child {
 .intro-block-content__text {
     border-top : 1px solid var(--color-border);
     padding-top: var(--vspace-0_5);
+    font-size  : 2rem;
 }
 
 .intro-block-content__social {
@@ -3693,6 +3702,7 @@ td:last-child {
     letter-spacing: 0.15em;
     color         : var(--color-text-light);
 }
+
 
 /* --------------------------------------------------------------------
  * ## intro scroll down
@@ -3911,6 +3921,15 @@ td:last-child {
         padding-inline: var(--gutter);
         position      : relative;
         z-index       : 3;
+    }
+
+    @media (max-width: 1200px) {
+         .intro-block-content__text-wrap {
+        padding-inline: var(--gutter);
+        position      : relative;
+        z-index       : 3;
+        font-size      : 1rem;
+    }
     }
 
     .intro-block-content__pic {
@@ -5198,6 +5217,13 @@ header.s-header {
     line-height: 1.1 !important;
     margin-bottom: 15px !important;
 }
+ @media (max-width: 1400px) {
+.intro-header__big-type {
+    font-size: 2rem !important; /* Ajustamos el tamaño para que sea legible y no gigante */
+    line-height: 1.1 !important;
+    margin-bottom: 15px !important;
+}
+ }
 
 /* 4. Quitamos el posicionamiento absoluto que rompe el diseño de las imágenes */
 .intro-pic-primary, 
@@ -5353,4 +5379,37 @@ header.s-header {
         margin: 20px 0 !important;
         border-radius: 8px !important;
     }
+}
+
+@media (max-width: 1200px and max-width: 1440px) {
+    .intro-header__big-type {
+        font-size: 3rem !important; /* Ajuste fino para pantallas medianas */
+    }
+    
+}
+/* ==========================================================================
+   RESCATE DE REDES SOCIALES E ICONOS INFERIORES
+   ========================================================================== */
+@media screen and (max-width: 800px) {
+    .intro-block-content__social {
+        justify-content: center !important; /* Centra las redes en móviles */
+    }
+
+#etapasdeformacion.s-intro {
+    /* 1. Cambiamos height por min-height para que la sección pueda crecer si el contenido lo pide */
+    height: auto !important; 
+    min-height: 100vh !important; 
+
+    /* 2. Le damos un buen colchón abajo para que los iconos respiren y no se corten */
+    padding-bottom: 80px !important; 
+
+    /* 3. Evitamos que cualquier regla de la plantilla mutile o esconda lo que sobresale */
+    overflow: visible !important; 
+}
+
+/* Forzamos a que la fila interna de la plantilla no recorte las redes */
+#etapasdeformacion.s-intro .row,
+#etapasdeformacion.s-intro .grid-block {
+    overflow: visible !important;
+}
 }
