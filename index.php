@@ -79,9 +79,17 @@
                         onmouseover="this.style.background='rgba(243, 246, 246, 0.13)'; this.style.color='#0033ff';" 
                         onmouseout="this.style.background='transparent'; this.style.color='#e0e0e0';">
                         Iniciar Sesión</a></li>
-                    
-                
-                
+                        </nav> <!-- línea 82 -->
+
+        <!-- NUESTRO BOTÓN EN EL MENÚ -->
+<div class="intro-scroll custom-header-scroll">
+    <a class="smoothscroll" href="#programas">
+        <span class="intro-scroll__circle-text"></span>
+        <span class="intro-scroll__text u-screen-reader-text">Palabra de Dios</span>
+        <div class="intro-scroll__icon"></div>
+    </a>
+</div>
+
                 
                 
                 
@@ -136,17 +144,6 @@
         </div> <!-- end intro-block-content__text-wrap -->
 
 
-
-                <div class="intro-scroll">
-                    <a class="smoothscroll" href="#programas">                            
-                        <span class="intro-scroll__circle-text"></span>
-                        <span class="intro-scroll__text u-screen-reader-text">Palabra de Dios</span>
-                        <div class="intro-scroll__icon">
-                            <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m5.214 14.522s4.505 4.502 6.259 6.255c.146.147.338.22.53.22s.384-.073.53-.22c1.754-1.752 6.249-6.244 6.249-6.244.144-.144.216-.334.217-.523 0-.193-.074-.386-.221-.534-.293-.293-.766-.294-1.057-.004l-4.968 4.968v-14.692c0-.414-.336-.75-.75-.75s-.75.336-.75.75v14.692l-4.979-4.978c-.289-.289-.761-.287-1.054.006-.148.148-.222.341-.221.534 0 .189.071.377.215.52z" fill-rule="nonzero"/></svg>
-                        </div>
-                    </a>
-                </div> <!-- end intro-scroll -->
-
             </div> <!-- grid-block -->            
 
         </section> <!-- end s-intro -->
@@ -172,7 +169,7 @@
         </div>
                 </div> <!-- end s-about__content-start -->
 
-                <div class="column xl-12 lg-12 md-12 s-about__content-end">                  
+                <div class="column xl- lg-6 md-4 s-about__content-end">                  
 
                     <p>
                      "Fundada en 1985 en El Paraíso, Caracas, la Escuela de Formación Bíblica (EFB) nació con el propósito firme de edificar a cada creyente a través de la Palabra de Dios. Tras una profunda reorganización a finales de los 90 que modernizó su enseñanza y estructuró las clases por rangos de edad, la institución se ha consolidado como un pilar fundamental de crecimiento espiritual, superando retos logísticos para continuar con su misión: formar líderes cristianos comprometidos."

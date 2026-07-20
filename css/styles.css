@@ -3571,10 +3571,10 @@ td:last-child {
     --content-padding-bottom: 2rem;
     --content-min-height    : calc(var(--vspace-1) * 27);
 
-    z-index                 : 2;
-    height                  : 100vh;
-    overflow                : hidden;
-    position                : relative;
+   z-index               : 2;
+    min-height            : 100vh;      /* 1. Cambiamos height por min-height */
+    overflow              : visible;     /* 2. Cambiamos hidden por visible */
+    position              : relative;
 }
 
 /* --------------------------------------------------------------------
@@ -3708,11 +3708,11 @@ td:last-child {
  * ## intro scroll down
  * -------------------------------------------------------------------- */
 .intro-scroll {
-    z-index    : 2;
-    grid-column: 2/span 6;
-    grid-row   : 2;
-    display    : flex;
-    position   : relative;
+    z-index       : 2;
+    display       : flex;
+    margin-top    : 35px;        /* 1. Lo separa elegantemente de los iconos de las redes */
+    margin-bottom : auto;        /* 2. EL TRUCO: Absorbe el espacio vacío de abajo y lo empuja hacia arriba */
+    align-self    : flex-start;  /* 3. Lo alinea a la izquierda, justo debajo de tus iconos */
 }
 
 .intro-scroll a {
@@ -5141,7 +5141,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* 3. Evitamos que el texto se meta debajo del Header */
 #etapasdeformacion.s-intro {
     /* Le damos un espacio arriba equivalente al alto del menú para empujar el contenido hacia abajo */
-    padding-top: 120px !important; 
+    padding-top: 120px !important;
+    padding-bottom: 0px !important; 
 }
 
 /* Ajuste específico para cuando el zoom es muy alto o la pantalla es pequeña */
@@ -5412,4 +5413,28 @@ header.s-header {
 #etapasdeformacion.s-intro .grid-block {
     overflow: visible !important;
 }
+}
+
+@media screen and (max-width:1200px) {
+    .container.s-about.target-section {
+        padding: 0 20px !important; /* Ajuste de padding lateral para pantallas medianas */
+    }
+}
+
+/* ==========================================================================
+   UBICACIÓN DEL SCROLL EN EL MENÚ SUPERIOR
+   ========================================================================== */
+.custom-header-scroll {
+    position: relative !important;
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
+    margin-left: 30px !important;
+    display: inline-flex !important;
+    transform: scale(0.8); /* Lo achica un poquito para que se vea premium en el menú */
+    /* ESTAS DOS LÍNEAS LO OBLIGAN A APARECER */
+    opacity: 1 !important;
+    visibility: visible !important;
+    
+    transform: scale(0.8);
 }
