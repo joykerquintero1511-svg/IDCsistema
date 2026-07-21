@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escuela de Formación Básica</title>
+    <title>Escuela de Formación Biblica</title>
     <link rel="icon" type="image/png" href="images/EFB.png">
 
     <script>
@@ -79,26 +79,31 @@
                         onmouseover="this.style.background='rgba(243, 246, 246, 0.13)'; this.style.color='#0033ff';" 
                         onmouseout="this.style.background='transparent'; this.style.color='#e0e0e0';">
                         Iniciar Sesión</a></li>
-                        </nav> <!-- línea 82 -->
+                      <!-- Tu línea 81 termina aquí: Iniciar Sesión</a></li> -->
 
-        <!-- NUESTRO BOTÓN EN EL MENÚ -->
-<div class="intro-scroll custom-header-scroll">
-    <a class="smoothscroll" href="#programas">
-        <span class="intro-scroll__circle-text"></span>
-        <span class="intro-scroll__text u-screen-reader-text">Palabra de Dios</span>
-        <div class="intro-scroll__icon"></div>
-    </a>
-</div>
+            <!-- NUESTRO BOTÓN INTEGRADO COMO ELEMENTO DE LA LISTA -->
+            <li class="custom-header-scroll-item">
+                <div class="intro-scroll">
+                    <a class="smoothscroll" href="#programas">
+                        <span class="intro-scroll__circle-text"></span>
+                        <span class="intro-scroll__text u-screen-reader-text">Palabra de Dios</span>
+                        <div class="intro-scroll__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="header-bible-svg">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                <path d="M12 7v8"></path>
+                                <path d="M10 9h4"></path>
+                            </svg>
+                        </div>
+                        <div class="intro-scroll__icon"></div>
+                    </a>
+                </div>
+            </li>
 
-                
-                
-                
-                
-                
-                
-                </ul> <!-- end header-nav__links -->
-            
-            </div> <!-- end s-header__content -->
+        </ul> <!-- end header-nav__links -->
+    </nav> <!-- end header-nav -->
+
+</div> <!-- end s-header__content -->
 
         </header> <!-- end s-header -->
 

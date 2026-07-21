@@ -5421,20 +5421,74 @@ header.s-header {
     }
 }
 
+}
 /* ==========================================================================
-   UBICACIÓN DEL SCROLL EN EL MENÚ SUPERIOR
+   SCROLL INTEGRADO PERFECTAMENTE EN LA LISTA DEL MENÚ
    ========================================================================== */
-.custom-header-scroll {
+body#top .header-nav__links .custom-header-scroll-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    margin-left: 25px !important; /* Espacio elegante después de Iniciar Sesión */
+}
+
+body#top .header-nav__links .custom-header-scroll-item .intro-scroll {
     position: relative !important;
+    
+    /* 🎛️ CONTROL VERTICAL: Con esto lo subimos en tiempo real */
+    top: -24px !important; 
+    
     bottom: auto !important;
     right: auto !important;
     left: auto !important;
-    margin-left: 30px !important;
-    display: inline-flex !important;
-    transform: scale(0.8); /* Lo achica un poquito para que se vea premium en el menú */
-    /* ESTAS DOS LÍNEAS LO OBLIGAN A APARECER */
     opacity: 1 !important;
     visibility: visible !important;
+    z-index: 99999 !important;
+    margin: 0 !important;
     
-    transform: scale(0.8);
+    /* Lo compactamos un pelín más para que se adapte con finura al menú */
+    transform: scale(0.75) !important; 
+    transform-origin: center center !important;
+}
+/* ==========================================================================
+   ICONO DE LA BIBLIA DENTRO DEL SCROLL
+   ========================================================================== */
+.intro-scroll__icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important; /* Lo centra milimétricamente en el núcleo */
+    width: 27px !important;
+    height: 27px !important;
+}
+
+.header-bible-svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+}
+
+/* ==========================================================================
+   AJUSTES DEL SCROLL PARA PANTALLAS MÓVILES (MENOS DE 900PX)
+   ========================================================================== */
+@media screen and (max-width: 900px) {
+    /* Centramos el contenedor en la lista vertical */
+    body#top .header-nav__links .custom-header-scroll-item {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin-left: 0 !important;     /* Quitamos el empuje de desktop */
+        margin-top: 40px !important;    /* Le damos espacio respirable abajo de Iniciar Sesión */
+    }
+
+    /* Reseteamos el comportamiento del círculo */
+    body#top .header-nav__links .custom-header-scroll-item .intro-scroll {
+        top: 0 !important;             /* Cancelamos el -24px de desktop */
+        transform: scale(0.7) !important; /* Lo escalamos un pelín más grande para que sea fácil de tocar con el dedo */
+        margin: 0 auto !important;
+    }
 }
