@@ -184,7 +184,7 @@
 
   /* background,surface and border colors
    */
-    --color-bg                    : var(--color-neutral-950);
+    --color-bg : linear-gradient(to bottom, #000000 0%, #111827 40%, #e5e7eb 100%);
     --color-bg-inverse            : var(--color-neutral-600);
 
     --color-bg-primary            : var(--color-1-600);
@@ -3684,7 +3684,10 @@ td:last-child {
     border-top : 1px solid var(--color-border);
     padding-top: var(--vspace-0_5);
     font-size  : 2rem;
+    color      : var(--color-neutral-50) !important;
 }
+
+
 
 .intro-block-content__social {
     display    : flex;
@@ -3700,7 +3703,7 @@ td:last-child {
 .intro-block-content__social a {
     font-size     : var(--text-sm);
     letter-spacing: 0.15em;
-    color         : var(--color-text-light);
+    color         : var(--color-neutral-50 );
 }
 
 
@@ -5491,4 +5494,24 @@ body#top .header-nav__links .custom-header-scroll-item .intro-scroll {
         transform: scale(0.7) !important; /* Lo escalamos un pelín más grande para que sea fácil de tocar con el dedo */
         margin: 0 auto !important;
     }
+}
+
+body {
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(to bottom, #000000 0%, #181919 50%, #7a7a7bc7 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+}
+/* Asigna un fondo oscuro sólido al contenedor del menú móvil */
+.navbar, 
+header, 
+nav, 
+.nav-menu, 
+.mobile-nav {
+  background-color: #000000 !important; /* Fondo oscuro sólido para que no se traslape */
+  z-index: 100 !important; /* Asegura que el menú quede por encima de todo */
 }
