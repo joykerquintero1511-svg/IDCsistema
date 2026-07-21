@@ -280,50 +280,50 @@
                 </div> <!-- end gallery-items__item -->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-03.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-03.jpg" 
-                            srcset="images/gallery/gallery-03.jpg 1x, 
-                                    images/gallery/gallery-03@2x.jpg 2x" alt="">
+                    <a href="images/1c.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/1c.jpeg" 
+                            srcset="images/1c.jpeg 1x, 
+                                    images/1c.jpeg 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-04.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-04.jpg" 
-                            srcset="images/gallery/gallery-04.jpg 1x, 
-                                    images/gallery/gallery-04@2x.jpg 2x" alt="">
+                    <a href="images/2a.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/2a.jpeg" 
+                            srcset="images/2a.jpeg 1x, 
+                                    images/2a.jpeg 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-05.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-05.jpg" 
-                            srcset="images/gallery/gallery-05.jpg 1x, 
-                                    images/gallery/gallery-05@2x.jpg 2x" alt="">
+                    <a href="images/vr1.png" class="gallery-items__item-thumb glightbox">
+                        <img src="images/vr1.png" 
+                            srcset="images/vr1.png 1x, 
+                                    images/vr1.png 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-06.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-06.jpg" 
-                            srcset="images/gallery/gallery-06.jpg 1x, 
-                                    images/gallery/gallery-06@2x.jpg 2x" alt="">
+                    <a href="images/vr2.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/vr2.jpeg" 
+                            srcset="images/vr2.jpeg 1x, 
+                                    images/vr2.jpeg 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-07.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-07.jpg" 
-                            srcset="images/gallery/gallery-07.jpg 1x, 
-                                    images/gallery/gallery-07@2x.jpg 2x" alt="">
+                    <a href="images/vr4.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/vr4.jpeg" 
+                            srcset="images/vr4.jpeg 1x, 
+                                    images/vr4.jpeg 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
     
                 <div class="gallery-items__item grid-cols__column">
-                    <a href="images/gallery/large/l-gallery-08.jpg" class="gallery-items__item-thumb glightbox">
-                        <img src="images/gallery/gallery-08.jpg" 
-                            srcset="images/gallery/gallery-08.jpg 1x, 
-                                    images/gallery/gallery-08@2x.jpg 2x" alt="">
+                    <a href="images/vr3.jpeg" class="gallery-items__item-thumb glightbox">
+                        <img src="images/vr3.jpeg" 
+                            srcset="images/vr3.jpeg 1x, 
+                                    images/vr3.jpeg 2x" alt="">
                     </a>
                 </div> <!-- end gallery-items__item -->
                 
