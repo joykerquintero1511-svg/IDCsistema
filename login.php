@@ -48,6 +48,10 @@
 </p>
                 </div>
 
+                             <p style="text-align: center; margin-top: 2.5rem;">
+    <a href="index.php" style="color: #ffffff; text-decoration: none; font-size: 20px;box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">Volver al inicio</a>
+</p>
+
             </form>
         </div>
     </main>
