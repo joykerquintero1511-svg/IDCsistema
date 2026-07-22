@@ -1,3 +1,11 @@
+<?php
+include("conexion.php");
+
+// Consultar si el proceso de inscripción está activo
+$q_inscrip = mysqli_query($conexion, "SELECT inscripciones_abiertas FROM periodos_academicos LIMIT 1");
+$r_inscrip = mysqli_fetch_assoc($q_inscrip);
+$inscripciones_activas = $r_inscrip['inscripciones_abiertas'] ?? 0;
+?>
 <!DOCTYPE html>
 <html lang="en" class="no-js" >
 <head>
@@ -72,7 +80,9 @@
                         <li><a class="smoothscroll" href="#nosotros">Nosotros</a></li>
                         <li><a class="smoothscroll" href="#programas">Etapas de Formación</a></li>
                         <li><a class="smoothscroll" href="#galeria">Momentos</a></li>
+                        <?php if ($inscripciones_activas == 1): ?>
                         <li><a href="inscripcion.php" style="color: #ffffff; font-weight: bold;">Inscripciones</a></li>
+                        <?php endif; ?>
                         <li>
                         <a href="login.php" 
                         style="color: #0976fc; font-weight: 500; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease;" 

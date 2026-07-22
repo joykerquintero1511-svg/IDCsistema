@@ -19,6 +19,11 @@ $verificados = intval($datos_verif['verificados'] ?? 0);
 $pendientes  = intval($datos_verif['pendientes'] ?? 0);
 $total_usr   = intval($datos_verif['total'] ?? 1);
 $porcentaje_verif = round(($verificados / $total_usr) * 100);
+
+// Consulta para saber si las inscripciones están abiertas o cerradas
+$q_estado = mysqli_query($conexion, "SELECT inscripciones_abiertas FROM periodos_academicos LIMIT 1");
+$res_estado = mysqli_fetch_assoc($q_estado);
+$estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
 ?>
 
 
@@ -187,6 +192,26 @@ document.addEventListener("DOMContentLoaded", function() {
                 <h3>Periodo Académico 📅</h3>
                 <p>Abre o cierra lapsos para la carga de notas o habilita procesos globales de inscripción.</p>
                 <a href="periodos.php" class="link">Configurar periodos academicos &rarr;</a>
+            </div>
+            <div class="info-card">
+            <div style="background: #0f172a; border: 1px solid #1e293b; padding: 22px; border-radius: 12px; margin-bottom: 20px;">
+    <h3 style="color: #fff; margin-top: 0;">Habilitar/Deshabilitar Inscripciones</h3>
+    <p style="color: #94a3b8; font-size: 13px;">
+        Abre o cierra el proceso web de pre-inscripciones públicas para la Escuela.
+    </p>
+
+    <div style="display: flex; align-items: center; gap: 15px; margin-top: 15px;">
+    <span style="color: #fff; font-size: 14px; font-weight: bold;">Estatus de Inscripciones:</span>
+
+    <?php if ($estado_actual == 1): ?>
+        <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">ABIERTAS</span>
+        <a href="toggle_inscripciones.php?estado=0" style="background: #ef4444; color: white; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 10;">Cerrar Inscripciones</a>
+    <?php else: ?>
+        <span style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">CERRADAS</span>
+        <a href="toggle_inscripciones.php?estado=1" style="background: #10b981; color: white; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 10;">Abrir Inscripciones</a>
+    <?php endif; ?>
+</div>
+</div>
             </div>
         </div>
     </div>
