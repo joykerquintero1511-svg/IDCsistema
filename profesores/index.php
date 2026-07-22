@@ -87,7 +87,6 @@ $_SESSION['panel_regreso'] = 'index.php';
                                     <p>Dirigido a: <span><?php echo htmlspecialchars($tarea['nivel_academico']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
                                     <p>Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
                                 </div>
-                                <a href="ver_respuestas.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Ver Entregas</a>
                             </li>
                         <?php endwhile; ?>
                     <?php else: ?>
