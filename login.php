@@ -42,6 +42,10 @@
                     <a href="registro_usuarios.php" style="color: rgba(255, 255, 255, 0.4); font-size: 1.3rem; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255, 255, 255, 0.4)'">
                         ¿No tienes cuenta de personal? Regístrate aquí
                     </a>
+
+                    <p style="text-align: center; margin-top: 2.5rem;">
+    <a href="recuperar_password.php" style="color: #7d7d7d; text-decoration: none; font-size: 14px;">¿Olvidaste tu contraseña?</a>
+</p>
                 </div>
 
             </form>

@@ -68,7 +68,7 @@
             
                 <nav class="header-nav">    
                     <ul class="header-nav__links">
-                        <li class="current"><a class="smoothscroll" href="#inicio">inicio</a></li>
+                        <li class="current"><a class="smoothscroll" href="#inicio">Inicio</a></li>
                         <li><a class="smoothscroll" href="#nosotros">Nosotros</a></li>
                         <li><a class="smoothscroll" href="#programas">Etapas de Formación</a></li>
                         <li><a class="smoothscroll" href="#galeria">Momentos</a></li>
