@@ -30,7 +30,7 @@ $resultado = mysqli_query($conexion, $sql);
 
         <label>Nivel:</label>
 
-        <select name="id_nivel" required>
+        <select name="id_nivel" required onchange="this.form.submit();">
 
             <option value="">Seleccione un nivel</option>
 
@@ -57,17 +57,43 @@ $resultado = mysqli_query($conexion, $sql);
 
         <label>Evaluación:</label>
 
-        <?php
+<select name="evaluacion">
 
-        $textoEvaluacion = "";
+    <option value="">Seleccione una evaluación</option>
 
-        if (isset($_GET['evaluacion'])) {
+    <?php
 
-            $textoEvaluacion = htmlspecialchars(ucwords(strtolower($_GET['evaluacion'])));
+    if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
+
+        $id_nivel_seleccionado = $_GET['id_nivel'];
+
+        $sql_evaluaciones = "
+            SELECT DISTINCT evaluacion
+            FROM calificaciones
+            WHERE id_nivel = '$id_nivel_seleccionado'
+            AND evaluacion != ''
+            ORDER BY evaluacion ASC
+        ";
+
+        $resultado_evaluaciones = mysqli_query($conexion, $sql_evaluaciones);
+
+        while ($fila_evaluacion = mysqli_fetch_assoc($resultado_evaluaciones)) {
+
+            $evaluacion_seleccionada = "";
+
+            if (isset($_GET['evaluacion']) && $_GET['evaluacion'] == $fila_evaluacion['evaluacion']) {
+                $evaluacion_seleccionada = "selected";
+            }
+
+            echo '<option value="' . htmlspecialchars($fila_evaluacion['evaluacion']) . '" ' . $evaluacion_seleccionada . '>';
+            echo htmlspecialchars(ucwords(strtolower($fila_evaluacion['evaluacion'])));
+            echo '</option>';
         }
-     ?>
+    }
 
-        <input type="text" name="evaluacion" value="<?php echo $textoEvaluacion; ?>">
+    ?>
+
+</select>
 
         <br><br>
 
@@ -78,7 +104,7 @@ $resultado = mysqli_query($conexion, $sql);
     <?php
 
     // Este bloque solo se ejecuta cuando el usuario pulsa Buscar
-    if (isset($_GET['id_nivel'])) {
+    if (isset($_GET['id_nivel']) && isset($_GET['evaluacion']) && $_GET['evaluacion'] != "") {
 
         $id_nivel = $_GET['id_nivel'];
         $evaluacion = trim($_GET['evaluacion']);
@@ -88,6 +114,8 @@ $resultado = mysqli_query($conexion, $sql);
                 calificaciones.id_calificacion,
                 personas.nombre,
                 personas.apellido,
+                calificaciones.descripcion_nota_1,
+                calificaciones.descripcion_nota_2,
                 calificaciones.nota_1,
                 calificaciones.nota_2,
                 calificaciones.nota_final,
@@ -121,17 +149,44 @@ $resultado = mysqli_query($conexion, $sql);
 
     ?>
 
+    <?php if (mysqli_num_rows($resultado_calificaciones) > 0) { ?>
+
         <h3>Calificaciones encontradas</h3>
 
-        <?php if (mysqli_num_rows($resultado_calificaciones) > 0) { ?>
+         <?php
+        if ($evaluacion != "") {
+            echo "<p><strong>Evaluación:</strong> " . htmlspecialchars(ucwords(strtolower($evaluacion))) . "</p>";
+        }
+        ?>
+
+        
+
+        <?php
+
+        $fila_encabezado = mysqli_fetch_assoc($resultado_calificaciones);
+
+        $nombre_actividad_1 = "Nota 1";
+        $nombre_actividad_2 = "Nota 2";
+
+        if ($fila_encabezado['descripcion_nota_1'] != "") {
+            $nombre_actividad_1 = ucwords(strtolower($fila_encabezado['descripcion_nota_1']));
+        }
+
+        if ($fila_encabezado['descripcion_nota_2'] != "") {
+            $nombre_actividad_2 = ucwords(strtolower($fila_encabezado['descripcion_nota_2']));
+        }
+
+        mysqli_data_seek($resultado_calificaciones, 0);
+
+        ?>
 
             <table border="1">
 
                 <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
-                    <th>Nota 1</th>
-                    <th>Nota 2</th>
+                    <th><?php echo htmlspecialchars($nombre_actividad_1); ?></th>
+                    <th><?php echo htmlspecialchars($nombre_actividad_2); ?></th>
                     <th>Nota Final</th>
                     <th>Observación</th>
                     <th>Acción</th>

@@ -2,23 +2,78 @@
 include '../session-start.php';
 include '../conexion.php';
 
+$descripcion_nota_1 = "";
+$descripcion_nota_2 = "";
+$evaluacion = "";
+$registro_existente = false;
+
 $sql =" SELECT id_nivel,nivel_academico 
         FROM niveles";
 
 $resultado = mysqli_query($conexion,$sql); // mysqli_query "Ejecuta la consulta que está en $sql usando la conexión $conexion y guarda el resultado en $resultado."
 
-    if(isset($_GET['id_nivel'])){
+           if (isset($_GET['id_nivel'])) {
 
-        $id_nivel = $_GET['id_nivel'];
-        $evaluacion = $_GET['evaluacion'];
+    $id_nivel = $_GET['id_nivel'];
 
+    if (isset($_GET['evaluacion'])) {
+        $evaluacion = trim($_GET['evaluacion']);
+    } else {
+        $evaluacion = "";
+}
+
+    if (isset($_GET['descripcion_nota_1'])) {
+        $descripcion_nota_1 = trim($_GET['descripcion_nota_1']);
+    } else {
+        $descripcion_nota_1 = "";
+    }
+
+    if (isset($_GET['descripcion_nota_2'])) {
+        $descripcion_nota_2 = trim($_GET['descripcion_nota_2']);
+    } else {
+        $descripcion_nota_2 = "";
+    }
+    
+  $sql_registros = "
+    SELECT DISTINCT evaluacion
+    FROM calificaciones
+    WHERE id_nivel = '$id_nivel'
+    AND evaluacion != ''
+    ORDER BY evaluacion ASC
+";
+
+$resultado_registros = mysqli_query($conexion, $sql_registros);
+
+if (!$resultado_registros) {
+    die("Error al buscar los registros de calificación: " . mysqli_error($conexion));
+}
+
+if ($evaluacion != "") {
+    $sql_descripciones = "
+        SELECT descripcion_nota_1, descripcion_nota_2
+        FROM calificaciones
+        WHERE id_nivel = '$id_nivel'
+        AND evaluacion = '$evaluacion'
+        LIMIT 1
+    ";
+
+    $resultado_descripciones = mysqli_query($conexion, $sql_descripciones);
+
+    if ($resultado_descripciones && mysqli_num_rows($resultado_descripciones) > 0) {
+        $fila_descripciones = mysqli_fetch_assoc($resultado_descripciones);
+        $descripcion_nota_1 = $fila_descripciones['descripcion_nota_1'];
+        $descripcion_nota_2 = $fila_descripciones['descripcion_nota_2'];
+        $registro_existente = true;
+    }
+}
+    
         $sql_nivel_seleccionado = "
         SELECT nivel_academico
         FROM niveles
         WHERE id_nivel = $id_nivel
 ";
 $resultado_nivel = mysqli_query($conexion, $sql_nivel_seleccionado);
-   $fila_nivel = mysqli_fetch_assoc($resultado_nivel);    
+$fila_nivel = mysqli_fetch_assoc($resultado_nivel);    
 $nombre_nivel = $fila_nivel['nivel_academico'];
 
 
@@ -69,16 +124,16 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
             echo "<p>Las notas fueron guardadas correctamente.</p>";
         }
         ?>
-    <form method="GET">
+   
 
-<main class="main-content-class">
+    <main class="main-content-class">
     
     <!-- CONTENEDOR MAESTRO QUE CENTRA TODO -->
     <div class="calificaciones-wrapper">
 
         <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
         <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <h1 style="margin: 0; font-size: 1.8rem;">📝 Registrar Calificaciones</h1>
+        <h1 style="margin: 0; font-size: 1.8rem;">Registrar Calificaciones</h1>
         <a href="../admin/index.php" style="color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver al Panel</a>
         </div>
         <!-- TARJETA 1: FILTRO DE BÚSQUEDA (AHORA ALINEADA AL ANCHO TOTAL) -->
@@ -99,17 +154,58 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                 </div>
 
                 <div class="form-group">
-                    <label for="evaluacion">Nombre de la Evaluación:</label>
+                    <label for="evaluacion">Nombre del Registro de Calificación:</label>
                     <?php
                     $textoEvaluacion = "";
+
                     if(isset($evaluacion)){
                         $textoEvaluacion = htmlspecialchars(ucwords(strtolower($evaluacion)));
                     }
                     ?>
-                    <input type="text" name="evaluacion" id="evaluacion" class="form-control" value="<?php echo $textoEvaluacion; ?>" placeholder="Ej: Primer Parcial">
-                </div>
 
-                <button type="submit" class="btn-block">Buscar estudiantes</button>
+                    <input type="text" name="evaluacion" id="evaluacion" class="form-control" value="<?php echo $textoEvaluacion; ?>" placeholder="Ej: Primer trimestre">
+                   <br><br>
+
+                    <label>Actividad 1:</label>
+            <input type="text" name="descripcion_nota_1" id="descripcion_nota_1_visible" class="form-control" value="<?php echo htmlspecialchars(ucwords(strtolower($descripcion_nota_1))); ?>" placeholder="Ej: Participación" <?php if ($registro_existente) { echo "readonly"; } ?>>
+               <br><br>
+
+                
+                <label>Actividad 2:</label>
+
+            <input type="text" name="descripcion_nota_2" id="descripcion_nota_2_visible" class="form-control" value="<?php echo htmlspecialchars(ucwords(strtolower($descripcion_nota_2))); ?>" placeholder="Ej: Participación" <?php if ($registro_existente) { echo "readonly"; } ?>>
+
+                </div>
+            <?php if ($registro_existente) { ?>
+            <br>
+
+            <button type="button" id="btnEditarRegistro" class="btn-block">
+                Editar registro
+            </button>
+
+            <?php } ?>
+                 <button type="submit" class="btn-block">Buscar estudiantes</button>
+            <?php
+                if (isset($resultado_registros) && $evaluacion == "" && mysqli_num_rows($resultado_registros) > 0 ) {
+                ?>
+
+                    <br>
+
+                    <div class="info-resumen">
+
+                        <p><strong>Registros de calificación existentes:</strong></p>
+
+            <?php
+          while ($registro = mysqli_fetch_assoc($resultado_registros)) {
+            echo '<p><a href="?id_nivel=' . $id_nivel . '&evaluacion=' . urlencode($registro['evaluacion']) . '">' . htmlspecialchars(ucwords(strtolower($registro['evaluacion']))) . '</a></p>';
+          } 
+              ?>
+
+                    </div>
+
+                <?php
+                }
+            ?>
             </form>
         </div>
 
@@ -121,7 +217,11 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                 <!-- Resumen Informativo Superior -->
                 <div class="info-resumen">
                     <p><strong>Nivel:</strong> <span class="text-highlight"><?php echo htmlspecialchars($nombre_nivel); ?></span></p>
-                    <p><strong>Evaluación:</strong> <span class="text-highlight"><?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?></span></p>
+                   <p><strong>Registro de Calificación:</strong>
+                    <span class="text-highlight"> <?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?>
+                    </span>
+                </p>
+                
                 </div>
 
                 <!-- Formulario de Carga de Notas -->
@@ -129,14 +229,33 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                     <input type="hidden" name="id_nivel" value="<?php echo $id_nivel; ?>">
                     <input type="hidden" name="evaluacion" value="<?php echo htmlspecialchars($evaluacion); ?>">
 
+            <input type="hidden" name="descripcion_nota_1" id="descripcion_nota_1_oculta" value="<?php echo htmlspecialchars($descripcion_nota_1); ?>">
+            <input type="hidden" name="descripcion_nota_2" id="descripcion_nota_2_oculta" value="<?php echo htmlspecialchars($descripcion_nota_2); ?>">
+
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Apellido</th>
-                                    <th>Nota 1</th>
-                                    <th>Nota 2</th>
+                                    <th>
+                                    <?php
+                                    if ($descripcion_nota_1 != "") {
+                                        echo htmlspecialchars(ucwords(strtolower($descripcion_nota_1)));
+                                    } else {
+                                        echo "Nota 1";
+                                    }
+                                    ?>
+                                    </th>
+                                    <th>
+                                    <?php
+                                        if ($descripcion_nota_2 != "") {
+                                            echo htmlspecialchars(ucwords(strtolower($descripcion_nota_2)));
+                                        } else {
+                                            echo "Nota 2";
+                                        }
+                                        ?>
+                                    </th>
                                     <th>Nota Final</th>
                                     <th>Observación</th>
                                 </tr>
@@ -165,14 +284,54 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                         </table>
                     </div>
 
-                    <button type="submit" class="btn-block" style="margin-top: 1.5rem;">Guardar notas</button>
+             <button type="submit" class="btn-block" style="margin-top: 1.5rem;" onclick="return confirmarGuardado();">Guardar notas</button>
                 </form>
             </div>
         <?php } ?>
 
     </div> <!-- FIN DEL WRAPPER -->
 </main>
-<?php include '../script-seguridad.php'; ?>
+      <script> 
+         function confirmarGuardado() {
+            return confirm("¿Está seguro de que desea guardar las notas?");
+        }
+
+         document.getElementById('id_nivel').addEventListener('change', function() {
+         document.getElementById('evaluacion').value = '';
+         document.getElementById('descripcion_nota_1_visible').value = '';
+         document.getElementById('descripcion_nota_2_visible').value = '';
+    });
+
+            document.getElementById('descripcion_nota_1_visible').addEventListener('input', function() {
+                if (document.getElementById('descripcion_nota_1_oculta')) {
+                    document.getElementById('descripcion_nota_1_oculta').value = this.value;
+                }
+            });
+
+            document.getElementById('descripcion_nota_2_visible').addEventListener('input', function() {
+                if (document.getElementById('descripcion_nota_2_oculta')) {
+                    document.getElementById('descripcion_nota_2_oculta').value = this.value;
+                }
+            });
+
+        const botonEditarRegistro = document.getElementById('btnEditarRegistro');
+
+        if (botonEditarRegistro) {
+         botonEditarRegistro.addEventListener('click', function() {
+         document.getElementById('descripcion_nota_1_visible').readOnly = false;
+         document.getElementById('descripcion_nota_2_visible').readOnly = false;
+
+        document.getElementById('descripcion_nota_1_visible').focus();
+
+        botonEditarRegistro.textContent = 'Edición habilitada';
+        botonEditarRegistro.disabled = true;
+    });
+}
+
+ </script>
+    
+
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

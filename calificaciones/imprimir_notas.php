@@ -20,6 +20,10 @@ if (isset($id_calificacion)) {
     personas.nombre,
 
     personas.apellido,
+    
+    calificaciones.descripcion_nota_1,
+
+    calificaciones.descripcion_nota_2,
 
     calificaciones.nota_1,
 
@@ -54,6 +58,10 @@ if (isset($id_calificacion)) {
     personas.nombre,
 
     personas.apellido,
+
+    calificaciones.descripcion_nota_1,
+
+    calificaciones.descripcion_nota_2,
 
     calificaciones.nota_1,
 
@@ -137,13 +145,42 @@ if (isset($id_calificacion)) {
 
 <hr>
 
+    <?php
+
+$fila_encabezado = mysqli_fetch_assoc($resultado);
+
+$nombre_actividad_1 = "Nota 1";
+$nombre_actividad_2 = "Nota 2";
+
+if ($fila_encabezado['descripcion_nota_1'] != "") {
+    $nombre_actividad_1 = ucwords(strtolower($fila_encabezado['descripcion_nota_1']));
+}
+
+    if ($fila_encabezado['descripcion_nota_2'] != "") {
+        $nombre_actividad_2 = ucwords(strtolower($fila_encabezado['descripcion_nota_2']));
+    }
+
+$mostrar_actividad_2 = false;
+
+    if ($fila_encabezado['descripcion_nota_2'] != "") {
+        $mostrar_actividad_2 = true;
+    }
+
+    mysqli_data_seek($resultado, 0);
+
+?>
+
     <table border="1">
 
     <tr>
         <th>Nombre</th>
         <th>Apellido</th>
-        <th>Nota 1</th>
-        <th>Nota 2</th>
+        <th><?php echo htmlspecialchars($nombre_actividad_1); ?></th>
+       
+        <?php if ($mostrar_actividad_2 == true) { ?>
+            <th><?php echo htmlspecialchars($nombre_actividad_2); ?></th>
+        <?php } ?>
+
         <th>Nota Final</th>
         <th>Observación</th>
     </tr>
@@ -158,17 +195,23 @@ if (isset($id_calificacion)) {
 
         <td><?php echo htmlspecialchars($fila['nota_1']); ?></td>
 
+       <?php if ($mostrar_actividad_2 == true) { ?>
+
         <td>
 
-    <?php
+        <?php
 
-    if ($fila['nota_2'] === null) {
-        echo "No registrada";
-    } else {
-        echo htmlspecialchars($fila['nota_2']);
-    }
+        if ($fila['nota_2'] == null) {
+            echo "No registrada";
+        } else {
+            echo htmlspecialchars($fila['nota_2']);
+        }
 
-    ?>
+        ?>
+
+</td>
+
+<?php } ?>
 
 </td>
         <td><?php echo htmlspecialchars($fila['nota_final']); ?></td>

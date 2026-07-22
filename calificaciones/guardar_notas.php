@@ -8,6 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST'){
 $id_nivel = $_POST['id_nivel'];
 $evaluacion = trim($_POST['evaluacion']); // trim() elimina espacios sobrantes al inicio y al final.
 
+$descripcion_nota_1 = trim($_POST['descripcion_nota_1']);
+$descripcion_nota_2 = trim($_POST['descripcion_nota_2']);
+
 $notas_1 = $_POST['nota_1'];
 $notas_2 = $_POST['nota_2'];
 $notas_finales = $_POST['nota_final'];
@@ -131,7 +134,9 @@ $observaciones = $_POST['observacion'];
             $sql_guardar = "
                 UPDATE calificaciones
 
-                SET nota_1 = $valor_nota_1,
+                SET descripcion_nota_1 = '$descripcion_nota_1',
+                    descripcion_nota_2 = '$descripcion_nota_2',
+                    nota_1 = $valor_nota_1,
                     nota_2 = $valor_nota_2,
                     nota_final = $valor_nota_final,
                     observacion = '$observacion'
@@ -144,12 +149,14 @@ $observaciones = $_POST['observacion'];
             // Si no existe, crearla
             $sql_guardar = "
                 INSERT INTO calificaciones
-                (id_estudiante, id_nivel, evaluacion, nota_1, nota_2, nota_final, observacion)
+                (id_estudiante, id_nivel, evaluacion, descripcion_nota_1, descripcion_nota_2, nota_1, nota_2, nota_final, observacion)
 
                 VALUES
                 ('$id_estudiante',
                 '$id_nivel',
                 '$evaluacion',
+                '$descripcion_nota_1',
+                '$descripcion_nota_2',
                 $valor_nota_1,
                 $valor_nota_2,
                 $valor_nota_final,
