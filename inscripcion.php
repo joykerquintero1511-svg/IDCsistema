@@ -1,8 +1,31 @@
 <?php 
+session_start();
 require_once('conexion.php');
 
 $sql = "SELECT * FROM niveles";
 $resultado = mysqli_query($conexion, $sql);
+
+
+
+// Buscamos el último período académico asegurándonos de traer el ID y el estatus
+$q_inscrip = mysqli_query($conexion, "SELECT id_periodo, inscripciones_abiertas FROM periodos_academicos ORDER BY id_periodo DESC LIMIT 1");
+$r_inscrip = mysqli_fetch_assoc($q_inscrip);
+
+if (!$r_inscrip || $r_inscrip['inscripciones_abiertas'] == 0) {
+    // Si están cerradas, lo pateamos pal inicio
+    die("
+    <div style='background:#0b0f19; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'>
+        <div style='background:#1e293b; padding:40px; border-radius:10px; text-align:center; color:white; max-width:400px;'>
+            <h2 style='color:#ef4444;'>Inscripciones Cerradas 🔒</h2>
+            <p style='color:#94a3b8;'>El proceso de inscripción no está activo en este momento. Mantente atento a nuestras redes para próximos avisos.</p>
+            <a href='index.php' style='display:inline-block; margin-top:20px; padding:10px 20px; background:#3b82f6; color:white; text-decoration:none; border-radius:6px; font-weight:bold;'>Volver al Inicio</a>
+        </div>
+    </div>
+    ");
+}
+
+$id_periodo_activo = $r_inscrip['id_periodo'];
+
 ?>
 
 <!DOCTYPE html>

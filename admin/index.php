@@ -204,13 +204,31 @@ document.addEventListener("DOMContentLoaded", function() {
     <span style="color: #fff; font-size: 14px; font-weight: bold;">Estatus de Inscripciones:</span>
 
     <?php if ($estado_actual == 1): ?>
-        <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">ABIERTAS</span>
-        <a href="toggle_inscripciones.php?estado=0" style="background: #ef4444; color: white; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 10;">Cerrar Inscripciones</a>
+        <span style="background: #10b981; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;">ABIERTAS</span>
+        
+        <a href="toggle_inscripciones.php?estado=0" style="background: #ef4444; color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            Cerrar Inscripciones
+        </a>
+
     <?php else: ?>
-        <span style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">CERRADAS</span>
-        <a href="toggle_inscripciones.php?estado=1" style="background: #10b981; color: white; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 10;">Abrir Inscripciones</a>
+        <span style="background: #ef4444; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;">CERRADAS</span>
+        
+        <a href="toggle_inscripciones.php?estado=1" style="background: #10b981; color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            Abrir Inscripciones
+        </a>
+        
     <?php endif; ?>
 </div>
+
+        <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+    <p style="color: #ef4444; font-size: 13px; margin-bottom: 10px;">⚠️ Zona de Mantenimiento:</p>
+    <a href="purgar_pendientes.php" onclick="return confirm('¿Estás seguro? Esto eliminará permanentemente a todos los alumnos pre-inscritos que NO validaron su asistencia presencial con el QR.');" style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; display: inline-block;">
+        🗑️ Ejecutar Purga Trimestral (Borrar Pendientes)
+    </a>
+</div>
+        </form>
+        
+    
 </div>
             </div>
         </div>
