@@ -1,6 +1,16 @@
 <?php
 require_once '../conexion.php';
 
+session_start();
+
+if (
+    !isset($_SESSION['rol']) ||
+    ($_SESSION['rol'] !== 'profesor' && $_SESSION['rol'] !== 'admin')
+) {
+    header("Location: ../login.php");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     die("Acceso no permitido.");
 }

@@ -2,6 +2,15 @@
 include '../session-start.php';
 include '../conexion.php';
 
+
+if (
+    !isset($_SESSION['rol']) ||
+    ($_SESSION['rol'] !== 'profesor' && $_SESSION['rol'] !== 'admin')
+) {
+    header("Location: ../login.php");
+    exit();
+}
+
 $descripcion_nota_1 = "";
 $descripcion_nota_2 = "";
 $evaluacion = "";
