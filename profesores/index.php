@@ -59,6 +59,7 @@ $_SESSION['panel_regreso'] = 'index.php';
             <li><a href="index.php" class="active">Inicio</a></li>
             <li><a href="registrar_asistencias.php">Registrar Asistencias</a></li>
             <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
+            <li><a href="../calificaciones/index.php">Calificaciones</a></li>
         </ul>
         </div>
         <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
