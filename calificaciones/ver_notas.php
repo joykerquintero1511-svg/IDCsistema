@@ -2,6 +2,16 @@
 
 require_once '../conexion.php';
 
+session_start();
+
+if (
+    !isset($_SESSION['rol']) ||
+    ($_SESSION['rol'] !== 'profesor' && $_SESSION['rol'] !== 'admin')
+) {
+    header("Location: ../login.php");
+    exit();
+}
+
 // Consulta para llenar el select de niveles
 $sql = "
     SELECT id_nivel, nivel_academico
