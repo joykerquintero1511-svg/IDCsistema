@@ -24,20 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     die("Acceso no permitido. Por favor, envía el formulario desde la página de inscripción.");
 }
 
-$nombre = $_POST['nombre'];
-$apellido = $_POST['apellidos'];
-$email = $_POST['email'];
-$nacionalidad = $_POST['nacionalidad'];
-$cedula = $_POST['cedula'];
-$telefono = $_POST['telefono'];
-$contacto_emergencia = $_POST['contacto_emergencia'];
-$nivel_instruccion = $_POST['nivel_instruccion'];
-$id_nivel = $_POST['nivel_academico'];
-$fecha_nacimiento = $_POST['fecha_nacimiento'];
+$nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+$apellido = mysqli_real_escape_string($conexion, $_POST['apellidos']);
+$email = mysqli_real_escape_string($conexion, $_POST['email']);
+$nacionalidad = mysqli_real_escape_string($conexion, $_POST['nacionalidad']);
+$cedula = mysqli_real_escape_string($conexion, $_POST['cedula']);
+$telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+$contacto_emergencia = mysqli_real_escape_string($conexion, $_POST['contacto_emergencia']);
+$nivel_instruccion = mysqli_real_escape_string($conexion, $_POST['nivel_instruccion']);
+$id_nivel = mysqli_real_escape_string($conexion, $_POST['nivel_academico']);
+$fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimiento']);
 $fecha_registro = date('Y-m-d');
-$genero = $_POST['genero'];
+$genero = mysqli_real_escape_string($conexion, $_POST['genero']);
 $estado_inscripcion = 1;
-$direccion = $_POST['direccion'];
+$direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
 
 $consulta_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel'";
 $resultado_nivel = mysqli_query($conexion, $consulta_nivel);
@@ -54,33 +54,56 @@ if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || emp
     die("Error: Todos los campos son obligatorios.");
 }
 
-// PASO 1: Insertar en la tabla personas
-$sql_persona = "INSERT INTO personas (tipo_documento, cedula, nacionalidad, nombre, apellido, fecha_nacimiento, genero, telefono, contacto_emergencia, direccion) 
-                VALUES ('Cédula', '$cedula', '$nacionalidad', '$nombre', '$apellido', '$fecha_nacimiento', '$genero', '$telefono', '$contacto_emergencia', '$direccion')";
+// =========================================================================
+// PASO 1: LÓGICA INTELIGENTE PARA LA TABLA PERSONAS
+// =========================================================================
+$sql_buscar_persona = "SELECT id_persona FROM personas WHERE cedula = '$cedula' LIMIT 1";
+$res_persona = mysqli_query($conexion, $sql_buscar_persona);
 
-if (!mysqli_query($conexion, $sql_persona)) {
-    die("Error al guardar datos personales: " . mysqli_error($conexion));
+if (mysqli_num_rows($res_persona) > 0) {
+    // La persona ya existe, tomamos su ID y actualizamos sus datos de contacto por si cambiaron
+    $fila = mysqli_fetch_assoc($res_persona);
+    $id_persona = $fila['id_persona'];
+    
+    $sql_update_persona = "UPDATE personas SET telefono='$telefono', contacto_emergencia='$contacto_emergencia', direccion='$direccion' WHERE id_persona='$id_persona'";
+    mysqli_query($conexion, $sql_update_persona);
+} else {
+    // Es una persona nueva, hacemos el INSERT
+    $sql_persona = "INSERT INTO personas (tipo_documento, cedula, nacionalidad, nombre, apellido, fecha_nacimiento, genero, telefono, contacto_emergencia, direccion) 
+                    VALUES ('Cédula', '$cedula', '$nacionalidad', '$nombre', '$apellido', '$fecha_nacimiento', '$genero', '$telefono', '$contacto_emergencia', '$direccion')";
+    if (!mysqli_query($conexion, $sql_persona)) {
+        die("Error al guardar datos personales: " . mysqli_error($conexion));
+    }
+    $id_persona = mysqli_insert_id($conexion);
 }
 
-// Obtener el ID del estudiante recién insertado
-$id_persona = mysqli_insert_id($conexion);
+// =========================================================================
+// PASO 2: LÓGICA INTELIGENTE PARA LA TABLA ESTUDIANTES
+// =========================================================================
+$sql_buscar_est = "SELECT id_estudiante FROM estudiantes WHERE id_persona = '$id_persona' LIMIT 1";
+$res_est = mysqli_query($conexion, $sql_buscar_est);
 
-
-// PASO 2: Insertar en la tabla estudiantes
-$sql_estudiante = "INSERT INTO estudiantes (id_persona, id_nivel, nivel_instruccion, fecha_registro, email) 
-        VALUES ('$id_persona', '$id_nivel' , '$nivel_instruccion', '$fecha_registro', '$email')";
-
-if (!mysqli_query($conexion, $sql_estudiante)) {
-    die("Error al guardar estudiante: " . mysqli_error($conexion));
+if (mysqli_num_rows($res_est) > 0) {
+    // Ya es estudiante de la escuela, tomamos su ID y actualizamos el nivel e email
+    $fila_est = mysqli_fetch_assoc($res_est);
+    $id_estudiante = $fila_est['id_estudiante'];
+    
+    $sql_update_est = "UPDATE estudiantes SET id_nivel='$id_nivel', nivel_instruccion='$nivel_instruccion', email='$email' WHERE id_estudiante='$id_estudiante'";
+    mysqli_query($conexion, $sql_update_est);
+} else {
+    // Es un estudiante nuevo, hacemos el INSERT
+    $sql_estudiante = "INSERT INTO estudiantes (id_persona, id_nivel, nivel_instruccion, fecha_registro, email) 
+            VALUES ('$id_persona', '$id_nivel' , '$nivel_instruccion', '$fecha_registro', '$email')";
+    if (!mysqli_query($conexion, $sql_estudiante)) {
+        die("Error al guardar estudiante: " . mysqli_error($conexion));
+    }
+    $id_estudiante = mysqli_insert_id($conexion);
 }
 
-// Obtener el ID del estudiante recién insertado para la inscripción
-$id_estudiante = mysqli_insert_id($conexion);
-
-
-// PASO 3: Insertar en la tabla inscripciones (AQUÍ AGREGAMOS LA MAGIA DEL QR)
-
-$token_qr = md5(uniqid(rand(), true)); // Genera un código loco único
+// =========================================================================
+// PASO 3: INSERTAR EN INSCRIPCIONES Y GENERAR QR (SIEMPRE SE HACE)
+// =========================================================================
+$token_qr = md5(uniqid(rand(), true));
 
 $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, nivel_academico, fecha_inscripcion, estado, estatus_presencial, token_qr) 
         VALUES ('$id_estudiante', '$nivel_academico', NOW(), '$estado_inscripcion', 'pendiente', '$token_qr')";
@@ -89,13 +112,13 @@ if (!mysqli_query($conexion, $sql_inscripcion)) {
     die("Error al guardar inscripción: " . mysqli_error($conexion));
 }
 
-// Generamos el enlace que leerá el QR (Ajusta 'localhost/IDCsistema' si tu proyecto se llama distinto)
 $url_validacion = "http://localhost/IDCsistema/admin/validar_qr.php?token=" . $token_qr;
 $url_qr_codificada = urlencode($url_validacion);
 ?>
 
 <!DOCTYPE html>
 <html lang="es" class="no-js">
+<!-- ... (Aquí va el resto de tu código HTML exacto como lo tienes para mostrar el QR) ... -->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -131,7 +154,7 @@ $url_qr_codificada = urlencode($url_validacion);
                         
                         <h2 style="color: #ffffff; font-size: 3rem; margin-bottom: 1rem;">¡Pre-inscripción Exitosa!</h2>
                         <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.6rem; margin-bottom: 2.5rem;">
-                            <strong style="color: #ffffff;"><?php echo htmlspecialchars($nombre . " " . $apellido); ?></strong>, has asegurado tu cupo.
+                            <strong style="color: #ffffff;"><?php echo htmlspecialchars(stripslashes($nombre) . " " . stripslashes($apellido)); ?></strong>, has asegurado tu cupo.
                         </p>
 
                         <!-- CAJA DEL CÓDIGO QR -->

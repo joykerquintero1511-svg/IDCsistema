@@ -74,12 +74,12 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                                 </label>
 
                                 <div style="display: flex; gap: 10px;">
-                                    <select name="nacionalidad" style="width: 80px; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; font-weight: bold; cursor: pointer;">
+                                    <select name="nacionalidad" id="nacionalidad" style="width: 80px; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; font-weight: bold; cursor: pointer;">
                                         <option value="V" style="background: #142132; color: #ffffff;">V</option>
                                         <option value="E" style="background: #142132; color: #ffffff;">E</option>
                                     </select>
 
-                                    <input class="u-fullwidth" type="text" name="cedula" placeholder="00000000" required 
+                                    <input class="u-fullwidth" type="text" name="cedula" id="cedula" placeholder="00000000" required 
                                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                            style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
                                 </div>
@@ -113,7 +113,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Género</label>
 
-                                <select name="genero" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
+                                <select name="genero"  id="genero" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
                                     <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu género</option>
                                     <option value="F" style="background: #142132; color: #fff;">F (Femenino)</option>
                                     <option value="M" style="background: #142132; color: #fff;">M (Masculino)</option>
@@ -123,7 +123,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Número de Teléfono</label>
                                 <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g,');"
                                        style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
 
@@ -135,7 +135,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel de Instrucción</label>
 
-                                <select name="nivel_instruccion" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
+                                <select name="nivel_instruccion" id="nivel_instruccion" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
                                     <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu nivel de estudio</option>
                                     <option value="Primaria" style="background: #142132; color: #fff;">Educación Primaria</option>
                                     <option value="Bachillerato" style="background: #142132; color: #fff;">Educación Media / Bachillerato</option>
@@ -184,6 +184,47 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
             </div>
         </section>
     </main>
+
+    <script>
+    document.getElementById('cedula').addEventListener('blur', function() {
+        let cedula = this.value;
+        
+        if (cedula.length >= 6) { // Solo buscar si escribió una cédula válida
+            let formData = new FormData();
+            formData.append('cedula', cedula);
+
+            fetch('buscar_cedula.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    // Rellenar los campos automáticamente
+                    if(data.nacionalidad) document.getElementById('nacionalidad').value = data.nacionalidad;
+                    document.getElementById('nombre').value = data.nombre;
+                    document.getElementById('apellidos').value = data.apellido;
+                    document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento;
+                    if(data.genero) document.getElementById('genero').value = data.genero;
+                    document.getElementById('telefono').value = data.telefono;
+                    document.getElementById('contacto_emergencia').value = data.contacto_emergencia;
+                    document.getElementById('direccion').value = data.direccion;
+                    
+                    if(data.email) document.getElementById('email').value = data.email;
+                    if(data.nivel_instruccion) document.getElementById('nivel_instruccion').value = data.nivel_instruccion;
+
+                    // Efecto visual: Ponemos los campos con un borde azul para que note el autorrelleno
+                    let campos = ['nombre', 'apellidos', 'fecha_nacimiento', 'telefono', 'contacto_emergencia', 'direccion', 'email'];
+                    campos.forEach(id => {
+                        document.getElementById(id).style.borderColor = '#3b82f6';
+                        document.getElementById(id).style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                    });
+                }
+            })
+            .catch(error => console.error('Error en la búsqueda:', error));
+        }
+    });
+</script>
 
 </body>
 </html>
