@@ -1,5 +1,6 @@
 <?php
 
+require '../vendor/autoload.php';
 require_once '../conexion.php';
 
 session_start();
@@ -11,6 +12,11 @@ if (
     header("Location: ../login.php");
     exit();
 }
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 $id_nivel = $_GET['id_nivel'];
 $evaluacion = $_GET['evaluacion'];
@@ -72,79 +78,109 @@ if ($fila_encabezado['descripcion_nota_2'] != "") {
 
 mysqli_data_seek($resultado, 0);
 
-header("Content-Type: application/vnd.ms-excel; charset=UTF-8");
-header("Content-Disposition: attachment; filename=calificaciones.xls");
-header("Pragma: no-cache");
-header("Expires: 0");
-?>
+$spreadsheet = new Spreadsheet();
+$hoja = $spreadsheet->getActiveSheet();
 
-<meta charset="UTF-8">
+$hoja->setTitle("Calificaciones");
 
-<table border="1">
+$hoja->setCellValue("A1", "Reporte de Calificaciones");
+$hoja->mergeCells("A1:F1");
 
-    <tr>
-        <th colspan="6">Reporte de Calificaciones</th>
-    </tr>
+$hoja->setCellValue("A2", "Nivel");
+$hoja->setCellValue("B2", $nombre_nivel);
 
-    <tr>
-        <td><strong>Nivel</strong></td>
-        <td><?php echo htmlspecialchars($nombre_nivel); ?></td>
-    </tr>
+$hoja->setCellValue("A3", "Evaluación");
+$hoja->setCellValue("B3", ucwords(strtolower($evaluacion)));
 
-    <tr>
-        <td><strong>Evaluación</strong></td>
-        <td><?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?></td>
-    </tr>
+$hoja->setCellValue("A5", "Nombre");
+$hoja->setCellValue("B5", "Apellido");
+$hoja->setCellValue("C5", $nombre_actividad_1);
 
-    <tr>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th><?php echo htmlspecialchars($nombre_actividad_1); ?></th>
+$columna = "D";
 
-        <?php if ($mostrar_actividad_2 == true) { ?>
-            <th><?php echo htmlspecialchars($nombre_actividad_2); ?></th>
-        <?php } ?>
+if ($mostrar_actividad_2 == true) {
+    $hoja->setCellValue("D5", $nombre_actividad_2);
+    $columna = "E";
+}
 
-        <th>Nota Final</th>
-        <th>Observación</th>
-    </tr>
+$hoja->setCellValue($columna . "5", "Nota Final");
 
-    <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
+$columna_observacion = chr(ord($columna) + 1);
 
-        <tr>
-            <td><?php echo htmlspecialchars(ucwords(strtolower($fila['nombre']))); ?></td>
+$hoja->setCellValue($columna_observacion . "5", "Observación");
 
-            <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
+$fila_excel = 6;
 
-            <td><?php echo htmlspecialchars($fila['nota_1']); ?></td>
+while ($fila = mysqli_fetch_assoc($resultado)) {
 
-            <?php if ($mostrar_actividad_2 == true) { ?>
+    $hoja->setCellValue("A" . $fila_excel, ucwords(strtolower($fila['nombre'])));
+    $hoja->setCellValue("B" . $fila_excel, ucwords(strtolower($fila['apellido'])));
+    $hoja->setCellValue("C" . $fila_excel, $fila['nota_1']);
 
-                <td>
-                    <?php
-                    if ($fila['nota_2'] == null || $fila['nota_2'] == "") {
-                        echo "No registrada";
-                    } else {
-                        echo htmlspecialchars($fila['nota_2']);
-                    }
-                    ?>
-                </td>
+    $columna_actual = "D";
 
-            <?php } ?>
+    if ($mostrar_actividad_2 == true) {
 
-            <td><?php echo htmlspecialchars($fila['nota_final']); ?></td>
+        if ($fila['nota_2'] == null || $fila['nota_2'] == "") {
+            $nota_2 = "No registrada";
+        } else {
+            $nota_2 = $fila['nota_2'];
+        }
 
-            <td>
-                <?php
-                if ($fila['observacion'] == null || $fila['observacion'] == "") {
-                    echo "Sin observación";
-                } else {
-                    echo htmlspecialchars(ucwords(strtolower($fila['observacion'])));
-                }
-                ?>
-            </td>
-        </tr>
+        $hoja->setCellValue("D" . $fila_excel, $nota_2);
 
-    <?php } ?>
+        $columna_actual = "E";
+    }
 
-</table>
+    $hoja->setCellValue($columna_actual . $fila_excel, $fila['nota_final']);
+
+    $columna_observacion_actual = chr(ord($columna_actual) + 1);
+
+    if ($fila['observacion'] == null || $fila['observacion'] == "") {
+        $observacion = "Sin observación";
+    } else {
+        $observacion = ucwords(strtolower($fila['observacion']));
+    }
+
+    $hoja->setCellValue(
+        $columna_observacion_actual . $fila_excel,
+        $observacion
+    );
+
+    $fila_excel++;
+}
+
+$ultima_columna = $columna_observacion;
+
+$hoja->getStyle("A1:" . $ultima_columna . "1")
+    ->getFont()
+    ->setBold(true)
+    ->setSize(14);
+
+$hoja->getStyle("A1:" . $ultima_columna . "1")
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+$hoja->getStyle("A5:" . $ultima_columna . "5")
+    ->getFont()
+    ->setBold(true);
+
+$hoja->getStyle("A5:" . $ultima_columna . ($fila_excel - 1))
+    ->getBorders()
+    ->getAllBorders()
+    ->setBorderStyle(Border::BORDER_THIN);
+
+foreach (range("A", $ultima_columna) as $letra) {
+    $hoja->getColumnDimension($letra)->setAutoSize(true);
+}
+
+$nombre_archivo = "calificaciones.xlsx";
+
+header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+header("Content-Disposition: attachment; filename=" . $nombre_archivo);
+header("Cache-Control: max-age=0");
+
+$writer = new Xlsx($spreadsheet);
+$writer->save("php://output");
+
+exit();
