@@ -30,11 +30,31 @@ $query_tareas = "SELECT * FROM asignacion WHERE id_nivel = '$id_nivel' AND fecha
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
 // 4. CONSULTA 2: Historial de Calificaciones (Unido con asignaciones para traer el nombre del tema/tarea)
-$query_notas = "SELECT c.evaluacion, c.nota_1, c.nota_2, c.nota_final, c.observacion, c.fecha_calificado
+$query_notas = "SELECT c.evaluacion, c.descripcion_nota_1, c.descripcion_nota_2, c.nota_1, c.nota_2, c.nota_final, c.observacion, c.fecha_calificado
                 FROM calificaciones c
                 WHERE c.id_estudiante = '$id_estudiante'
                 ORDER BY c.fecha_calificado DESC";
 $result_notas = mysqli_query($conexion, $query_notas);
+// para que se vea el nombre de la evaluacion q coloque el profesor
+
+$nombre_nota_1 = "Nota 1";
+$nombre_nota_2 = "Nota 2";
+
+if ($result_notas && mysqli_num_rows($result_notas) > 0) {
+
+    $primera_nota = mysqli_fetch_assoc($result_notas);
+
+    if (!empty($primera_nota['descripcion_nota_1'])) {
+        $nombre_nota_1 = ucwords(strtolower($primera_nota['descripcion_nota_1']));
+    }
+
+    if (!empty($primera_nota['descripcion_nota_2'])) {
+        $nombre_nota_2 = ucwords(strtolower($primera_nota['descripcion_nota_2']));
+    }
+
+    mysqli_data_seek($result_notas, 0);
+}
+
 // 5. CONSULTA 3: Cronograma de clases corregido con tus campos reales
 $query_clases = "SELECT materia_tema, fecha, hora_inicio, hora_fin 
                  FROM cronograma_clases 
@@ -92,7 +112,7 @@ $result_clases = mysqli_query($conexion, $query_clases);
                                     <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
                                     <p>Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
                                     <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #64748b;">
-                                        📅 Entrega límite: <?php echo date("d/m/Y", strtotime($tarea['fecha_limite'])); ?>
+                                         Entrega límite: <?php echo date("d/m/Y", strtotime($tarea['fecha_limite'])); ?>
                                     </p>
                                 </div>
                                 <a href="subir_tarea.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Subir Tarea</a>
@@ -112,8 +132,8 @@ $result_clases = mysqli_query($conexion, $query_clases);
                         <thead>
                             <tr>
                                 <th>Evaluación</th>
-                                <th>Nota 1</th>
-                                <th>Nota 2</th>
+                                <th><?php echo htmlspecialchars($nombre_nota_1); // mostrará el nombre que colocó el profesor ?></th>
+                                <th><?php echo htmlspecialchars($nombre_nota_2); ?></th>
                                 <th>Nota Final</th>
                                 <th>Observación</th>
                             </tr>
