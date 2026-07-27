@@ -109,7 +109,17 @@ $resultado = mysqli_query($conexion, $sql);
 
         <br><br>
 
-        <button type="submit">Buscar</button>
+                <label>Buscar estudiante:</label>
+
+                 <input type="text" name="buscar" value="<?php if(isset($_GET['buscar'])){ echo htmlspecialchars($_GET['buscar']); } ?>">
+
+            <br><br>
+
+            <button type="submit">Buscar</button>
+
+            <a href="ver_notas.php" style="margin-left:10px;padding:6px 12px;text-decoration:none;border:1px solid #999;border-radius:5px;background:#f2f2f2;color:#000;">Limpiar</a>
+
+            </form>
 
     </form>
 
@@ -121,6 +131,11 @@ $resultado = mysqli_query($conexion, $sql);
         $id_nivel = $_GET['id_nivel'];
         $evaluacion = trim($_GET['evaluacion']);
 
+        $buscar = "";
+
+            if (isset($_GET['buscar'])) {
+                $buscar = trim($_GET['buscar']);
+            }
         $sql_calificaciones = "
             SELECT
                 calificaciones.id_calificacion,
@@ -146,6 +161,9 @@ $resultado = mysqli_query($conexion, $sql);
 
         if ($evaluacion !== "") {
             $sql_calificaciones .= " AND calificaciones.evaluacion = '$evaluacion'";
+        }
+        if ($buscar != "") {
+            $sql_calificaciones .= " AND (personas.nombre LIKE '%$buscar%' OR personas.apellido LIKE '%$buscar%')";
         }
         
         $sql_calificaciones .= " ORDER BY personas.apellido ASC";
