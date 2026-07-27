@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_plana = $_POST['password'];
     $rol = $_POST['rol'];
     $codigo = isset($_POST['codigo_autorizacion']) ? $_POST['codigo_autorizacion'] : '';
-    $id_nivel = isset($_POST['id_nivel']) ? intval($_POST['id_nivel']) : null;
+    $id_nivel = (isset($_POST['id_nivel']) && !empty($_POST['id_nivel'])) ? intval($_POST['id_nivel']) : null;
 
     // 2. SEGURIDAD (Solo para Profesores y Admin)
     $clave_secreta_profesor = "TITO_2_7-8";
@@ -33,30 +33,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_hash = password_hash($password_plana, PASSWORD_BCRYPT);
 
     // ==========================================
-    // NUEVO: GENERACIÓN DE TOKEN Y EXPIRACIÓN
+    // GENERACIÓN DE TOKEN Y EXPIRACIÓN
     // ==========================================
     $token = bin2hex(random_bytes(32)); // Creamos una llave criptográfica única de 64 caracteres
     $token_expiracion = date("Y-m-d H:i:s", strtotime("+24 hours")); // El enlace expira en 24 horas
 
-    // 5. INSERCIÓN EN USUARIOS (Actualizado con verificado = 0, token y token_expiracion)
-    // Nota: Guardamos verificado en 0 por defecto hasta que confirme su correo.
+    // 5. INSERCIÓN EN USUARIOS
     $sql = "INSERT INTO usuarios (usuario, email, contraseña, rol, estado, verificado, token, token_expiracion) 
             VALUES ('$nombre', '$email', '$password_hash', '$rol', 'activo', 0, '$token', '$token_expiracion')";
 
     if (mysqli_query($conexion, $sql)) {
-        $nuevo_id = mysqli_insert_id($conexion);
+        $nuevo_id = mysqli_insert_id($conexion); // Obtenemos el ID asignado al usuario
 
-        // 6. REGISTRO ESPECÍFICO DEL ESTUDIANTE
+        // ==========================================
+        // 6. REGISTRO ESPECÍFICO SEGÚN EL ROL
+        // ==========================================
+        
+        // A) Si es Estudiante / Alumno
         if ($rol === 'estudiante' || $rol === 'alumno') {
+            $val_nivel = $id_nivel ? "'$id_nivel'" : "NULL";
             $sql_est = "INSERT INTO estudiantes (id_persona, id_nivel, fecha_registro) 
-                        VALUES ('$nuevo_id', '$id_nivel', NOW())";
+                        VALUES ('$nuevo_id', $val_nivel, NOW())";
             mysqli_query($conexion, $sql_est);
         }
         
+        // B) NUEVO: Si es Profesor
+        elseif ($rol === 'profesor') {
+            // Separamos el nombre completo si vienen dos palabras (Nombre y Apellido)
+            $partes_nombre = explode(' ', trim($nombre), 2);
+            $primer_nombre = mysqli_real_escape_string($conexion, $partes_nombre[0]);
+            $apellido = isset($partes_nombre[1]) ? mysqli_real_escape_string($conexion, $partes_nombre[1]) : '';
+            
+            $val_nivel = $id_nivel ? "$id_nivel" : "NULL";
+
+            $sql_prof = "INSERT INTO profesores (nombre, apellido, id_usuario, id_nivel) 
+                         VALUES ('$primer_nombre', '$apellido', $nuevo_id, $val_nivel)";
+            
+            mysqli_query($conexion, $sql_prof);
+        }
+        
         // ==========================================
-        // NUEVO: DISPARAR EL CORREO DE VERIFICACIÓN
+        // DISPARAR EL CORREO DE VERIFICACIÓN
         // ==========================================
-        // Construimos el enlace dinámico que lo va a verificar
         $enlace = "http://localhost/IDCsistema/verificar.php?token=" . $token;
         
         $asunto = "Verifica tu cuenta - Escuela de Formación Bíblica";
