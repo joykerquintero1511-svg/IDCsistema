@@ -12,28 +12,36 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
 $id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 
-// 3. CONSULTA: Obtener el ID real del profesor en la tabla profesores
-$query_prof = "SELECT id_profesor FROM profesores WHERE id_usuario = '$id_usuario'";
+// 3. CONSULTA: Obtener el ID real del profesor y su nivel académico asignado
+$query_prof = "SELECT p.id_profesor, p.id_nivel, n.nivel_academico 
+               FROM profesores p 
+               LEFT JOIN niveles n ON p.id_nivel = n.id_nivel 
+               WHERE p.id_usuario = '$id_usuario'";
 $res_prof = mysqli_query($conexion, $query_prof);
 $id_profesor = 0;
+$nivel_asignado = "Sin nivel asignado";
 
 if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
     $id_profesor = $row_prof['id_profesor'];
+    if (!empty($row_prof['nivel_academico'])) {
+        $nivel_asignado = $row_prof['nivel_academico'];
+    }
 }
 
-// 4. CONSULTA 1: Últimas asignaciones creadas por este profesor (Uniendo con niveles para ver a quién va dirigida)
-$query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico #modifique nombre_nivel por nivel _academico q es la q esta en la BD
+// 4. CONSULTA 1: Últimas asignaciones creadas por este profesor
+$query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico 
                  FROM asignacion a
                  INNER JOIN niveles n ON a.id_nivel = n.id_nivel
                  ORDER BY a.id_asignacion DESC LIMIT 5"; 
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
-// 5. CONSULTAR 2: Clases/Encuentros en el cronograma
+// 5. CONSULTAR 2: Clases/Encuentros en el cronograma (incluyendo modalidad)
 $query_clases = "SELECT c.materia_tema, c.fecha, c.hora_inicio, c.hora_fin, n.nivel_academico 
                  FROM cronograma_clases c
                  INNER JOIN niveles n ON c.id_nivel = n.id_nivel
                  ORDER BY c.fecha ASC";
 $result_clases = mysqli_query($conexion, $query_clases);
+
 // Si entra al panel de profesor
 $_SESSION['panel_regreso'] = 'index.php';
 ?>
@@ -56,12 +64,12 @@ $_SESSION['panel_regreso'] = 'index.php';
                 <h2>Profesor</h2>
             </div>
             <ul class="menu-links">
-            <li><a href="index.php" class="active">Inicio</a></li>
-            <li><a href="../validar.php" >Validar Asistencia y QR</a></li>
-            <li><a href="registrar_asistencias.php">Registrar Asistencias</a></li>
-            <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
-            <li><a href="../calificaciones/index.php">Calificaciones</a></li>
-        </ul>
+                <li><a href="index.php" class="active">Inicio</a></li>
+                <li><a href="../validar.php">Validar Asistencia y QR</a></li>
+                <li><a href="registrar_asistencias.php">Registrar Asistencias</a></li>
+                <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
+                <li><a href="../calificaciones/index.php">Calificaciones</a></li>
+            </ul>
         </div>
         <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
     </aside>
@@ -69,7 +77,8 @@ $_SESSION['panel_regreso'] = 'index.php';
     <main class="main-content">
         <header class="welcome-header">
             <h1>Bienvenido Profesor, <?php echo htmlspecialchars($nombre_profesor); ?></h1>
-            <p>Escuela de Formación Bíblica • Estado de cuenta académico</p>
+            <!-- AQUÍ SE REFLEJA AUTOMÁTICAMENTE EL NIVEL QUE LE ASIGNÓ EL ADMIN -->
+            <p>Escuela de Formación Bíblica • Nivel Asignado: <span style="color: #38bdf8; font-weight: bold;"><?php echo htmlspecialchars($nivel_asignado); ?></span></p>
         </header>
 
         <div class="dashboard-grid">
@@ -84,8 +93,6 @@ $_SESSION['panel_regreso'] = 'index.php';
                             <li class="task-item">
                                 <div class="item-info">
                                     <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
-
-                                     <!--ACA ABAJO modifique  [nombre_nivel] por nivel _academico q es la q esta en la BD-->
                                     <p>Dirigido a: <span><?php echo htmlspecialchars($tarea['nivel_academico']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
                                     <p>Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
                                 </div>
@@ -111,9 +118,6 @@ $_SESSION['panel_regreso'] = 'index.php';
                                     <p>Grupo: <span><?php echo htmlspecialchars($clase['nivel_academico']); ?></span></p>
                                     <p>Fecha: <?php echo date('d/m/Y', strtotime($clase['fecha'])); ?></p>
                                     <p>Hora: <?php echo date('h:i A', strtotime($clase['hora_inicio'])); ?> - <?php echo date('h:i A', strtotime($clase['hora_fin'])); ?></p>
-
-                                    <!-- Estaba mal escrito lugar_modalidad colocaste lug_modalidad y daba error con la BD-->
-                                    <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #3a7bc8;">Modalidad: <?php echo htmlspecialchars($clase['lugar_modalidad'] ?? 'Presencial'); ?></p>
                                 </div>
                             </li>
                         <?php endwhile; ?>
@@ -126,7 +130,7 @@ $_SESSION['panel_regreso'] = 'index.php';
 
     </div>
     </main>
-     <?php include '../script-seguridad.php'; ?>
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

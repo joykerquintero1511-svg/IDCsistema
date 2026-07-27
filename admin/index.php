@@ -49,6 +49,8 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
         <li><a href="estudiantes/listar.php">Gestión de Estudiantes</a></li>
         <li><a href="reportes/reporte_estudiantes.php" >Reporte de Estudiantes</a></li>
         <li><a href="../validar.php" >Validar Asistencia y QR</a></li>
+        <li><a href="promover_estudiantes.php" >Promover Estudiantes</a></li>
+        <li><a href="asignar_nivel_profesor.php" >Asignar Nivel a Profesores</a></li>
         <li><a href="crear_nivel.php" >Crear Nivel Académico</a></li>
         <li><a href="../logout.php" class="closed">Cerrar Sesión</a></li>
     </div>
