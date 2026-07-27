@@ -39,6 +39,7 @@ $resultados = mysqli_query($conexion, $sql_resultado);
 <head>
     <meta charset="UTF-8">
     <title>Estadísticas Avanzadas - EFB</title>
+    <link rel="icon" href="./images/EFB.png" type="image/png">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0f19; color: #e2e8f0; margin: 0; padding: 30px; }
         .container { max-width: 1100px; margin: 0 auto; }
