@@ -269,6 +269,14 @@ $resultado = mysqli_query($conexion, $sql);
         <a href="imprimir_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank">
             Imprimir Calificaciones
         </a>
+          <br> 
+        <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank">
+        Exportar PDF
+        </a>
+        <br>
+        <a href="excel_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>">
+          Exportar Excel
+        </a>
 
         <?php } else { ?>
 
