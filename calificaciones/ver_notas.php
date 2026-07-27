@@ -36,6 +36,8 @@ $resultado = mysqli_query($conexion, $sql);
 
     <h1>Ver Calificaciones</h1>
 
+    <div style="margin-bottom:20px;"><a href="index.php" style="background:#2563eb;color:white;padding:10px 18px;text-decoration:none;border-radius:8px;font-weight:bold;">← Volver a Registrar Calificaciones</a></div>
+
     <form method="GET">
 
         <label>Nivel:</label>
@@ -266,17 +268,7 @@ $resultado = mysqli_query($conexion, $sql);
             </table>
             <br><br>
 
-        <a href="imprimir_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank">
-            Imprimir Calificaciones
-        </a>
-          <br> 
-        <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank">
-        Exportar PDF
-        </a>
-        <br>
-        <a href="excel_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>">
-          Exportar Excel
-        </a>
+    <div style="display:flex;justify-content:center;gap:15px;margin-top:20px;"><a href="imprimir_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" style="background:#2563eb;color:white;padding:10px 18px;text-decoration:none;border-radius:8px;font-weight:bold;">🖨 Imprimir</a><a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" style="background:#dc2626;color:white;padding:10px 18px;text-decoration:none;border-radius:8px;font-weight:bold;">Exportar PDF</a><a href="excel_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" style="background:#16a34a;color:white;padding:10px 18px;text-decoration:none;border-radius:8px;font-weight:bold;">Exportar Excel</a></div>
 
         <?php } else { ?>
 

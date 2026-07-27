@@ -143,6 +143,7 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
         <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
         <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <h1 style="margin: 0; font-size: 1.8rem;">Registrar Calificaciones</h1>
+
         <a href="../admin/index.php" style="color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver al Panel</a>
         </div>
         <!-- TARJETA 1: FILTRO DE BÚSQUEDA (AHORA ALINEADA AL ANCHO TOTAL) -->
@@ -292,8 +293,10 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                             </tbody>
                         </table>
                     </div>
-
-             <button type="submit" class="btn-block" style="margin-top: 1.5rem;" onclick="return confirmarGuardado();">Guardar notas</button>
+                        <div style="display:flex;justify-content:center;gap:15px;margin-top:20px;">
+      <button type="submit" class="btn-block" style="width:auto;padding:12px 22px;" onclick="return confirmarGuardado();">Guardar notas</button>
+                        <a href="ver_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" class="btn-block" style="display:inline-block;width:auto;padding:12px 22px;text-decoration:none;">Ver Calificaciones</a>
+                        </div>
                 </form>
             </div>
         <?php } ?>
