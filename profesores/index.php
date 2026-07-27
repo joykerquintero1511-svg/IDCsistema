@@ -13,10 +13,17 @@ $id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 
 // 3. CONSULTA: Obtener el ID real del profesor y su nivel académico asignado
+// Limpiamos el nombre de la sesión (ej: "JoykerQuintero" -> "joykerquintero") para asegurar la coincidencia
+$nombre_limpio = strtolower(str_replace(' ', '', $nombre_profesor));
+
 $query_prof = "SELECT p.id_profesor, p.id_nivel, n.nivel_academico 
                FROM profesores p 
                LEFT JOIN niveles n ON p.id_nivel = n.id_nivel 
-               WHERE p.id_usuario = '$id_usuario'";
+               WHERE p.id_usuario = '$id_usuario' 
+                  OR REPLACE(LOWER(CONCAT(p.nombre, IFNULL(p.apellido, ''))), ' ', '') = '$nombre_limpio'
+                  OR REPLACE(LOWER(p.nombre), ' ', '') = '$nombre_limpio'
+               LIMIT 1";
+
 $res_prof = mysqli_query($conexion, $query_prof);
 $id_profesor = 0;
 $nivel_asignado = "Sin nivel asignado";
