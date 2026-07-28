@@ -2,6 +2,38 @@
 include '../session-start.php';
 include '../conexion.php';
 
+// Para que el prof vea unicamente su nivel
+
+$id_usuario = $_SESSION['id_usuario'];
+
+$id_nivel_profesor = null;
+
+if ($_SESSION['rol'] === 'profesor') {
+
+    $sql_profesor = "
+
+    SELECT id_nivel
+
+    FROM profesores
+
+    WHERE id_usuario = '$id_usuario'
+
+    LIMIT 1
+
+    ";
+
+    $resultado_profesor = mysqli_query($conexion, $sql_profesor);
+
+    if ($resultado_profesor && mysqli_num_rows($resultado_profesor) > 0) {
+
+        $fila_profesor = mysqli_fetch_assoc($resultado_profesor);
+
+        $id_nivel_profesor = $fila_profesor['id_nivel'];
+
+    }
+
+}
+
 
 if (
     !isset($_SESSION['rol']) ||
@@ -16,14 +48,54 @@ $descripcion_nota_2 = "";
 $evaluacion = "";
 $registro_existente = false;
 
-$sql =" SELECT id_nivel,nivel_academico 
-        FROM niveles";
+# Esta consulta muestra todos los niveles al administrador
+# Y solamente el nivel asignado al profesor
 
-$resultado = mysqli_query($conexion,$sql); // mysqli_query "Ejecuta la consulta que está en $sql usando la conexión $conexion y guarda el resultado en $resultado."
+if ($_SESSION['rol'] === 'admin') {
 
-           if (isset($_GET['id_nivel'])) {
+    $sql = "
+        SELECT id_nivel, nivel_academico
+        FROM niveles
+    ";
 
-    $id_nivel = $_GET['id_nivel'];
+} else {
+
+    $sql = "
+        SELECT id_nivel, nivel_academico
+        FROM niveles
+        WHERE id_nivel = '$id_nivel_profesor'
+    ";
+
+}
+
+$resultado = mysqli_query($conexion, $sql);
+// // Bloquea el acceso a otros niveles si el profesor cambia el id_nivel en la URL
+    if (isset($_GET['id_nivel'])) {
+
+    $id_nivel = intval($_GET['id_nivel']);
+    
+        if ($_SESSION['rol'] === 'profesor') {
+
+        if ($id_nivel != $id_nivel_profesor) {
+
+            header("Location: index.php");
+            exit();
+
+        }
+
+    }
+
+    // Evita que un profesor acceda a otro nivel modificando la URL
+    if ($_SESSION['rol'] === 'profesor') {
+
+        if ($id_nivel !== intval($id_nivel_profesor)) { // Intval : Es una función de PHP que convierte cualquier dato en un número entero.
+
+            header("Location: index.php");
+            exit();
+
+        }
+
+    }
 
     if (isset($_GET['evaluacion'])) {
         $evaluacion = trim($_GET['evaluacion']);
@@ -143,8 +215,22 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
         <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
         <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <h1 style="margin: 0; font-size: 1.8rem;">Registrar Calificaciones</h1>
+            
+        <?php // Para q el boton lo rediriga depende de su rol
 
-        <a href="../admin/index.php" style="color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver al Panel</a>
+             if ($_SESSION['rol'] === 'admin') { ?>
+                 <a href="../admin/index.php">Volver</a>
+
+         <?php
+
+             } else { ?>
+                <a href="../profesores/index.php">Volver</a>
+
+         <?php
+
+        }
+    ?>
+       
         </div>
         <!-- TARJETA 1: FILTRO DE BÚSQUEDA (AHORA ALINEADA AL ANCHO TOTAL) -->
         <div class="info-card">
