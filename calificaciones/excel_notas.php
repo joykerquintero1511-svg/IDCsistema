@@ -17,6 +17,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 $id_nivel = $_GET['id_nivel'];
 $evaluacion = $_GET['evaluacion'];
@@ -82,6 +83,22 @@ $spreadsheet = new Spreadsheet();
 $hoja = $spreadsheet->getActiveSheet();
 
 $hoja->setTitle("Calificaciones");
+
+// Insertar el logo de la institución
+$ruta_logo = "../images/logo_azul.png";
+
+if (file_exists($ruta_logo)) {
+
+    $logo = new Drawing();
+
+    $logo->setName("Logo");
+    $logo->setDescription("Logo Iglesia Dios en Casa");
+    $logo->setPath($ruta_logo);
+    $logo->setHeight(80);
+    $logo->setCoordinates("A1");
+    $logo->setWorksheet($hoja);
+
+}
 
 $hoja->setCellValue("A1", "Reporte de Calificaciones");
 $hoja->mergeCells("A1:F1");

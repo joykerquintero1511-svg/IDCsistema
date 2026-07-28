@@ -12,15 +12,52 @@ if (
     exit();
 }
 
+// Esto obtiene el nivel asignado al profesor
+
+$id_usuario = $_SESSION['id_usuario'];
+
+$id_nivel_profesor = null;
+
+if ($_SESSION['rol'] === 'profesor') {
+
+    $sql_profesor = "
+        SELECT id_nivel
+        FROM profesores
+        WHERE id_usuario = '$id_usuario'
+        LIMIT 1
+    ";
+
+    $resultado_profesor = mysqli_query($conexion, $sql_profesor);
+
+    if ($resultado_profesor && mysqli_num_rows($resultado_profesor) > 0) {
+
+        $fila_profesor = mysqli_fetch_assoc($resultado_profesor);
+
+        $id_nivel_profesor = $fila_profesor['id_nivel'];
+    }
+}
+
 // Consulta para llenar el select de niveles
-$sql = "
-    SELECT id_nivel, nivel_academico
-    FROM niveles
-    ORDER BY nivel_academico ASC
-";
+if ($_SESSION['rol'] === 'admin') {
+
+    $sql = "
+        SELECT id_nivel, nivel_academico
+        FROM niveles
+        ORDER BY nivel_academico ASC
+    ";
+
+} else {
+
+    $sql = "
+        SELECT id_nivel, nivel_academico
+        FROM niveles
+        WHERE id_nivel = '$id_nivel_profesor'
+        ORDER BY nivel_academico ASC
+    ";
+
+}
 
 $resultado = mysqli_query($conexion, $sql);
-
 ?>
 
 <!DOCTYPE html>
@@ -299,9 +336,95 @@ $resultado = mysqli_query($conexion, $sql);
         // Este bloque solo se ejecuta cuando el usuario pulsa Buscar
         if (isset($_GET['id_nivel']) && isset($_GET['evaluacion']) && $_GET['evaluacion'] != "") {
 
+<<<<<<< HEAD
             $id_nivel = $_GET['id_nivel'];
             $evaluacion = trim($_GET['evaluacion']);
             $buscar = "";
+=======
+             </option>
+
+            <?php } ?>
+
+        </select>
+
+        <br><br>
+
+        <label>Evaluación:</label>
+
+<select name="evaluacion">
+
+    <option value="">Seleccione una evaluación</option>
+
+    <?php
+
+    if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
+
+        $id_nivel_seleccionado = intval($_GET['id_nivel']);
+    
+     // Evita que un profesor consulte otro nivel modificando la URL
+        if ($_SESSION['rol'] === 'profesor') {
+
+            if ($id_nivel_seleccionado != $id_nivel_profesor) {
+
+                header("Location: ver_notas.php");
+                exit();
+
+            }
+
+        }
+
+        $sql_evaluaciones = "
+            SELECT DISTINCT evaluacion
+            FROM calificaciones
+            WHERE id_nivel = '$id_nivel_seleccionado'
+            AND evaluacion != ''
+            ORDER BY evaluacion ASC
+        ";
+
+        $resultado_evaluaciones = mysqli_query($conexion, $sql_evaluaciones);
+
+        while ($fila_evaluacion = mysqli_fetch_assoc($resultado_evaluaciones)) {
+
+            $evaluacion_seleccionada = "";
+
+            if (isset($_GET['evaluacion']) && $_GET['evaluacion'] == $fila_evaluacion['evaluacion']) {
+                $evaluacion_seleccionada = "selected";
+            }
+
+            echo '<option value="' . htmlspecialchars($fila_evaluacion['evaluacion']) . '" ' . $evaluacion_seleccionada . '>';
+            echo htmlspecialchars(ucwords(strtolower($fila_evaluacion['evaluacion'])));
+            echo '</option>';
+        }
+    }
+
+    ?>
+
+</select>
+
+        <br><br>
+
+                <label>Buscar estudiante:</label>
+
+                 <input type="text" name="buscar" value="<?php if(isset($_GET['buscar'])){ echo htmlspecialchars($_GET['buscar']); } ?>">
+
+            <br><br>
+
+            <button type="submit">Buscar</button>
+
+ <a href="ver_notas.php" style="margin-left:10px;padding:6px 12px;text-decoration:none;border:1px solid #999;border-radius:5px;background:#f2f2f2;color:#000;">Limpiar</a>
+
+            </form>
+
+    <?php
+
+    // Este bloque solo se ejecuta cuando el usuario pulsa Buscar
+    if (isset($_GET['id_nivel']) && isset($_GET['evaluacion']) && $_GET['evaluacion'] != "") {
+
+        $id_nivel = $_GET['id_nivel'];
+        $evaluacion = trim($_GET['evaluacion']);
+
+        $buscar = "";
+>>>>>>> c30fb3438b953ddb5d3a8c7121569af81ee69462
 
             if (isset($_GET['buscar'])) {
                 $buscar = trim($_GET['buscar']);
