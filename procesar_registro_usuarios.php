@@ -6,8 +6,27 @@ include("mailer.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // 1. CAPTURA DE DATOS
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $email = mysqli_real_escape_string($conexion, $_POST['email']);
+// Preparar el nombre para guardarlo en la base de datos (en orden con su Mayus y Minusc)
+
+$nombre = trim($_POST['nombre']);
+
+$nombre = preg_replace('/\s+/', ' ', $nombre);
+
+$nombre = mb_convert_case(mb_strtolower($nombre, 'UTF-8'),MB_CASE_TITLE,'UTF-8');
+
+$nombre = mysqli_real_escape_string($conexion, $nombre);
+
+
+// Preparar el correo electrónico para guardarlo en la base de datos (en orden con su Mayus y Minusc)
+
+$email = strtolower(trim($_POST['email']));
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    die("Error: El correo electrónico no es válido. <a href='registro_usuarios.php'>Volver</a>");
+}
+
+$email = mysqli_real_escape_string($conexion, $email);
+    
     $password_plana = $_POST['password'];
     $rol = $_POST['rol'];
     $codigo = isset($_POST['codigo_autorizacion']) ? $_POST['codigo_autorizacion'] : '';
@@ -32,9 +51,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 4. ENCRIPTACIÓN
     $password_hash = password_hash($password_plana, PASSWORD_BCRYPT);
 
-    // ==========================================
-    // GENERACIÓN DE TOKEN Y EXPIRACIÓN
-    // ==========================================
+    /*
+     GENERACIÓN DE TOKEN Y EXPIRACIÓN
+    */
     $token = bin2hex(random_bytes(32)); // Creamos una llave criptográfica única de 64 caracteres
     $token_expiracion = date("Y-m-d H:i:s", strtotime("+24 hours")); // El enlace expira en 24 horas
 
@@ -45,9 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_query($conexion, $sql)) {
         $nuevo_id = mysqli_insert_id($conexion); // Obtenemos el ID asignado al usuario
 
-        // ==========================================
-        // 6. REGISTRO ESPECÍFICO SEGÚN EL ROL
-        // ==========================================
+        /*
+         6. REGISTRO ESPECÍFICO SEGÚN EL ROL
+       */
         
         // A) Si es Estudiante / Alumno
         if ($rol === 'estudiante' || $rol === 'alumno') {
@@ -72,9 +91,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_query($conexion, $sql_prof);
         }
         
-        // ==========================================
-        // DISPARAR EL CORREO DE VERIFICACIÓN
-        // ==========================================
+        /*
+         DISPARAR EL CORREO DE VERIFICACIÓN
+        */
         $enlace = "http://localhost/IDCsistema/verificar.php?token=" . $token;
         
         $asunto = "Verifica tu cuenta - Escuela de Formación Bíblica";
