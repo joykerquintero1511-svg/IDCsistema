@@ -92,10 +92,11 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
             <li><a href="promover_estudiantes.php" >Promover Estudiantes</a></li>
             <li><a href="asignar_nivel_profesor.php" >Asignar Nivel a Profesores</a></li>
             <li><a href="crear_nivel.php" >Crear Nivel Académico</a></li>
+            <li><a href="../calificaciones/ver_notas.php?origen=admin">Consulta de Calificaciones</a></li>
             <li><a href="../logout.php" class="closed">Cerrar Sesión</a></li>
         </ul>
     </aside>
-
+       
     <main class="main-content">
         <div class="welcome-header">
             <h1><?php echo htmlspecialchars($_SESSION['usuario']); ?><span class="badge">/ Admin</span></h1>

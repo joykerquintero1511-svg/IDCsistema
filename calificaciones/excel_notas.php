@@ -151,50 +151,50 @@
         $nombre_nivel = $fila_nivel['nivel_academico'];
 
 
-        // Obtener los nombres de las actividades
+    // Obtener los nombres de las actividades
 
-        $fila_encabezado = mysqli_fetch_assoc(
-            $resultado
-        );
+            $nombre_actividad_1 = "Nota 1";
+            $nombre_actividad_2 = "Nota 2";
 
-        $nombre_actividad_1 = "Nota 1";
-        $nombre_actividad_2 = "Nota 2";
+            $mostrar_actividad_2 = false;
 
-        if (
-            $fila_encabezado['descripcion_nota_1'] !== null &&
-            $fila_encabezado['descripcion_nota_1'] !== ""
-        ) {
-            $nombre_actividad_1 = ucwords(
-                strtolower(
-                    $fila_encabezado['descripcion_nota_1']
-                )
-            );
-        }
+            while ($fila_encabezado = mysqli_fetch_assoc($resultado)) {
 
-        if (
-            $fila_encabezado['descripcion_nota_2'] !== null &&
-            $fila_encabezado['descripcion_nota_2'] !== ""
-        ) {
-            $nombre_actividad_2 = ucwords(
-                strtolower(
-                    $fila_encabezado['descripcion_nota_2']
-                )
-            );
-        }
+                if (
+                    $fila_encabezado['descripcion_nota_1'] !== null &&
+                    $fila_encabezado['descripcion_nota_1'] !== ""
+                ) {
+                    $nombre_actividad_1 = ucwords(
+                        strtolower(
+                            $fila_encabezado['descripcion_nota_1']
+                        )
+                    );
+                }
 
+                if (
+                    $fila_encabezado['descripcion_nota_2'] !== null &&
+                    $fila_encabezado['descripcion_nota_2'] !== ""
+                ) {
+                    $nombre_actividad_2 = ucwords(
+                        strtolower(
+                            $fila_encabezado['descripcion_nota_2']
+                        )
+                    );
 
-        // Determinar si debe mostrarse la segunda actividad
+                    $mostrar_actividad_2 = true;
+                }
 
-        $mostrar_actividad_2 = false;
+                if (
+                    $fila_encabezado['nota_2'] !== null &&
+                    $fila_encabezado['nota_2'] !== ""
+                ) {
+                    $mostrar_actividad_2 = true;
+                }
+            }
 
-        if (
-            $fila_encabezado['descripcion_nota_2'] !== null &&
-            $fila_encabezado['descripcion_nota_2'] !== ""
-        ) {
-            $mostrar_actividad_2 = true;
-        }
+            // Regresar el resultado al primer estudiante
 
-        mysqli_data_seek($resultado, 0);
+            mysqli_data_seek($resultado, 0);
 
 
         // Determinar las columnas del Excel
