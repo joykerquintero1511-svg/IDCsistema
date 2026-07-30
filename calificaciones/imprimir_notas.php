@@ -18,8 +18,8 @@ if (isset($_GET['id_calificacion'])) {
     $evaluacion = $_GET['evaluacion'];
 }
 
-// Consulta
-       // Consulta
+
+ // Consulta
 
 if (isset($id_calificacion)) {
 
@@ -157,26 +157,46 @@ if (isset($id_calificacion)) {
 
     <?php
 
-$fila_encabezado = mysqli_fetch_assoc($resultado);
+// Preparar los nombres de las actividades
 
 $nombre_actividad_1 = "Nota 1";
 $nombre_actividad_2 = "Nota 2";
 
-if ($fila_encabezado['descripcion_nota_1'] != "") {
-    $nombre_actividad_1 = ucwords(strtolower($fila_encabezado['descripcion_nota_1']));
-}
-
-    if ($fila_encabezado['descripcion_nota_2'] != "") {
-        $nombre_actividad_2 = ucwords(strtolower($fila_encabezado['descripcion_nota_2']));
-    }
-
 $mostrar_actividad_2 = false;
 
-    if ($fila_encabezado['descripcion_nota_2'] != "") {
+while ($fila_encabezado = mysqli_fetch_assoc($resultado)) {
+
+    if (
+        $fila_encabezado['descripcion_nota_1'] !== null &&
+        $fila_encabezado['descripcion_nota_1'] !== ""
+    ) {
+        $nombre_actividad_1 = ucwords(
+            strtolower($fila_encabezado['descripcion_nota_1'])
+        );
+    }
+
+    if (
+        $fila_encabezado['descripcion_nota_2'] !== null &&
+        $fila_encabezado['descripcion_nota_2'] !== ""
+    ) {
+        $nombre_actividad_2 = ucwords(
+            strtolower($fila_encabezado['descripcion_nota_2'])
+        );
+
         $mostrar_actividad_2 = true;
     }
 
-    mysqli_data_seek($resultado, 0);
+    if (
+        $fila_encabezado['nota_2'] !== null &&
+        $fila_encabezado['nota_2'] !== ""
+    ) {
+        $mostrar_actividad_2 = true;
+    }
+}
+
+// Regresar el resultado al primer estudiante
+
+mysqli_data_seek($resultado, 0);
 
 ?>
 

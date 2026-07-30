@@ -268,10 +268,26 @@ $resultado = mysqli_query($conexion, $sql);
 </head>
 
 <body>
-
-    <div class="contenedor-principal">
         
-        <a href="index.php" class="boton-volver">← Volver al Inicio</a>
+    <div class="contenedor-principal">
+                        
+           <?php
+
+                if (
+                    isset($_GET['origen']) && $_GET['origen'] === 'admin' && $_SESSION['rol'] === 'admin') {
+                ?>
+
+                    <a href="../admin/index.php">← Volver al Inicio</a>
+
+                <?php
+                } else {
+                ?>
+
+                    <a href="index.php">← Volver al Inicio</a>
+
+                <?php
+                }
+        ?>
 
         <div class="cabecera">
             <!-- INYECCIÓN DEL LOGO -->
@@ -280,6 +296,15 @@ $resultado = mysqli_query($conexion, $sql);
         </div>
 
         <form method="GET" class="panel-filtros">
+         
+         <?php if (
+        isset($_GET['origen']) &&
+        $_GET['origen'] === 'admin'
+    ) { ?>
+
+        <input type="hidden" name="origen" value="admin">
+
+    <?php } ?>
             <div class="grid-filtros">
                 
                 <div class="grupo-form">
