@@ -184,7 +184,7 @@
 
   /* background,surface and border colors
    */
-    --color-bg : linear-gradient(to bottom, #000000 0%, #111827 40%, #e5e7eb 100%);
+    --color-bg : linear-gradient(to bottom, #000000 0%, #414141 40%, #e5e7eb 100%);
     --color-bg-inverse            : var(--color-neutral-600);
 
     --color-bg-primary            : var(--color-1-600);

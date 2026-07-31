@@ -6,9 +6,9 @@ include '../conexion.php';
 
 // 1. ESTUDIANTES INSCRITOS POR NIVELES (Para el Gráfico Circular)
 $res_niveles = mysqli_query($conexion, "
-    SELECT nivel_academico, COUNT(*) as cantidad 
+    SELECT id_nivel, COUNT(*) as cantidad 
     FROM inscripciones 
-    GROUP BY nivel_academico 
+    GROUP BY id_nivel 
     ORDER BY cantidad DESC
 ");
 $labels_niveles = [];
@@ -21,7 +21,7 @@ $colores_aplicados = [];
 $i = 0;
 
 while($row = mysqli_fetch_assoc($res_niveles)){
-    $nivel = !empty($row['nivel_academico']) ? $row['nivel_academico'] : 'Sin asignar';
+    $nivel = !empty($row['id_nivel']) ? $row['id_nivel'] : 'Sin asignar';
     // Acortamos el texto si es muy largo para que la leyenda no se rompa
     if(strlen($nivel) > 22) {
         $nivel = substr($nivel, 0, 22) . '...';

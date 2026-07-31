@@ -149,7 +149,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
     <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel a Cursar</label>
     
-    <select name="nivel_academico" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer; width: 100%;">
+    <select name="id_nivel" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer; width: 100%;">
         
         <!-- Opción por defecto (igual que en tu otro menú) -->
         <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">

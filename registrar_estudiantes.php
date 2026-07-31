@@ -32,22 +32,12 @@ $cedula = mysqli_real_escape_string($conexion, $_POST['cedula']);
 $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
 $contacto_emergencia = mysqli_real_escape_string($conexion, $_POST['contacto_emergencia']);
 $nivel_instruccion = mysqli_real_escape_string($conexion, $_POST['nivel_instruccion']);
-$id_nivel = mysqli_real_escape_string($conexion, $_POST['nivel_academico']);
+$id_nivel = mysqli_real_escape_string($conexion, $_POST['id_nivel']); // <-- Ahora recibimos id_nivel correctamente
 $fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimiento']);
 $fecha_registro = date('Y-m-d');
 $genero = mysqli_real_escape_string($conexion, $_POST['genero']);
 $estado_inscripcion = 1;
 $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
-
-$consulta_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel'";
-$resultado_nivel = mysqli_query($conexion, $consulta_nivel);
-
-if (!$resultado_nivel || mysqli_num_rows($resultado_nivel) == 0) {
-    die("Error: El nivel seleccionado no existe.");
-}
-
-$fila_nivel = mysqli_fetch_assoc($resultado_nivel);
-$nivel_academico = $fila_nivel['nivel_academico'];
 
 // Validar campos obligatorios
 if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($direccion)|| empty($id_nivel) || empty($nacionalidad) || empty($fecha_nacimiento )) {
@@ -105,8 +95,9 @@ if (mysqli_num_rows($res_est) > 0) {
 // =========================================================================
 $token_qr = md5(uniqid(rand(), true));
 
-$sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, nivel_academico, fecha_inscripcion, estado, estatus_presencial, token_qr) 
-        VALUES ('$id_estudiante', '$nivel_academico', NOW(), '$estado_inscripcion', 'pendiente', '$token_qr')";
+// <-- Ahora insertamos el id_nivel en lugar del texto
+$sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, id_nivel, fecha_inscripcion, estado, estatus_presencial, token_qr) 
+        VALUES ('$id_estudiante', '$id_nivel', NOW(), '$estado_inscripcion', 'pendiente', '$token_qr')";
 
 if (!mysqli_query($conexion, $sql_inscripcion)) {
     die("Error al guardar inscripción: " . mysqli_error($conexion));
@@ -118,7 +109,6 @@ $url_qr_codificada = urlencode($url_validacion);
 
 <!DOCTYPE html>
 <html lang="es" class="no-js">
-<!-- ... (Aquí va el resto de tu código HTML exacto como lo tienes para mostrar el QR) ... -->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
