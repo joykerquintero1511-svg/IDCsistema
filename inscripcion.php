@@ -176,9 +176,21 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                     <br><br>
 
-                    <a href="index.php" style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                    <?php if (isset($_GET['origen']) && $_GET['origen'] === 'admin') { ?>
+
+                    <a href="admin/estudiantes/listar.php"
+                    style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;"onmouseover="this.style.color='#fff'"onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                        ← Volver a la lista de estudiantes
+                    </a>
+
+                    <?php } else { ?>
+
+                    <a href="index.php"
+                    style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;"onmouseover="this.style.color='#fff'"onmouseout="this.style.color='rgba(255,255,255,0.4)'">
                         ← Volver a la página principal
                     </a>
+
+                <?php } ?>
 
                 </div>
             </div>

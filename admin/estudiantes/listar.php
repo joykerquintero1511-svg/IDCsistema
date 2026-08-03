@@ -169,8 +169,10 @@ if (!$resultado) {
     <div class="main-header">
         <h1>Lista de Estudiantes</h1>
         <!-- Movimos el botón de agregar aquí arriba para que se vea ordenado -->
-        <a href="agregar.php" class="btn-add">Agregar nuevo estudiante</a>
-    </div>
+            <a href="../../inscripcion.php?origen=admin" class="btn-add">
+                  Nueva inscripción
+            </a>
+        </div>
 
     <!-- Quitamos el border="1" viejo y le ponemos nuestra clase -->
     <table class="custom-table">
