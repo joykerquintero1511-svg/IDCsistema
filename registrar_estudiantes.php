@@ -40,7 +40,23 @@ $fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimient
 $fecha_registro = date('Y-m-d');
 $genero = mysqli_real_escape_string($conexion, $_POST['genero']);
 $estado_inscripcion = 1;
-$direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
+
+        // Preparar la dirección con mayúsculas y minúsculas ordenadas
+
+        // Eliminar espacios al inicio y al final
+        $direccion = trim($_POST['direccion']);
+
+        // Reemplazar múltiples espacios por uno solo
+        $direccion = preg_replace('/\s+/', ' ', $direccion);
+
+        // Convertir toda la dirección a minúsculas
+        $direccion = mb_strtolower($direccion, 'UTF-8');
+
+        // Colocar la primera letra de cada palabra en mayúscula
+        $direccion = mb_convert_case($direccion, MB_CASE_TITLE, 'UTF-8');
+
+        // Preparar la dirección para guardarla de forma segura en la base de datos
+        $direccion = mysqli_real_escape_string($conexion, $direccion);
 
 // Validar campos obligatorios
 if (empty($nombre) || empty($apellido) || empty($email) || empty($cedula) || empty($telefono) || empty($direccion)|| empty($id_nivel) || empty($nacionalidad) || empty($fecha_nacimiento )) {

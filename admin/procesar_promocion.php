@@ -11,9 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $estudiantes_seleccionados = $_POST['estudiantes']; // Esto es un array de IDs
-    $id_nivel_nuevo = mysqli_real_escape_string($conexion, $_POST['id_nivel_nuevo']);
+    // Capturar y validar el nivel nuevo
+        $id_nivel_nuevo = intval($_POST['id_nivel_nuevo']);
 
-    // Buscamos el texto del nivel nuevo (Ej: "Nivel 2") para guardarlo en inscripciones
+    // Buscar el nombre del nivel nuevo para mostrarlo en el mensaje final
     $sql_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel_nuevo'";
     $res_nivel = mysqli_query($conexion, $sql_nivel);
     $fila_nivel = mysqli_fetch_assoc($res_nivel);
@@ -24,17 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // INICIAMOS EL BUCLE: Recorremos cada estudiante seleccionado
     foreach ($estudiantes_seleccionados as $id_estudiante) {
         
-        $id_estudiante = mysqli_real_escape_string($conexion, $id_estudiante);
+       $id_estudiante = intval($id_estudiante); // porque id_estudiante también debe ser un número
 
         // 1. Actualizamos su nivel en la tabla 'estudiantes'
         $sql_update = "UPDATE estudiantes SET id_nivel = '$id_nivel_nuevo' WHERE id_estudiante = '$id_estudiante'";
         mysqli_query($conexion, $sql_update);
 
-        // 2. Le creamos una NUEVA inscripción para el nuevo período con un QR nuevo
+        // Crear una nueva inscripción para el nivel promovido con un QR nuevo
         $token_qr = md5(uniqid(rand(), true)); // Nuevo token para su nueva entrada
         
-        $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, nivel_academico, fecha_inscripcion, estado, estatus_presencial, token_qr) 
-                            VALUES ('$id_estudiante', '$nombre_nivel_nuevo', NOW(), 1, 'pendiente', '$token_qr')";
+        $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante,id_nivel,fecha_inscripcion,estado,estatus_presencial,token_qr)
+            VALUES ('$id_estudiante','$id_nivel_nuevo',NOW(),1,'pendiente','$token_qr')";
         
         if (mysqli_query($conexion, $sql_inscripcion)) {
             $exitos++;
