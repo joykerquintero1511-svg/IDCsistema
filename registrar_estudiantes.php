@@ -32,7 +32,10 @@ $cedula = mysqli_real_escape_string($conexion, $_POST['cedula']);
 $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
 $contacto_emergencia = mysqli_real_escape_string($conexion, $_POST['contacto_emergencia']);
 $nivel_instruccion = mysqli_real_escape_string($conexion, $_POST['nivel_instruccion']);
-$id_nivel = mysqli_real_escape_string($conexion, $_POST['id_nivel']); // <-- Ahora recibimos id_nivel correctamente
+
+// Capturar y validar el nivel académico
+$id_nivel = intval($_POST['id_nivel']);
+
 $fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimiento']);
 $fecha_registro = date('Y-m-d');
 $genero = mysqli_real_escape_string($conexion, $_POST['genero']);

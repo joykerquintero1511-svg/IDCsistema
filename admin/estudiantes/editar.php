@@ -18,7 +18,9 @@ if (!isset($_GET['id'])) {
     die(" No se especificó qué estudiante editar.");
 }
 
-$id = $_GET['id'];
+// Convertir el ID recibido por la URL en un número entero
+
+$id = intval($_GET['id']);
 
 // Obtener los datos actuales del estudiante
 $sql = "
@@ -63,8 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $apellido = trim($_POST['apellido']);
     $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono']);
-    $id_nivel = trim($_POST['id_nivel']);
-    $estado = trim ($_POST['estado']); 
+
+// Capturar y validar el nivel y el estado
+    $id_nivel = intval($_POST['id_nivel']);
+    $estado = intval($_POST['estado']);
 
     if (empty($nombre) || empty($apellido)) {
         $error = " Nombre y Apellido son obligatorios.";
@@ -81,13 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         WHERE id_estudiante = $id";
 
     $sql_inscripciones = "UPDATE inscripciones SET 
-        estado = '$estado',
-        nivel_academico = (
-            SELECT nivel_academico 
-            FROM niveles 
-            WHERE id_nivel = '$id_nivel'
-        )
-        WHERE id_estudiante = $id";
+    estado = '$estado',
+    id_nivel = '$id_nivel'
+    WHERE id_estudiante = '$id'";
 
     if (
     ejecutarConsulta($conexion, $sql_personas) &&

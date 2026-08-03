@@ -123,7 +123,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Número de Teléfono</label>
                                 <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required
-                                       oninput="this.value = this.value.replace(/[^0-9]/g,');"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g,'');"
                                        style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
 
