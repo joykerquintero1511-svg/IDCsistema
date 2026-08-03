@@ -17,7 +17,7 @@ $nombre = mb_convert_case(mb_strtolower($nombre, 'UTF-8'),MB_CASE_TITLE,'UTF-8')
 $nombre = mysqli_real_escape_string($conexion, $nombre);
 
 
-// Preparar el correo electrónico para guardarlo en la base de datos (en orden con su Mayus y Minusc)
+// Preparar el nombre con mayúsculas y minúsculas ordenadas
 
 $email = strtolower(trim($_POST['email']));
 
@@ -48,6 +48,35 @@ $email = mysqli_real_escape_string($conexion, $email);
         die("Error: El correo ya está registrado. <a href='registro_usuarios.php'>Volver</a>");
     }
 
+    // Verificar que el estudiante ya se encuentre inscrito
+
+        if ($rol === 'estudiante' || $rol === 'alumno') {
+
+            $sql_buscar_estudiante = "
+                SELECT id_estudiante
+                FROM estudiantes
+                WHERE email = '$email'
+                LIMIT 1
+            ";
+
+            $resultado_estudiante = mysqli_query(
+                $conexion,
+                $sql_buscar_estudiante
+            );
+
+            if (
+                !$resultado_estudiante ||
+                mysqli_num_rows($resultado_estudiante) == 0
+            ) {
+                die(
+                    "Error: No existe una inscripción asociada a este correo. " .
+                    "Primero debes completar la inscripción. " .
+                    "<a href='inscripciones.php'>Ir a inscripciones</a>"
+                );
+            }
+}
+
+
     // 4. ENCRIPTACIÓN
     $password_hash = password_hash($password_plana, PASSWORD_BCRYPT);
 
@@ -68,29 +97,53 @@ $email = mysqli_real_escape_string($conexion, $email);
          6. REGISTRO ESPECÍFICO SEGÚN EL ROL
        */
         
-        // A) Si es Estudiante / Alumno
-        if ($rol === 'estudiante' || $rol === 'alumno') {
-            $val_nivel = $id_nivel ? "'$id_nivel'" : "NULL";
-            $sql_est = "INSERT INTO estudiantes (id_persona, id_nivel, fecha_registro) 
-                        VALUES ('$nuevo_id', $val_nivel, NOW())";
-            mysqli_query($conexion, $sql_est);
-        }
-        
-        // B) NUEVO: Si es Profesor
-        elseif ($rol === 'profesor') {
-            // Separamos el nombre completo si vienen dos palabras (Nombre y Apellido)
-            $partes_nombre = explode(' ', trim($nombre), 2);
-            $primer_nombre = mysqli_real_escape_string($conexion, $partes_nombre[0]);
-            $apellido = isset($partes_nombre[1]) ? mysqli_real_escape_string($conexion, $partes_nombre[1]) : '';
-            
-            $val_nivel = $id_nivel ? "$id_nivel" : "NULL";
+        // Si es profesor
 
-            $sql_prof = "INSERT INTO profesores (nombre, apellido, id_usuario, id_nivel) 
-                         VALUES ('$primer_nombre', '$apellido', $nuevo_id, $val_nivel)";
-            
-            mysqli_query($conexion, $sql_prof);
-        }
-        
+            if ($rol === 'profesor') {
+
+                $partes_nombre = explode(
+                    ' ',
+                    trim($nombre),
+                    2
+                );
+
+                $primer_nombre = mysqli_real_escape_string(
+                    $conexion,
+                    $partes_nombre[0]
+                );
+
+                if (isset($partes_nombre[1])) {
+                    $apellido = mysqli_real_escape_string(
+                        $conexion,
+                        $partes_nombre[1]
+                    );
+                } else {
+                    $apellido = '';
+                }
+
+                if ($id_nivel) {
+                    $val_nivel = $id_nivel;
+                } else {
+                    $val_nivel = "NULL";
+                }
+
+                $sql_prof = "
+                    INSERT INTO profesores (
+                        nombre,
+                        apellido,
+                        id_usuario,
+                        id_nivel
+                    )
+                    VALUES (
+                        '$primer_nombre',
+                        '$apellido',
+                        '$nuevo_id',
+                        $val_nivel
+                    )
+                ";
+
+                mysqli_query($conexion, $sql_prof);
+}
         /*
          DISPARAR EL CORREO DE VERIFICACIÓN
         */
