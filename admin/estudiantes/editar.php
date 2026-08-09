@@ -278,7 +278,7 @@ body {
             
             <!-- Botonera Final -->
             <button type="submit" class="boton-input">Guardar Cambios</button>
-            <a href="listar.php" class="boton-volver">Cancelar</a>
+            <a href="listar.php" class="boton-volver">Volver</a>
 
         </form>
     </div>

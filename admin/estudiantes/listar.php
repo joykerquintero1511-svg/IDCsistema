@@ -200,11 +200,13 @@ if (!$resultado) {
                         <!-- Agregamos las clases nuevas a tus links de acción -->
                         <a href="editar.php?id=<?php echo $fila['id_estudiante']; ?>" class="btn-action btn-edit">Editar</a>
                         <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>" class="btn-action btn-delete">Eliminar</a>
+                        <a href="../index.php" class="btn-action boton-volver">Volver</a>
                     </td>
                 </tr>
             <?php } ?>
         </tbody>
     </table>
+
 
 </main>
 <?php include '../../script-seguridad.php'; ?>
