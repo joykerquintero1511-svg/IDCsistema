@@ -7,8 +7,7 @@ $filtro_nivel = "";
 $filtro_anio = "";
 $filtro_mes = "";
 
-$condiciones= [];
-
+$condiciones = [];
 
 if (isset($_GET['estado'])) {
     $filtro_estado = $_GET['estado'];
@@ -26,8 +25,6 @@ if (isset($_GET['mes'])) {
     $filtro_mes = $_GET['mes'];
 }
 
-
-//en $consulta PHP está guardando un texto SQL dentro de una variable,es otra forma usando sql
 // Buscar estudiantes inscritos
 $consulta = "
     SELECT
@@ -44,7 +41,7 @@ $consulta = "
     INNER JOIN personas 
         ON estudiantes.id_persona = personas.id_persona
     INNER JOIN niveles
-    ON estudiantes.id_nivel = niveles.id_nivel    
+        ON estudiantes.id_nivel = niveles.id_nivel    
 ";
 $consulta_niveles = "
     SELECT id_nivel, nivel_academico
@@ -81,10 +78,9 @@ if ($filtro_mes !== "") {
    $condiciones[] = "MONTH(inscripciones.fecha_inscripcion) = $filtro_mes";
 }
 
-// Aqui dice Si hay al menos un filtro guardado, entonces agrega WHERE.
-if(count($condiciones) > 0) { //COUNT: revisa si hay filtros guardados
+if(count($condiciones) > 0) {
     $consulta .= " WHERE ";
-    $consulta .= implode (" AND ", $condiciones); // IMPLODE: une los filtros  con AND
+    $consulta .= implode (" AND ", $condiciones);
 }
 
 $consulta .= " ORDER BY personas.apellido ASC ";
@@ -94,369 +90,130 @@ $resultado = $conexion->query($consulta);
 if (!$resultado) {
     die('Error en la consulta: ' . $conexion->error);
 }
-
 ?>
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Estudiantes</title>
+    <title>Reporte de Estudiantes - EFB</title>
     <link rel="icon" type="image/png" href="../../images/EFB.png">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: #00031fcf;
-            color: #000000;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 260px;
-            background-color: #111111;
-            color: #ffffff;
-            padding: 30px 20px;
-        }
-
-         .sidebar-brand { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
-        .sidebar-brand img { max-width: 35px; height: auto; }
-        .sidebar-brand h2 { font-size: 1.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
-
-        .brand {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 40px;
-            color: #0b0a0aa5;
-        }
-
-        .brand span {
-            color: #0070f3;
-        }
-
-        .menu-item {
-            display: block;
-            color: #a0a0a0;
-            text-decoration: none;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-        }
-
-        .menu-item:hover,
-        .menu-item.active {
-            background-color: #222222;
-            color: #ffffff;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 40px;
-            background-color: #090909e3;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eaeaea;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 1.75rem;
-            color: #ffffff;
-        }
-
-        .btn-logout {
-            border: 1px solid #eaeaea;
-            color: #666666;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-logout:hover {
-            background-color: #e21d1dcd;
-            color: #ffffff;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            border-radius: 8px;
-            padding: 25px;
-        }
-
-        .card p {
-            color: #666666;
-            margin-bottom: 20px;
-        }
-
-        .resumen-card{
-    background: #f8fbff;
-    border: 1px solid #d9e8ff;
-    border-left: 6px solid #0070f3;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 25px;
-    }
-
-    .resumen-card h3{
-    color: #555;
-    font-size: 16px;
-    margin-bottom: 10px;
-    }
-
-        .resumen-card h1{
-        color: #0070f3;
-        font-size: 40px;
-        font-weight: bold;
-    }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #ffffff;
-        }
-
-        th {
-            background-color: #111111;
-            color: #ffffff;
-            padding: 12px;
-            text-align: left;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eaeaea;
-        }
-
-        tr:hover {
-            background-color: #f3f6fb;
-        }
-        .filtro-form {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.filtro-form label {
-    font-weight: bold;
-}
-
-.filtro-form select {
-    padding: 8px;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-}
-
-.filtro-form button {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    background-color: #111111;
-    color: white;
-    cursor: pointer;
-}
-    </style>
+    <link rel="stylesheet" href="../../css/mystyle.css">
 </head>
-
 <body>
 
+    <!-- Menú lateral unificado -->
+    <?php include '../sidebaradmin.php'; ?>
 
-    <div class="sidebar">
-
-    
-       <div class="sidebar-brand">
-        <img src="../../images/EFB.png" alt="Logo">
-        <h2>Administrador</h2>
-    </div>
-
-        <a href="../index.php" class="menu-item">Gestión Central</a>
-        <a href="../estudiantes/listar.php" class="menu-item">Gestión de Estudiantes</a>
-        <a href="reporte_estudiantes.php" class="menu-item active">Reporte de Estudiantes</a>
-    </div>
-
-    <div class="main-content">
+    <main class="main-content">
 
         <div class="header">
             <h1>Reporte de Estudiantes</h1>
         </div>
 
- <div class="card">
+        <div class="reportes-card">
+            <form method="GET" class="reportes-filter-form">
 
-    <form method="GET" class="filtro-form">
+                <div class="reportes-filter-group">
+                    <label for="estado">Filtrar por estado:</label>
+                    <select name="estado" id="estado" class="reportes-select">
+                        <option value="">Todos</option>
+                        <option value="1" <?php if($filtro_estado === "1"){ echo "selected"; } ?>>Activos</option>
+                        <option value="0" <?php if($filtro_estado === "0"){ echo "selected"; } ?>>Inactivos</option>
+                    </select>
+                </div>
 
-        <label for="estado">Filtrar por estado:</label>
+                <div class="reportes-filter-group">
+                    <label for="nivel">Nivel académico:</label>
+                    <select name="nivel" id="nivel" class="reportes-select">
+                        <option value="">Todos</option>
+                        <?php while($nivel = $resultado_niveles->fetch_assoc()) { ?>
+                            <option value="<?php echo $nivel['id_nivel']; ?>" <?php if($filtro_nivel == $nivel['id_nivel']){ echo "selected"; } ?>>
+                                <?php echo $nivel['nivel_academico']; ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-    <select name="estado" id="estado">
-        <option value="">Todos</option>
-        <option value="1" <?php if($filtro_estado === "1"){ echo "selected"; } ?>>Activos</option>
-        <option value="0" <?php if($filtro_estado === "0"){ echo "selected"; } ?>>Inactivos</option>
-    </select>
+                <div class="reportes-filter-group">
+                    <label for="anio">Año de inscripción:</label>
+                    <select name="anio" id="anio" class="reportes-select">
+                        <option value="">Todos</option>
+                        <?php while($anio = $resultado_anios->fetch_assoc()) { ?>
+                            <option value="<?php echo $anio['anio']; ?>" <?php if($filtro_anio == $anio['anio']){ echo "selected"; } ?>>
+                                <?php echo $anio['anio']; ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-    <label for="nivel">Nivel académico:</label>
+                <div class="reportes-filter-group">
+                    <label for="mes">Mes de inscripción:</label>
+                    <select name="mes" id="mes" class="reportes-select">
+                        <option value="">Todos</option>
+                        <?php
+                        $nombre_meses = [
+                            1 => "Enero", 2 => "Febrero", 3 => "Marzo", 4 => "Abril",
+                            5 => "Mayo", 6 => "Junio", 7 => "Julio", 8 => "Agosto",
+                            9 => "Septiembre", 10 => "Octubre", 11 => "Noviembre", 12 => "Diciembre"
+                        ]; 
+                        while($mes = $resultado_meses->fetch_assoc()) { ?>
+                            <option value="<?php echo $mes['mes']; ?>" <?php if($filtro_mes == $mes['mes']){ echo "selected"; } ?>>
+                                <?php echo $nombre_meses[$mes['mes']]; ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-<select name="nivel" id="nivel">
+                <button type="submit" class="reportes-btn-search">Buscar</button>
 
-    <option value="">Todos</option>
+            </form>
+        </div>
 
-    <?php while($nivel = $resultado_niveles->fetch_assoc()) { ?>
+        <div class="reportes-stat-card">
+            <h3>Total de estudiantes encontrados</h3>
+            <h1><?php echo $resultado->num_rows; ?></h1>
+        </div>
 
-        <option
-    value="<?php echo $nivel['id_nivel']; ?>"
-
-    <?php
-    if($filtro_nivel == $nivel['id_nivel']){
-        echo "selected";
-    }
-    ?>
->
-    <?php echo $nivel['nivel_academico']; ?>
-</option>
-
-    <?php } ?>
-
-</select>
-
-<label for="anio">Año de inscripción:</label>
-
-<select name="anio" id="anio">
-
-    <option value="">Todos</option>
-
-    <?php while($anio = $resultado_anios->fetch_assoc()) { ?>
-
-        <option
-            value="<?php echo $anio['anio']; ?>"
-
-            <?php
-            if($filtro_anio == $anio['anio']){
-                echo "selected";
-            }
-            ?>
-
-        >
-            <?php echo $anio['anio']; ?>
-        </option>
-
-    <?php } ?>
-
-</select>
-
-<label for="mes">Mes de inscripción:</label>
-
-<select name="mes" id="mes">
-
-    <option value="">Todos</option>
-         <?php
-                $nombre_meses = [
-                    1 => "Enero",
-                    2 => "Febrero",
-                    3 => "Marzo",
-                    4 => "Abril",
-                    5 => "Mayo",
-                    6 => "Junio",
-                    7 => "Julio",
-                    8 => "Agosto",
-                    9 => "Septiembre",
-                    10 => "Octubre",
-                    11 => "Noviembre",
-                    12 => "Diciembre"
-                ]; ?>
-
-    <?php while($mes = $resultado_meses->fetch_assoc()) { ?>
-
-        <option
-            value="<?php echo $mes['mes']; ?>"
-
-            <?php
-            if($filtro_mes == $mes['mes']){
-                echo "selected";
-            }
-            ?>
-        >
-           
-        <?php echo $nombre_meses[$mes['mes']]; ?>
-            
-        </option>
-
-    <?php } ?>
-
-</select>
-
-<button type="submit">Buscar</button>
-
-        
-</form>
-            <div class="resumen-card">
-
-    <h3>Total de estudiantes encontrados</h3>
-
-    <h1>
-
-        <?php echo $resultado->num_rows; ?>
-
-    </h1>
-
-    </div>
-
-            <table>
-                <tr>
-                    <th>Cédula</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Nivel</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-
-                <?php while($fila = $resultado->fetch_assoc()) { ?>
-
+        <div class="reportes-table-wrapper">
+            <table class="reportes-table">
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($fila['cedula']); ?></td>
-                        <td><?php echo htmlspecialchars(ucwords(strtolower($fila['nombre']))); ?></td>
-                        <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
-                        <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
-                        
-
-                        
-                        
-                     <td>
-                            <?php
-                            if($fila['estado'] == 1){
-                                echo "<span style='color: green; font-weight: bold;'> Activo</span>";
-                            }else{
-                                echo "<span style='color: red; font-weight: bold;'> Inactivo</span>";
-                            }
-                            ?>
-                        </td>
-                        <td>  <!-- urlencode() es una función de PHP.Sirve para preparar un texto para que pueda viajar de forma segura por una URL.-->
-                         <a href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&estado=<?php echo $filtro_estado; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>"> 
-                             Ver detalles
-                        </a>
-                             
-                        </td>
+                        <th>Cédula</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Nivel</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
-
-                <?php } ?>
-
+                </thead>
+                <tbody>
+                    <?php while($fila = $resultado->fetch_assoc()) { ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($fila['cedula']); ?></td>
+                            <td><?php echo htmlspecialchars(ucwords(strtolower($fila['nombre']))); ?></td>
+                            <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
+                            <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
+                            <td>
+                                <?php if($fila['estado'] == 1): ?>
+                                    <span class="reportes-badge reportes-badge-active">Activo</span>
+                                <?php else: ?>
+                                    <span class="reportes-badge reportes-badge-inactive">Inactivo</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a class="reportes-link-action" href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&estado=<?php echo $filtro_estado; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>"> 
+                                    Ver detalles
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
             </table>
         </div>
 
-    </div>
+    </main>
+
     <?php include '../../script-seguridad.php'; ?>
 
 </body>

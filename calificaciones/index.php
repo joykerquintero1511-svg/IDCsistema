@@ -219,12 +219,12 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
         <?php // Para q el boton lo rediriga depende de su rol
 
              if ($_SESSION['rol'] === 'admin') { ?>
-                 <a href="../admin/index.php">Volver</a>
+                 <a class="btn-action" href="../admin/index.php">Volver</a>
 
          <?php
 
              } else { ?>
-                <a href="../profesores/index.php">Volver</a>
+                <a  class="btn-action" href="../profesores/index.php">Volver</a>
 
          <?php
 
@@ -274,7 +274,7 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
                 </div>
             <?php if ($registro_existente) { ?>
             <br>
-
+            
             <button type="button" id="btnEditarRegistro" class="btn-block">
                 Editar registro
             </button>
@@ -293,7 +293,7 @@ $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 
             <?php
           while ($registro = mysqli_fetch_assoc($resultado_registros)) {
-            echo '<p><a href="?id_nivel=' . $id_nivel . '&evaluacion=' . urlencode($registro['evaluacion']) . '">' . htmlspecialchars(ucwords(strtolower($registro['evaluacion']))) . '</a></p>';
+            echo '<p style="margin: 0.4rem 0; color: #3d8cfb; text-decoration: underline;">' . '<a href="?id_nivel=' . $id_nivel . '&evaluacion=' . urlencode($registro['evaluacion']) . '">' . htmlspecialchars(ucwords(strtolower($registro['evaluacion']))) . '</a></p>';
           } 
               ?>
 

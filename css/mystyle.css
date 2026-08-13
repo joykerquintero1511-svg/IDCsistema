@@ -431,6 +431,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     border-radius: 6px;
     border-left: 4px solid #3b82f6;
     margin-bottom: 1.5rem;
+    margin-top: 1rem;
 }
 
 .info-resumen p {
@@ -563,3 +564,792 @@ input[type=number].table-input {
 .sidebar::-webkit-scrollbar-thumb:hover {
     background: #3b82f6;
 }
+
+/* ==========================================
+   MÓDULO: EDITAR CALIFICACIÓN (CLASES ÚNICAS)
+   ========================================== */
+
+.edit-notas-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+.edit-notas-card {
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    margin:  auto;
+}
+
+.edit-notas-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.edit-notas-header h2 {
+    color: #ffffff;
+    font-size: 2.4rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.edit-notas-header p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.edit-notas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.edit-notas-group {
+    margin-bottom: 1.8rem;
+    text-align: left;
+}
+
+.edit-notas-group label {
+    display: block;
+    color: #ffffff;
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+.edit-notas-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    font-size: 1.5rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.edit-notas-input:focus {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.edit-notas-textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.edit-notas-actions {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.edit-notas-btn-save {
+    width: 100%;
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 1.4rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.edit-notas-btn-save:hover {
+    background: #2563eb;
+}
+
+.edit-notas-btn-print {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 1.2rem;
+    font-size: 1.4rem;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.edit-notas-btn-print:hover {
+    color: #ffffff;
+    border-color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================
+   MÓDULO: REPORTE DE ESTUDIANTES (TEMA OSCURO)
+   ========================================== */
+
+/* Contenedor Principal de Filtros (Más compacto) */
+.reportes-card {
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Formulario de Filtros */
+.reportes-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.reportes-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 140px; /* Reducido para que los selectores quepan en una línea */
+}
+
+.reportes-filter-group label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.reportes-select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reportes-select option {
+    background: #142132;
+    color: #ffffff;
+}
+
+.reportes-select:focus {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.reportes-btn-search {
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    height: 36px; /* Altura ajustada a la de los selectores */
+}
+
+.reportes-btn-search:hover {
+    background: #2563eb;
+}
+
+/* Tarjeta de Estadísticas (Ahora horizontal para ahorrar espacio) */
+.reportes-stat-card {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-left: 4px solid #3b82f6;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Texto de un lado, número del otro */
+}
+
+.reportes-stat-card h3 {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.reportes-stat-card h1 {
+    color: #3b82f6;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Tabla Oscura Ajustada */
+.reportes-table-wrapper {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.reportes-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111111;
+    color: #ffffff;
+    text-align: left;
+    table-layout: auto;
+}
+
+.reportes-table th {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.reportes-table td {
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    vertical-align: middle;
+}
+
+.reportes-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Badges de Estado y Acciones */
+.reportes-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.reportes-badge-active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.reportes-badge-inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.reportes-link-action {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.reportes-link-action:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+/* ==========================================
+   MÓDULO: GESTIÓN DE ESTUDIANTES (LISTADO)
+   ========================================== */
+
+/* Encabezado y Botón Principal */
+.estudiantes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.estudiantes-header h1 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.estudiantes-btn-add {
+    background: #3b82f6;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.estudiantes-btn-add:hover {
+    background: #2563eb;
+}
+
+/* Tabla Oscura - Ajustada para encajar sin scroll horizontal */
+.estudiantes-table-wrapper {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #111111;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    overflow: hidden; /* Evita desbordes innecesarios */
+}
+
+.estudiantes-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111111;
+    color: #ffffff;
+    text-align: left;
+    table-layout: auto; /* Permite que las columnas se ajusten dinámicamente */
+}
+
+.estudiantes-table th {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem; /* Reducido para ahorrar espacio */
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap; /* Mantiene los títulos en una sola línea */
+}
+
+.estudiantes-table td {
+    padding: 1rem;
+    font-size: 0.95rem; /* Texto de datos más equilibrado */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    vertical-align: middle;
+}
+
+/* Fuerza al correo electrónico a saltar de línea si es muy largo, protegiendo la estructura */
+.estudiantes-table td:nth-child(4) {
+    word-break: break-all;
+    min-width: 120px;
+}
+
+.estudiantes-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Botones de Acción dentro de la Tabla - Versión Compacta */
+.estudiantes-btn-action {
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem; /* Botones más pequeños */
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 0.3rem;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* Evita que el botón se parta en dos líneas */
+}
+
+.estudiantes-btn-edit {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.estudiantes-btn-edit:hover {
+    background: rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
+}
+
+.estudiantes-btn-delete {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.estudiantes-btn-delete:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+ /* ==========================================
+       ESTILOS DEL MÓDULO DE VALIDACIÓN (EFB)
+       ========================================== */
+.efb-validar-wrapper { 
+        background-color: #0b0f19 !important; 
+        color: white; 
+        font-family: sans-serif; 
+        margin: 0; 
+        padding: 20px; 
+        
+        /* ESCUDO CONTRA MYSTYLE.CSS PARA CENTRAR A LA FUERZA */
+        display: flex !important; 
+        justify-content: center !important; 
+        align-items: center !important; 
+        min-height: 100vh !important; 
+        width: 100% !important; /* Obliga al fondo a ocupar toda la pantalla */
+        flex: 1 !important; 
+        box-sizing: border-box;
+    }
+    
+    .efb-validar-container { 
+        background: #1e293b; 
+        padding: 30px; 
+        border-radius: 12px; 
+        width: 100%; 
+        max-width: 500px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+        margin: 0 auto !important; /* Respaldo para asegurar el centro horizontal */
+    }
+    
+    .efb-validar-container h2 { 
+        text-align: center; 
+        color: #38bdf8; 
+        margin-bottom: 20px; 
+        margin-top: 0;
+    }
+    #reader { 
+        background: #0f172a; 
+        border: 2px dashed #334155; 
+        border-radius: 8px; 
+        margin-bottom: 20px; 
+        overflow: hidden; 
+    }
+    #reader video { 
+        width: 100% !important; 
+        border-radius: 6px; 
+    }
+    .efb-form-group { 
+        margin-bottom: 20px; 
+    }
+    .efb-validar-container label { 
+        display: block; 
+        margin-bottom: 8px; 
+        color: #94a3b8; 
+        font-size: 14px; 
+    }
+    .efb-validar-container input[type="text"] { 
+        width: 100%; 
+        padding: 12px; 
+        background: #0f172a; 
+        border: 1px solid #334155; 
+        border-radius: 8px; 
+        color: white; 
+        font-size: 16px; 
+        box-sizing: border-box; 
+    }
+    .efb-validar-container input[type="text"]:focus { 
+        border-color: #38bdf8; 
+        outline: none; 
+    }
+    .efb-validar-container button { 
+        width: 100%; 
+        padding: 12px; 
+        background: #3b82f6; 
+        border: none; 
+        border-radius: 8px; 
+        color: white; 
+        font-weight: bold; 
+        font-size: 16px; 
+        cursor: pointer; 
+        transition: background 0.2s; 
+    }
+    .efb-validar-container button:hover { 
+        background: #2563eb; 
+    }
+    .efb-alert { 
+        padding: 12px; 
+        border-radius: 8px; 
+        margin-bottom: 20px; 
+        text-align: center; 
+        font-weight: bold; 
+        font-size: 14px; 
+    }
+    .efb-alert.success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+    .efb-alert.warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+    .efb-alert.error { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    .efb-card-result { 
+        background: #0f172a; 
+        padding: 20px; 
+        border-radius: 8px; 
+        margin-top: 20px; 
+        border-left: 4px solid #38bdf8; 
+    }
+    .efb-card-result p { margin: 8px 0; font-size: 14px; color: #cbd5e1; }
+    .efb-card-result strong { color: white; }
+    .efb-back-link { display: block; text-align: center; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 14px; }
+    .efb-back-link:hover { color: white; }
+
+    /* ==========================================
+   MÓDULO: PROMOCIÓN DE ESTUDIANTES
+   ========================================== */
+
+.promocion-header {
+    margin-bottom: 2rem;
+}
+
+.promocion-header h1 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.promocion-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* Tarjetas para los selectores */
+.promocion-card {
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.promocion-card label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.8rem;
+}
+
+.promocion-select {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.promocion-select:focus {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.promocion-select option {
+    background: #142132;
+    color: #ffffff;
+}
+
+/* Tabla de Promoción */
+.promocion-table-wrapper {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+.promocion-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111111;
+    color: #ffffff;
+    text-align: left;
+    table-layout: auto;
+}
+
+.promocion-table th {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.promocion-table td {
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    vertical-align: middle;
+}
+
+.promocion-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Checkbox personalizado */
+.checkbox-custom {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+/* Zona de botones final */
+.promocion-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.promocion-btn-submit {
+    background: #10b981; 
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.promocion-btn-submit:hover {
+    background: #059669;
+}
+
+.promocion-link-back {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.promocion-link-back:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+
+/* ==========================================
+   MÓDULO: CREAR NIVEL ACADÉMICO
+   ========================================== */
+
+.nivel-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    box-sizing: border-box;
+}
+
+.nivel-card {
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.nivel-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.nivel-header h1 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 0.4rem 0;
+}
+
+.nivel-header p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.nivel-form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.nivel-form-group label {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+}
+
+.nivel-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.nivel-input:focus {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.nivel-btn-submit {
+    width: 100%;
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.nivel-btn-submit:hover {
+    background: #2563eb;
+}
+

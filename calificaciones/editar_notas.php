@@ -44,55 +44,60 @@ if (
 ?>
 
    <!DOCTYPE html>
-   <html lang="es">
-   <head>
+<html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Calificacion</title>
-   </head>
-   <body>
-        <h2>Editar Calificacion</h2>
-    <form method="POST" action="actualizar_notas.php">
+    <title>Editar Calificación</title>
+    <link rel="stylesheet" href="../css/mystyle.css">
+</head>
+<body>
 
-    <input type="hidden" name="id_calificacion" value="<?php echo $fila['id_calificacion']; ?>">
-    <input type="hidden" name="id_nivel" value="<?php echo $fila['id_nivel']; ?>">
-    <input type="hidden" name="evaluacion" value="<?php echo htmlspecialchars($fila['evaluacion']); ?>">
+    <div class="edit-notas-wrapper">
+        <div class="edit-notas-card">
+            
+            <div class="edit-notas-header">
+                <h2>Editar Calificación</h2>
+                <p>Modificación de notas y observaciones</p>
+            </div>
 
-        <label>Nota 1:</label>
+            <form method="POST" action="actualizar_notas.php">
 
-        <input type="number" name="nota_1" value="<?php echo $fila['nota_1']; ?>" min="0" max="20" step="0.01" required>
-    
-    <br><br>
-        
-     <label>Nota 2:</label>
+                <input type="hidden" name="id_calificacion" value="<?php echo $fila['id_calificacion']; ?>">
+                <input type="hidden" name="id_nivel" value="<?php echo $fila['id_nivel']; ?>">
+                <input type="hidden" name="evaluacion" value="<?php echo htmlspecialchars($fila['evaluacion']); ?>">
 
-        <input type="number" name="nota_2" value="<?php echo $fila['nota_2']; ?>" min="0" max="20" step="0.01">
+                <div class="edit-notas-grid">
+                    <div class="edit-notas-group">
+                        <label for="nota_1">Nota 1:</label>
+                        <input type="number" id="nota_1" name="nota_1" class="edit-notas-input" value="<?php echo $fila['nota_1']; ?>" min="0" max="20" step="0.01" required>
+                    </div>
 
-     <br><br>
-        
-    <label>Nota Final:</label>
+                    <div class="edit-notas-group">
+                        <label for="nota_2">Nota 2:</label>
+                        <input type="number" id="nota_2" name="nota_2" class="edit-notas-input" value="<?php echo $fila['nota_2']; ?>" min="0" max="20" step="0.01">
+                    </div>
+                </div>
 
-        <input type="number" name="nota_final" value="<?php echo $fila['nota_final']; ?>" min="0" max="20" step="0.01" required>
+                <div class="edit-notas-group">
+                    <label for="nota_final">Nota Final:</label>
+                    <input type="number" id="nota_final" name="nota_final" class="edit-notas-input" value="<?php echo $fila['nota_final']; ?>" min="0" max="20" step="0.01" required>
+                </div>
 
-     <br><br>
+                <div class="edit-notas-group">
+                    <label for="observacion">Observación:</label>
+                    <textarea id="observacion" name="observacion" class="edit-notas-input edit-notas-textarea" placeholder="Escriba una observación opcional..."><?php echo htmlspecialchars($fila['observacion']); ?></textarea>
+                </div>
 
-     <label>Observación:</label>
+                <div class="edit-notas-actions">
+                    <button type="submit" class="edit-notas-btn-save">Guardar cambios</button>
+                    <a href="imprimir_notas.php?id_calificacion=<?php echo $fila['id_calificacion']; ?>" target="_blank" class="edit-notas-btn-print">🖨️ Imprimir esta calificación</a>
+                </div>
 
-         <textarea name="observacion"><?php echo htmlspecialchars($fila['observacion']); ?></textarea>
- <!-- <textarea> porque una observación puede ser más larga.-->
-    <br><br>
-    
-            <button type="submit">Guardar cambios</button>
-    <br><br>
+            </form>
 
-<a href="imprimir_notas.php?id_calificacion=<?php echo $fila['id_calificacion']; ?>" target="_blank">Imprimir esta calificación</a>        
-
-</form>
+        </div>
+    </div>
 
 </body>
 </html>
-
-    </form>
-    
-   </body>
-   </html>
