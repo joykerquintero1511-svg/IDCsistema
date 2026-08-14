@@ -162,3 +162,416 @@
     .intro-block-content__social{
     align-items: center !important;
     }
+
+    /* ==========================================================================
+   OCULTAR ELEMENTOS MÓVILES EN COMPUTADORA (ESCRITORIO)
+   ========================================================================== */
+.mobile-header,
+.sidebar-overlay {
+    display: none !important;
+}
+
+/* ==========================================================================
+   ADAPTACIÓN MÓVIL Y RESPONSIVA
+   ========================================================================== */
+@media (max-width: 768px) {
+
+    /* Muestra la barra superior solo en pantallas pequeñas */
+    .mobile-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #11131a;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0 1.25rem;
+        z-index: 99;
+    }
+
+    .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    /* Limita el tamaño de la imagen en móviles */
+    .mobile-brand img {
+        height: 28px;
+        width: auto;
+    }
+
+    .mobile-brand span {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Botón Hamburguesa (3 rayitas) */
+    .btn-hamburger {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 26px;
+        height: 19px;
+        padding: 0;
+    }
+
+    .btn-hamburger span {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #3b82f6;
+        border-radius: 3px;
+    }
+
+    /* --- RESTRUCTURACIÓN DEL SIDEBAR (OFF-CANVAS) --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 270px;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+        padding-top: 1.5rem;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay.active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(3px);
+        z-index: 999;
+    }
+
+    /* --- REALINEACIÓN DEL CONTENEDOR PRINCIPAL EN MÓVIL --- */
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1.25rem !important;
+        margin-top: 60px;
+    }
+
+    .dashboard-grid,
+    .cronograma-grid,
+    .edit-notas-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem;
+    }
+
+    .table-responsive,
+    .reportes-table-wrapper,
+    .estudiantes-table-wrapper,
+    .promocion-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+    /* ==========================================================================
+   ADAPTACIÓN MÓVIL Y RESPONSIVA (SISTEMA DE CONTROL ACADÉMICO)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    /* --- BARRA SUPERIOR MÓVIL (TOPBAR CON BOTÓN HAMBURGUESA) --- */
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #11131a;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0 1.25rem;
+        z-index: 99;
+    }
+
+    .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .mobile-brand img {
+        height: 28px;
+        width: auto;
+    }
+
+    .mobile-brand span {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Botón de 3 Rayitas */
+    .btn-hamburger {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 26px;
+        height: 19px;
+        padding: 0;
+    }
+
+    .btn-hamburger span {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #3b82f6;
+        border-radius: 3px;
+        transition: all 0.3s ease;
+    }
+
+    /* --- RESTRUCTURACIÓN DEL SIDEBAR (OFF-CANVAS) --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 270px;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%); /* Oculto a la izquierda */
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+        padding-top: 1.5rem;
+    }
+
+    /* Clase active para mostrar la barra lateral */
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    /* Capa oscura de fondo al abrir el menú */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(3px);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Botón para cerrar el sidebar dentro del mismo menú */
+    .btn-close-sidebar {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* --- REALINEACIÓN DEL CONTENEDOR PRINCIPAL --- */
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1.25rem !important;
+        margin-top: 60px; /* Compensación por la barra superior */
+    }
+
+    .welcome-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .welcome-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .welcome-header p {
+        font-size: 0.9rem;
+    }
+
+    /* --- REJILLAS Y COLUMNAS --- */
+    .dashboard-grid,
+    .cronograma-grid,
+    .edit-notas-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    /* --- TARJETAS Y CONTENEDORES --- */
+    .info-card,
+    .reportes-card,
+    .promocion-card,
+    .nivel-card,
+    .edit-notas-card,
+    .efb-validar-container {
+        padding: 1.25rem !important;
+        max-width: 100% !important;
+    }
+
+    .edit-notas-wrapper,
+    .nivel-wrapper {
+        min-height: auto;
+        padding: 1rem 0;
+    }
+
+    .edit-notas-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .edit-notas-header p,
+    .edit-notas-group label {
+        font-size: 1rem;
+    }
+
+    .edit-notas-input {
+        font-size: 1.1rem;
+        padding: 0.8rem 1rem;
+    }
+
+    /* --- TABLAS RESPONSIVAS (SCROLL HORIZONTAL LISO) --- */
+    .table-responsive,
+    .reportes-table-wrapper,
+    .estudiantes-table-wrapper,
+    .promocion-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        margin-top: 0.8rem;
+    }
+
+    .data-table,
+    .reportes-table,
+    .estudiantes-table,
+    .promocion-table {
+        min-width: 600px; /* Garantiza que las columnas no se colapsen feo */
+    }
+
+    .data-table th, .data-table td,
+    .reportes-table th, .reportes-table td,
+    .estudiantes-table th, .estudiantes-table td,
+    .promocion-table th, .promocion-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* --- MÓDULO DE REPORTES Y FILTROS --- */
+    .reportes-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reportes-filter-group {
+        width: 100%;
+    }
+
+    .reportes-btn-search {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .reportes-stat-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .reportes-stat-card h1 {
+        font-size: 1.6rem;
+    }
+
+    /* --- ENCABEZADOS Y BOTONES DE MÓDULOS --- */
+    .estudiantes-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .estudiantes-btn-add {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .promocion-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .promocion-btn-submit {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Ajuste para el wrapper de notas compactas */
+    .main-content-class {
+        padding: 1.5rem 0.75rem !important;
+    }
+
+    /* Adaptaciones móviles para Estadísticas */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .card {
+        padding: 15px !important;
+    }
+
+    /* Ajustes específicos para Períodos en Celulares */
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    .welcome-header h1 {
+        font-size: 1.35rem !important;
+        line-height: 1.3;
+    }
+
+    .info-card {
+        padding: 15px !important;
+    }
+}

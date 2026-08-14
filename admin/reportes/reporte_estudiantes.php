@@ -99,6 +99,7 @@ if (!$resultado) {
     <title>Reporte de Estudiantes - EFB</title>
     <link rel="icon" type="image/png" href="../../images/EFB.png">
     <link rel="stylesheet" href="../../css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
 <body>
 

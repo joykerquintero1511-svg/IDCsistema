@@ -58,6 +58,7 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asignar Niveles a Profesores - Escuela de Formación Bíblica</title>
     <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
     <link rel="icon" type="image/png" href="../images/EFB.png">
 </head>
 <body style="background: #0b0f19; color: white; font-family: sans-serif; margin: 0; padding: 20px;">

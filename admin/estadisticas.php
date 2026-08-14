@@ -40,7 +40,7 @@ $tiene_usuario = isset($_GET['tiene_usuario']) ? $_GET['tiene_usuario'] : '';
 // Cargar niveles para el desplegable del filtro
 $niveles_query = mysqli_query($conexion, "SELECT id_nivel, nivel_academico FROM niveles ORDER BY id_nivel ASC");
 
-// Consulta corregida: Vinculación de estudiantes y usuarios por EMAIL
+// Consulta: Vinculación de estudiantes y usuarios por EMAIL
 $sql_resultado = "SELECT 
                     e.id_estudiante, 
                     p.nombre, 
@@ -64,9 +64,9 @@ if ($nota_min !== '' && $nota_max !== '') {
     $sql_resultado .= " AND c.nota_final BETWEEN $nota_min AND $nota_max";
 }
 if ($tiene_usuario === '1') {
-    $sql_resultado .= " AND u.id_usuario IS NOT NULL"; // Solo con usuario
+    $sql_resultado .= " AND u.id_usuario IS NOT NULL";
 } elseif ($tiene_usuario === '0') {
-    $sql_resultado .= " AND u.id_usuario IS NULL"; // Solo sin usuario
+    $sql_resultado .= " AND u.id_usuario IS NULL";
 }
 
 $resultados = mysqli_query($conexion, $sql_resultado);
@@ -76,41 +76,21 @@ $resultados = mysqli_query($conexion, $sql_resultado);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estadísticas Avanzadas - EFB</title>
     <link rel="icon" href="../images/EFB.png" type="image/png">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0f19; color: #e2e8f0; margin: 0; padding: 30px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 25px; margin-bottom: 25px; }
-        h1, h2, h3 { color: #f8fafc; margin-top: 0; }
-        .btn-volver { color: #60a5fa; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; }
-        label { display: block; color: #9ca3af; font-size: 13px; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 10px; background: #1f2937; border: 1px solid #374151; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; }
-        button:hover { background: #1d4ed8; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #1f2937; }
-        th { background: #1f2937; color: #9ca3af; font-size: 13px; text-transform: uppercase; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .stat-box { background: #1f2937; padding: 20px; border-radius: 8px; border: 1px solid #374151; }
-        .stat-title { font-size: 12px; text-transform: uppercase; color: #9ca3af; font-weight: bold; margin-bottom: 15px; letter-spacing: 1px; }
-        .stat-main-value { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 15px; line-height: 1; }
-        .stat-detail { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; color: #cbd5e1; }
-        .stat-detail span.green { color: #10b981; font-weight: bold; }
-        .stat-detail span.red { color: #ef4444; font-weight: bold; }
-        .progress-bar { width: 100%; height: 6px; background: #374151; border-radius: 3px; overflow: hidden; display: flex; }
-        
-        /* Badges de estado */
-        .badge { font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px; text-transform: uppercase; }
-        .badge-user { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-nouser { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.3); }
-    </style>
+    
+    <!-- HOJAS DE ESTILO EXTERNAS -->
+    <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
 <body>
 
-<div class="container">
+<!-- BARRA LATERAL ADMINISTRATIVA -->
+<?php include 'sidebaradmin.php'; ?>
+
+<!-- CONTENEDOR PRINCIPAL -->
+<main class="main-content">
     <a href="index.php" class="btn-volver">← Volver al Panel Maestro</a>
     
     <h1>Módulo de Estadísticas y Filtros Avanzados 📊</h1>
@@ -158,7 +138,7 @@ $resultados = mysqli_query($conexion, $sql_resultado);
 
     <!-- FORMULARIO DE FILTROS PERSONALIZADOS -->
     <div class="card">
-        <h3>Filtro Personalizado de Alumnos</h3>
+        <h3 style="margin-bottom: 15px;">Filtro Personalizado de Alumnos</h3>
         <form method="GET" action="">
             <div class="form-grid">
                 <div>
@@ -176,7 +156,6 @@ $resultados = mysqli_query($conexion, $sql_resultado);
                     </select>
                 </div>
 
-                <!-- FILTRO DE CUENTA DE USUARIO -->
                 <div>
                     <label>Estado de Cuenta:</label>
                     <select name="tiene_usuario">
@@ -207,58 +186,60 @@ $resultados = mysqli_query($conexion, $sql_resultado);
         <h3>Resultados de la Búsqueda (<?php echo $resultados ? mysqli_num_rows($resultados) : 0; ?> Alumnos encontrados)</h3>
         
         <?php if($resultados && mysqli_num_rows($resultados) > 0): ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Estudiante</th>
-                        <th>Nivel Académico</th>
-                        <th>Nota Final</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while($row = mysqli_fetch_assoc($resultados)): 
-                        $nombre_completo = trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? ''));
-                        if (empty($nombre_completo)) {
-                            $nombre_completo = "Alumno #" . $row['id_estudiante'];
-                        }
-                        
-                        $tiene_cuenta = !empty($row['id_usuario']);
-                        $usuario_alias = htmlspecialchars($row['usuario'] ?? '');
-                    ?>
+            <div class="table-responsive">
+                <table>
+                    <thead>
                         <tr>
-                            <td style="font-weight: bold; color: #fff;">
-                                <?php echo htmlspecialchars($nombre_completo); ?>
-                                
-                                <?php if($tiene_cuenta): ?>
-                                    <span style="font-weight: normal; color: #9ca3af; font-size: 12px; margin-left: 4px;">
-                                        (@<?php echo $usuario_alias; ?>)
-                                    </span>
-                                    <span class="badge badge-user">Cuenta Activa</span>
-                                <?php else: ?>
-                                    <span class="badge badge-nouser">Sin Cuenta</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($row['nivel_academico'] ?? 'Sin Nivel Asignado'); ?></td>
-                            <td>
-                                <?php if ($row['nota_final'] !== null): ?>
-                                    <span style="background: #1e293b; padding: 4px 10px; border-radius: 4px; font-weight: bold; color: <?php echo ($row['nota_final'] >= 10) ? '#10b981' : '#ef4444'; ?>;">
-                                        <?php echo number_format($row['nota_final'], 2); ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span style="color: #6b7280; font-size: 13px;">Sin nota registrada</span>
-                                <?php endif; ?>
-                            </td>
+                            <th>Estudiante</th>
+                            <th>Nivel Académico</th>
+                            <th>Nota Final</th>
                         </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php while($row = mysqli_fetch_assoc($resultados)): 
+                            $nombre_completo = trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? ''));
+                            if (empty($nombre_completo)) {
+                                $nombre_completo = "Alumno #" . $row['id_estudiante'];
+                            }
+                            
+                            $tiene_cuenta = !empty($row['id_usuario']);
+                            $usuario_alias = htmlspecialchars($row['usuario'] ?? '');
+                        ?>
+                            <tr>
+                                <td style="font-weight: bold; color: #fff;">
+                                    <?php echo htmlspecialchars($nombre_completo); ?>
+                                    
+                                    <?php if($tiene_cuenta): ?>
+                                        <span style="font-weight: normal; color: #9ca3af; font-size: 12px; margin-left: 4px;">
+                                            (@<?php echo $usuario_alias; ?>)
+                                        </span>
+                                        <span class="badge badge-user">Cuenta Activa</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-nouser">Sin Cuenta</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($row['nivel_academico'] ?? 'Sin Nivel Asignado'); ?></td>
+                                <td>
+                                    <?php if ($row['nota_final'] !== null): ?>
+                                        <span style="background: #1e293b; padding: 4px 10px; border-radius: 4px; font-weight: bold; color: <?php echo ($row['nota_final'] >= 10) ? '#10b981' : '#ef4444'; ?>;">
+                                            <?php echo number_format($row['nota_final'], 2); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color: #6b7280; font-size: 13px;">Sin nota registrada</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php else: ?>
             <p style="color: #94a3b8; margin-top: 20px;">No se encontraron registros que coincidan con los criterios seleccionados.</p>
         <?php endif; ?>
     </div>
-</div>
-<?php include "../script-seguridad.php";
-?>
+</main>
+
+<?php include "../script-seguridad.php"; ?>
 
 </body>
 </html>

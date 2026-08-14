@@ -32,6 +32,7 @@ $q_estudiantes = mysqli_query($conexion, $sql_estudiantes);
     <title>Promover Estudiantes - EFB</title>
     <link rel="icon" type="image/png" href="/IDCsistema/images/EFB.png">
     <link rel="stylesheet" href="/IDCsistema/css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
 <body>
 

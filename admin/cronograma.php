@@ -51,25 +51,17 @@ if ($periodo_activo) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cronograma de Clases - Administrador</title>
     <link rel="icon" type="image/png" href="../images/EFB.png">
     <!-- UNICA LLAMADA A TUS ESTILOS -->
     <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
 <body>
 
 <!-- BARRA LATERAL ADMINISTRATIVA (SIDEBAR) -->
-<div class="sidebar">
-    <div class="sidebar-brand">
-        <img src="../images/EFB.png" alt="EFB Logo" onerror="this.style.display='none'">
-        <h2>Administrador</h2>
-    </div>
-    <ul class="menu-links">
-        <li><a href="cronograma.php" class="active">Cronograma</a></li>
-        <li><a href="periodos.php">Períodos Académicos</a></li>
-        <li><a href="index.php">Volver al Inicio</a></li>
-    </ul>
-</div>
+<?php include 'sidebaradmin.php'; ?>
 
 <!-- CONTENEDOR PRINCIPAL -->
 <main class="main-content">
@@ -187,7 +179,7 @@ if ($periodo_activo) {
                     </table>
                 <?php else: ?>
                     <div class="alert alert-danger alert-no-margin">
-                        ⚠️ Formulario listo. Aún no hay clases agendadas para este período.
+                    Aún no hay clases agendadas para este período.
                     </div>
                 <?php endif; ?>
             </div>

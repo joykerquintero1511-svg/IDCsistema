@@ -5,30 +5,53 @@ include '../conexion.php';
 // --- CONSULTAS ANALÍTICAS PARA EL DASHBOARD ---
 
 // 1. ESTUDIANTES INSCRITOS POR NIVELES (Para el Gráfico Circular)
-$res_niveles = mysqli_query($conexion, "
-    SELECT id_nivel, COUNT(*) as cantidad 
-    FROM inscripciones 
-    GROUP BY id_nivel 
-    ORDER BY cantidad DESC
-");
+// Unimos inscripciones con la tabla niveles para extraer 'nivel_academico'
+$query_niveles = "
+    SELECT n.nivel_academico, COUNT(i.id_nivel) as cantidad 
+    FROM inscripciones i
+    LEFT JOIN niveles n ON i.id_nivel = n.id_nivel 
+    GROUP BY i.id_nivel 
+    ORDER BY i.id_nivel ASC
+";
+$res_niveles = mysqli_query($conexion, $query_niveles);
+
 $labels_niveles = [];
 $data_niveles = [];
 $total_inscritos_grafico = 0;
 
-// Paleta de colores vibrantes para cada nivel
-$colores_grafico = ['#3b82f6', '#10b981', '#f59e0b', '#a855f7', '#ef4444', '#06b6d4', '#ec4899'];
+// Paleta ampliada de 12 colores únicos y contrastantes (optimizados para tema oscuro)
+$colores_grafico = [
+    '#3b82f6', // 1A - Azul
+    '#10b981', // 1B - Esmeralda / Verde
+    '#f59e0b', // 1C - Ámbar / Amarillo
+    '#a855f7', // 2A - Púrpura
+    '#ef4444', // 2B - Rojo
+    '#06b6d4', // 2C - Cian
+    '#ec4899', // 3A - Rosa
+    '#6366f1', // 3B - Índigo
+    '#f97316', // 3C - Naranja
+    '#14b8a6', // 4A - Teal / Turquesa
+    '#8b5cf6', // Violeta adicional
+    '#84cc16'  // Lima adicional
+];
+
 $colores_aplicados = [];
 $i = 0;
 
 while($row = mysqli_fetch_assoc($res_niveles)){
-    $nivel = !empty($row['id_nivel']) ? $row['id_nivel'] : 'Sin asignar';
-    // Acortamos el texto si es muy largo para que la leyenda no se rompa
-    if(strlen($nivel) > 22) {
-        $nivel = substr($nivel, 0, 22) . '...';
+    // Tomamos el nombre del nivel académico de la tabla 'niveles'
+    $nivel = !empty($row['nivel_academico']) ? $row['nivel_academico'] : 'Sin asignar';
+    
+    // Acortamos si supera los 25 caracteres para mantener la maquetación limpia
+    if(strlen($nivel) > 25) {
+        $nivel = substr($nivel, 0, 25) . '...';
     }
+    
     $labels_niveles[] = $nivel;
     $data_niveles[] = $row['cantidad'];
     $total_inscritos_grafico += $row['cantidad'];
+    
+    // Asigna un color único de la lista sin desbordar la memoria
     $colores_aplicados[] = $colores_grafico[$i % count($colores_grafico)];
     $i++;
 }
@@ -75,6 +98,7 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - EFB</title>
     <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
     <link rel="icon" type="image/png" href="../images/EFB.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -250,7 +274,7 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
                             <span style="color: #fff; font-size: 14px; font-weight: bold;">Estatus de Inscripciones:</span>
 
                             <?php if ($estado_actual == 1): ?>
-                                <span style="background: #10b981; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;">ABIERTAS</span>
+                                <span style="background: #10b981; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;box-shadow: 0 4px 6px rgba(35, 247, 91, 0.32);">ABIERTAS</span>
                                 <a href="toggle_inscripciones.php?estado=0" style="background: #ef4444; color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; cursor: pointer; position: relative; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
                                     Cerrar Inscripciones
                                 </a>
