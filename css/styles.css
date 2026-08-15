@@ -5516,3 +5516,8 @@ nav,
   z-index: 100 !important; /* Asegura que el menú quede por encima de todo */
 }
 
+.btn-block {
+    margin: auto !important;
+    justify-content: center !important;
+    box-align: center !important;
+}

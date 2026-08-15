@@ -1,22 +1,39 @@
 <?php
 include '../session-start.php';
 require_once("../conexion.php");
-// ... resto de tu código
 
-
-
-
-
-// 1. LOGICA DE SEGURIDAD (Intacta)
+// 1. LÓGICA DE SEGURIDAD
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
     header("Location: ../login.php");
     exit();
 }
 
+$id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 $mensaje = "";
 
-// 2. PROCESAMIENTO DEL FORMULARIO (Intacto)
+// 2. CONSULTA DEL NIVEL O NIVELES ASIGNADOS AL PROFESOR
+$query_niveles = "SELECT n.id_nivel, n.nivel_academico 
+                  FROM niveles n 
+                  INNER JOIN profesores p ON p.id_nivel = n.id_nivel 
+                  WHERE p.id_usuario = '$id_usuario' 
+                  ORDER BY n.id_nivel ASC";
+
+$result_niveles = mysqli_query($conexion, $query_niveles);
+
+// Guardamos los IDs de niveles permitidos para validación de seguridad
+$niveles_permitidos = [];
+if ($result_niveles) {
+    while ($row = mysqli_fetch_assoc($result_niveles)) {
+        $niveles_permitidos[] = $row;
+    }
+}
+
+// Extract de IDs válidos para verificación
+$ids_validos = array_column($niveles_permitidos, 'id_nivel');
+
+
+// 3. PROCESAMIENTO DEL FORMULARIO
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_nivel = mysqli_real_escape_string($conexion, $_POST['id_nivel']);
     $titulo_tarea = mysqli_real_escape_string($conexion, $_POST['titulo_tarea']);
@@ -24,7 +41,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tema = mysqli_real_escape_string($conexion, $_POST['tema']);
     $fecha_limite = mysqli_real_escape_string($conexion, $_POST['fecha_limite']);
 
-    if (!empty($id_nivel) && !empty($titulo_tarea) && !empty($fecha_limite)) {
+    // Validar que el nivel seleccionado realmente pertenece a este profesor
+    if (!in_array($id_nivel, $ids_validos)) {
+        $mensaje = "<div class='alert-error'>❌ No tienes permiso para publicar en este nivel académico.</div>";
+    } elseif (!empty($id_nivel) && !empty($titulo_tarea) && !empty($fecha_limite)) {
         $query_insertar = "INSERT INTO asignacion (id_nivel, titulo_tarea, descripcion, tema, fecha_limite) 
                            VALUES ('$id_nivel', '$titulo_tarea', '$descripcion', '$tema', '$fecha_limite')";
         
@@ -37,10 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensaje = "<div class='alert-warning'>⚠️ Por favor, rellene todos los campos obligatorios.</div>";
     }
 }
-
-// 3. CONSULTA DINÁMICA DE NIVELES (Intacta)
-$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles ORDER BY id_nivel ASC";
-$result_niveles = mysqli_query($conexion, $query_niveles);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -50,21 +66,11 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
     <title>Panel Profesor - EFB</title>
     <link rel="icon" type="image/png" href="../images/EFB.png">
     <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="../css/movil.css">
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div>
-            <div class="sidebar-brand">
-                <img src="../images/EFB.png" alt="Logo">
-                <h2>Profesor</h2>
-            </div>
-            <ul class="menu-links">
-                <li><a href="index.php">Inicio</a></li>
-                <li><a href="crear_asignacion.php" class="active">Nueva Asignación</a></li>
-            </ul>
-        </div>
-    </aside>
+    <?php include 'sidebarprof.php'; ?> 
 
     <main class="main-content">
         <div class="info-card">
@@ -75,15 +81,20 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
             <form action="crear_asignacion.php" method="POST">
                 
                 <div class="form-group">
-                    <label for="id_nivel">Nivel Académico Destinatario </label>
+                    <label for="id_nivel">Nivel Académico Destinatario</label>
                     <select name="id_nivel" id="id_nivel" class="form-control" required>
-                        <option value="">-- Seleccione el nivel --</option>
-                        <?php if ($result_niveles): ?>
-                            <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
-                                <option value="<?php echo $nivel['id_nivel']; ?>">
-                                    <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
-                                </option>
-                            <?php endwhile; ?>
+                        <?php if (count($niveles_permitidos) > 1): ?>
+                            <option value="">-- Seleccione el nivel --</option>
+                        <?php endif; ?>
+
+                        <?php foreach ($niveles_permitidos as $nivel): ?>
+                            <option value="<?php echo $nivel['id_nivel']; ?>" <?php echo (count($niveles_permitidos) === 1) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+                            </option>
+                        <?php endforeach; ?>
+
+                        <?php if (empty($niveles_permitidos)): ?>
+                            <option value="">⚠️ No tienes ningún nivel asignado</option>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -108,10 +119,14 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                     <input type="date" name="fecha_limite" id="fecha_limite" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn-action btn-submit-full">Publicar en el Aula</button>
+                <button type="submit" class="btn-action btn-submit-full" <?php echo empty($niveles_permitidos) ? 'disabled' : ''; ?>>
+                    Publicar en el Aula
+                </button>
             </form>
         </div>
     </main>
+
+    <?php include '../script-seguridad.php'; ?>
 
 </body>
 </html>

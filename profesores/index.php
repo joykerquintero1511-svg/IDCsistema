@@ -61,25 +61,11 @@ $_SESSION['panel_regreso'] = 'index.php';
     <title>Panel de Profesor - EFB</title>
     <link rel="icon" type="image/png" href="../images/EFB.png">
     <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="../css/movil.css">
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div>
-            <div class="sidebar-brand">
-                <img src="../images/EFB.png" alt="Logo">
-                <h2>Profesor</h2>
-            </div>
-            <ul class="menu-links">
-                <li><a href="index.php" class="active">Inicio</a></li>
-                <li><a href="../validar.php">Validar Asistencia y QR</a></li>
-                <li><a href="registrar_asistencias.php">Registrar Asistencias</a></li>
-                <li><a href="crear_asignacion.php">Nueva Asignación</a></li>
-                <li><a href="../calificaciones/index.php">Calificaciones</a></li>
-            </ul>
-        </div>
-        <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
-    </aside>
+    <?php include 'sidebarprof.php'; ?>
 
     <main class="main-content">
         <header class="welcome-header">

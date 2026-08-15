@@ -504,6 +504,8 @@ input[type=number].table-input {
     font-size: 0.95rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    margin: auto;
+    box-align: center;
 }
 
 .btn-block:hover {
