@@ -371,7 +371,7 @@ $resultado = mysqli_query($conexion, $sql);
 
         <?php
         // Este bloque solo se ejecuta cuando el usuario pulsa Buscar
-        if (isset($_GET['id_nivel']) && isset($_GET['evaluacion']) && $_GET['evaluacion'] != "") {
+        if (isset($_GET['id_nivel']) && isset($_GET['evaluacion'])) {
 
             $id_nivel = $_GET['id_nivel'];
             $evaluacion = trim($_GET['evaluacion']);

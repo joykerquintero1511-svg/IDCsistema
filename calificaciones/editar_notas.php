@@ -20,6 +20,8 @@ if (
     calificaciones.id_estudiante,
     calificaciones.id_nivel,
     calificaciones.evaluacion,
+    calificaciones.descripcion_nota_1,
+    calificaciones.descripcion_nota_2,
     calificaciones.nota_1,
     calificaciones.nota_2,
     calificaciones.nota_final,
@@ -69,12 +71,31 @@ if (
 
                 <div class="edit-notas-grid">
                     <div class="edit-notas-group">
-                        <label for="nota_1">Nota 1:</label>
+
+                        <label for="nota_1">
+                            <?php
+                            if ($fila['descripcion_nota_1'] != "") {
+                                echo htmlspecialchars(ucwords(strtolower($fila['descripcion_nota_1'])));
+                            } else {
+                                echo "Nota 1";
+                            }
+                            ?>:
+                        </label>
+
                         <input type="number" id="nota_1" name="nota_1" class="edit-notas-input" value="<?php echo $fila['nota_1']; ?>" min="0" max="20" step="0.01" required>
                     </div>
 
                     <div class="edit-notas-group">
-                        <label for="nota_2">Nota 2:</label>
+                       <label for="nota_2">
+                        <?php
+                        if ($fila['descripcion_nota_2'] != "") {
+                            echo htmlspecialchars(ucwords(strtolower($fila['descripcion_nota_2'])));
+                        } else {
+                            echo "Nota 2";
+                        }
+                        ?>:
+                        </label>
+                        
                         <input type="number" id="nota_2" name="nota_2" class="edit-notas-input" value="<?php echo $fila['nota_2']; ?>" min="0" max="20" step="0.01">
                     </div>
                 </div>
@@ -89,9 +110,12 @@ if (
                     <textarea id="observacion" name="observacion" class="edit-notas-input edit-notas-textarea" placeholder="Escriba una observación opcional..."><?php echo htmlspecialchars($fila['observacion']); ?></textarea>
                 </div>
 
-                <div class="edit-notas-actions">
-                    <button type="submit" class="edit-notas-btn-save">Guardar cambios</button>
-                    <a href="imprimir_notas.php?id_calificacion=<?php echo $fila['id_calificacion']; ?>" target="_blank" class="edit-notas-btn-print">🖨️ Imprimir esta calificación</a>
+                <div class="edit-notas-actions"> 
+                    <button type="submit" class="edit-notas-btn-save">Guardar cambios</button> 
+
+                    <a href="ver_notas.php?id_nivel=<?php echo $fila['id_nivel']; ?>&evaluacion=<?php echo urlencode($fila['evaluacion']); ?>" class="edit-notas-btn-print">Volver</a>
+
+                    <a href="imprimir_notas.php?id_calificacion=<?php echo $fila['id_calificacion']; ?>" target="_blank" class="edit-notas-btn-print">🖨️ Imprimir esta calificación</a> 
                 </div>
 
             </form>

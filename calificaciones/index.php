@@ -129,25 +129,39 @@ if (!$resultado_registros) {
     die("Error al buscar los registros de calificación: " . mysqli_error($conexion));
 }
 
-if ($evaluacion != "") {
-    $sql_descripciones = "
-        SELECT descripcion_nota_1, descripcion_nota_2
-        FROM calificaciones
-        WHERE id_nivel = '$id_nivel'
-        AND evaluacion = '$evaluacion'
-        LIMIT 1
-    ";
+// Buscar los nombres de las actividades del registro seleccionado
 
-    $resultado_descripciones = mysqli_query($conexion, $sql_descripciones);
+$sql_descripciones = "
+    SELECT descripcion_nota_1, descripcion_nota_2
+    FROM calificaciones
+    WHERE id_nivel = '$id_nivel'
+    AND evaluacion = '$evaluacion'
+    LIMIT 1
+";
 
-    if ($resultado_descripciones && mysqli_num_rows($resultado_descripciones) > 0) {
-        $fila_descripciones = mysqli_fetch_assoc($resultado_descripciones);
-        $descripcion_nota_1 = $fila_descripciones['descripcion_nota_1'];
-        $descripcion_nota_2 = $fila_descripciones['descripcion_nota_2'];
-        $registro_existente = true;
-    }
+$resultado_descripciones = mysqli_query(
+    $conexion,
+    $sql_descripciones
+);
+
+if (
+    $resultado_descripciones &&
+    mysqli_num_rows($resultado_descripciones) > 0
+) {
+    $fila_descripciones = mysqli_fetch_assoc(
+        $resultado_descripciones
+    );
+
+    $descripcion_nota_1 =
+        $fila_descripciones['descripcion_nota_1'];
+
+    $descripcion_nota_2 =
+        $fila_descripciones['descripcion_nota_2'];
+
+    $registro_existente = true;
 }
-    
+
+
         $sql_nivel_seleccionado = "
         SELECT nivel_academico
         FROM niveles

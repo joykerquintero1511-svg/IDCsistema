@@ -270,6 +270,12 @@ mysqli_data_seek($resultado, 0);
         <button onclick="window.print()">
             Imprimir
 </button>
+    <?php if (isset($id_calificacion)) { ?>
 
+    <a href="editar_notas.php?id_calificacion=<?php echo $id_calificacion; ?>">
+        Volver
+    </a>
+
+<?php } ?>
 </body>
 </html>
