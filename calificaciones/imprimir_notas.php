@@ -136,12 +136,12 @@ if (isset($id_calificacion)) {
 
     <title>Imprimir Calificaciones</title> <!-- @media print:  oculta el botón en la hoja impresa. --> 
         <style > 
-    @media print { 
-        button {
-            display: none;
-        } 
+ 
+    @media print {
+    .no-imprimir {
+        display: none;
     }
-    
+}
     </style>
 </head>
 
@@ -265,17 +265,17 @@ mysqli_data_seek($resultado, 0);
 
 </table>
 
-    <br><br>
+        <br><br>
+            <div class="no-imprimir">
+            <button onclick="window.print()">
+                Imprimir
+            </button>
+                <?php if (isset($id_calificacion)) { ?>
 
-        <button onclick="window.print()">
-            Imprimir
-</button>
-    <?php if (isset($id_calificacion)) { ?>
-
-    <a href="editar_notas.php?id_calificacion=<?php echo $id_calificacion; ?>">
-        Volver
-    </a>
-
-<?php } ?>
+                <a href="editar_notas.php?id_calificacion=<?php echo $id_calificacion; ?>">
+                    Volver
+                </a>
+        <?php } ?>
+    </div>
 </body>
 </html>
