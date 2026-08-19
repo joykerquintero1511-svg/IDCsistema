@@ -1646,3 +1646,136 @@ input[type=number].table-input {
     font-size: 0.75rem;
     font-weight: 600;
 }
+
+/* =========================================
+   ESTILOS EXCLUSIVOS: REPORTE DE NOTAS
+   ========================================= */
+
+/* El contenedor aísla la vista para evitar que se ponga horizontal */
+.idc-impresion-contenedor {
+    display: block !important; 
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #0b1120;
+    color: #f8fafc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.idc-impresion-titulo {
+    color: #ffffff;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.idc-impresion-info {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    margin: 8px 0;
+}
+
+.idc-impresion-info strong {
+    color: #3b82f6;
+}
+
+.idc-impresion-separador {
+    border: none;
+    border-top: 1px solid #1e293b;
+    margin: 25px 0;
+}
+
+.idc-impresion-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #151e2f;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #1e293b;
+}
+
+.idc-impresion-tabla th, 
+.idc-impresion-tabla td {
+    border: 1px solid #1e293b;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.idc-impresion-tabla th {
+    background-color: #0b1120;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.idc-impresion-tabla td {
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.idc-impresion-tabla tr:hover {
+    background-color: #1e293b;
+}
+
+/* Botones inferiores */
+.idc-impresion-acciones {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.idc-btn-imprimir,
+.idc-btn-volver {
+    padding: 10px 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.idc-btn-imprimir { background-color: #3b82f6; color: white; }
+.idc-btn-imprimir:hover { background-color: #2563eb; }
+
+.idc-btn-volver { background-color: #334155; color: white; }
+.idc-btn-volver:hover { background-color: #475569; }
+
+/* =========================================
+   MODO IMPRESORA (Papel blanco)
+   ========================================= */
+@media print {
+    body { background-color: white !important; }
+    
+    .idc-impresion-contenedor {
+        background-color: white !important;
+        color: black !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .idc-impresion-titulo, 
+    .idc-impresion-info, 
+    .idc-impresion-info strong, 
+    .idc-impresion-tabla th, 
+    .idc-impresion-tabla td {
+        color: black !important;
+    }
+
+    .idc-impresion-titulo { border-bottom: 2px solid black !important; }
+    .idc-impresion-tabla { border: 1px solid black !important; background-color: transparent !important; }
+    .idc-impresion-tabla th, .idc-impresion-tabla td { border: 1px solid black !important; }
+    .idc-impresion-tabla th { background-color: #f3f4f6 !important; }
+    
+    /* Ocultar botones al imprimir */
+    .idc-impresion-acciones { display: none !important; }
+}

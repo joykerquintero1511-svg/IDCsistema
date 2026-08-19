@@ -574,4 +574,32 @@
     .info-card {
         padding: 15px !important;
     }
+
+  /* =========================================
+   ADAPTACIÓN MÓVIL: REPORTE DE NOTAS
+   ========================================= */
+@media screen and (max-width: 768px) {
+    .idc-impresion-contenedor {
+        padding: 15px;
+        margin: 10px auto;
+    }
+
+    /* Vuelve la tabla deslizable hacia los lados */
+    .idc-impresion-tabla {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .idc-impresion-acciones {
+        flex-direction: column;
+    }
+
+    .idc-btn-imprimir,
+    .idc-btn-volver {
+        width: 100%;
+        padding: 12px;
+    }
 }

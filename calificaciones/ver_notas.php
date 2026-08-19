@@ -487,7 +487,7 @@ $resultado = mysqli_query($conexion, $sql);
                 
                 <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-pdf">📄 Exportar PDF</a>
                 
-                <a href="excel_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" class="btn-exportar btn-excel">📊 Exportar Excel</a>
+
             </div>
 
         <?php } else { ?>
