@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     die("Acceso no permitido. Por favor, envía el formulario desde la página de inscripción.");
 }
 
-$nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-$apellido = mysqli_real_escape_string($conexion, $_POST['apellidos']);
+$nombre = mysqli_real_escape_string($conexion, mb_convert_case(mb_strtolower(trim($_POST['nombre'])), MB_CASE_TITLE, 'UTF-8'));
+$apellido = mysqli_real_escape_string($conexion, mb_convert_case(mb_strtolower(trim($_POST['apellidos'])), MB_CASE_TITLE, 'UTF-8'));
 $email = mysqli_real_escape_string($conexion, $_POST['email']);
 $nacionalidad = mysqli_real_escape_string($conexion, $_POST['nacionalidad']);
 $cedula = mysqli_real_escape_string($conexion, $_POST['cedula']);
