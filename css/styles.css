@@ -184,7 +184,7 @@
 
   /* background,surface and border colors
    */
-    --color-bg : linear-gradient(to bottom, #000000 0%, #414141 40%, #e5e7eb 100%);
+    --color-bg : linear-gradient(to bottom, #151414 0%,  #404040ce 80%);
     --color-bg-inverse            : var(--color-neutral-600);
 
     --color-bg-primary            : var(--color-1-600);
@@ -5512,7 +5512,7 @@ header,
 nav, 
 .nav-menu, 
 .mobile-nav {
-  background-color: #000000 !important; /* Fondo oscuro sólido para que no se traslape */
+  background-color: transparent !important; /* Fondo oscuro sólido para que no se traslape */
   z-index: 100 !important; /* Asegura que el menú quede por encima de todo */
 }
 
@@ -5521,3 +5521,10 @@ nav,
     justify-content: center !important;
     box-align: center !important;
 }
+
+body {
+    background: linear-gradient(to bottom, #030303ec 0%,  #717171d4 50%, #030303ec 100%) !important;
+    }
+
+
+    
