@@ -76,6 +76,9 @@ if (!$resultado) {
                                 <a href="editar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-edit">
                                     Editar
                                 </a>
+                                <a href="certificados_estudiante.php?id_estudiante=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-edit">
+                                    Certificados
+                                </a>
                                 <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-delete" onclick="return confirm('¿Está seguro de eliminar este estudiante?');">
                                     Eliminar
                                 </a>

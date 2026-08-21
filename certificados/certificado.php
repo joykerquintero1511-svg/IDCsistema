@@ -9,25 +9,69 @@
      exit();
 
   }
- 
- 
 
+  // Verificar que se recibió el id de la inscripción
+
+if (!isset($_GET['id_inscripcion'])) {
+    die("No se recibió la inscripción.");
+}
+
+$id_inscripcion = intval($_GET['id_inscripcion']);
+
+ // Buscar los datos de la inscripción, el estudiante y el nivel
+
+    $sql_certificado = "
+    SELECT 
+    estudiantes.id_estudiante,
+    personas.nombre,
+    personas.apellido,
+    niveles.nivel_academico
+    FROM inscripciones
+    INNER JOIN estudiantes
+    ON inscripciones.id_estudiante = estudiantes.id_estudiante
+    INNER JOIN personas
+    ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+    ON inscripciones.id_nivel = niveles.id_nivel
+    WHERE inscripciones.id_inscripcion = '$id_inscripcion'
+    ";
+
+    $resultado_certificado = mysqli_query($conexion, $sql_certificado);
+
+    $datos_certificado = mysqli_fetch_assoc($resultado_certificado);
+
+    // Verificar que la inscripción exista
+
+    if (!$datos_certificado) {
+        die("No se encontraron datos para este certificado.");
+    }
+ 
+    // Obtener la fecha actual
+
+        $dia = date('d');
+        $mes = date('m');
+        $anio = date('Y');
+    
+    $meses = [
+        '01' => 'enero',
+        '02' => 'febrero',
+        '03' => 'marzo',
+        '04' => 'abril',
+        '05' => 'mayo',
+        '06' => 'junio',
+        '07' => 'julio',
+        '08' => 'agosto',
+        '09' => 'septiembre',
+        '10' => 'octubre',
+        '11' => 'noviembre',
+        '12' => 'diciembre'
+];
+
+$mes = $meses[$mes];
 
  ?>
        
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       <!DOCTYPE html>
+ <!DOCTYPE html>
         <html lang="es">
         <head>
             <meta charset="UTF-8">
@@ -188,19 +232,23 @@
                     </div>
                     
                     <div class="nombre">
-                        MARÍA GONZÁLEZ PÉREZ
-                    </div>
-                    
+                    <?php
+                    echo htmlspecialchars( mb_strtoupper($datos_certificado['nombre'] . ' ' . $datos_certificado['apellido'],'UTF-8'));
+                    ?>
+                </div>
+                                    
                     <div class="descripcion">
                         <p>Ha cursado y aprobado satisfactoriamente el nivel de formación</p>
                     </div>
                     
-                    <div class="nivel">
-                        <strong>1A - Escuela para Bautismo</strong>
-                    </div>
+                 <div class="nivel">
+                        <strong>
+                        <?php echo htmlspecialchars($datos_certificado['nivel_academico']); ?>
+                        </strong>
+                </div>
                     
                     <div class="fecha">
-                        Caracas, 06 de junio de 2026
+                        Caracas, <?php echo $dia . ' de ' . $mes . ' de ' . $anio; ?>
                     </div>
                     
                     <div class="firma">
@@ -209,9 +257,12 @@
                     </div>
                 </div>
                 
-                <div class="btn-imprimir">
-                    <button onclick="window.print();">🖨️ IMPRIMIR / GUARDAR COMO PDF</button>
-                </div>
-            </div>
-        </body>
-        </html>
+        <div class="btn-imprimir">
+            <button onclick="window.print();">🖨️ IMPRIMIR / GUARDAR COMO PDF</button>
+         <a href="../admin/estudiantes/certificados_estudiante.php?id_estudiante=<?php echo $datos_certificado['id_estudiante']; ?>">
+        ← Volver
+    </a>
+     </div>
+ </div>
+ </body>
+  </html>
