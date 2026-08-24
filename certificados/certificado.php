@@ -94,8 +94,9 @@ $mes = $meses[$mes];
                     background: white;
                     width: 297mm;
                     min-height: 210mm;
-                    border: 8px double #c9a03d;
-                    padding: 35mm 25mm;
+                    border: 10px solid #1c5889;
+                    box-shadow: inset 0 0 0 4px white, inset 0 0 0 6px #1c5889;
+                    padding: 28mm 25mm;
                     text-align: center;
                     overflow: hidden;
                 }
@@ -103,11 +104,11 @@ $mes = $meses[$mes];
                     content: "";
                     position: absolute;
                     inset: 0;
-                    background-image: url('images/marca_agua_logo.png');
+                    background-image: url('images/marca_logo3.png');
                     background-repeat: no-repeat;
                     background-position: center 35%;
-                    background-size: 95%;
-                    opacity: 0.03;
+                    background-size: 70%;
+                    opacity: 0.09;
                     z-index: 0;
                 }
                 .certificado > * {
@@ -118,12 +119,18 @@ $mes = $meses[$mes];
                     size: A4 landscape;
                     margin: 0;
                 }
-                
+
+                .logo-certificado {
+                    width: 180px;
+                    height: auto;
+                    margin-bottom: 10px;
+                }
+
                 .iglesia {
-                    border-bottom: 2px solid #c9a03d;
+                    border-bottom: 2px solid #1c5889;
                     padding-bottom: 15px;
                     margin-bottom: 25px;
-                }
+                }      
                 
                 .iglesia h1 {
                     font-size: 28px;
@@ -137,6 +144,14 @@ $mes = $meses[$mes];
                     font-weight: normal;
                     margin-top: 5px;
                 }
+
+                .subtitulo {
+                    font-size: 32px;
+                    letter-spacing: 6px;
+                    color: #2c3e4e;
+                    margin: 25px 0 20px;
+                    font-weight: bold;
+                }
                 
                 .certifica {
                     font-size: 28px;
@@ -146,35 +161,60 @@ $mes = $meses[$mes];
                     font-size: 20px;
                     margin: 30px 0 10px;
                 }
+
                 .nombre {
-                    font-size: 38px;
+                    font-size: 40px;
                     font-weight: bold;
                     text-transform: uppercase;
-                    margin: 20px 0;
+                    margin: 20px auto;
                     color: #2c3e4e;
-                    border-bottom: 1px dashed #c9a03d;
-                    padding-bottom: 15px;
-                    display: inline-block;
-                    width: 100%;
+                    border-bottom: 1px solid #123B5D;
+                    padding-bottom: 12px;
+                    display: block;
+                    width: 85%;
+                }
+
+                .nombre-largo {
+                    font-size: 30px;
                 }
                 
                 .nivel {
-                    padding: 15px;
-                    font-size: 20px;
-                    margin: 25px 0;
+                    padding: 12px 20px;
+                    font-size: 22px;
+                    margin: 20px auto;
+                    color: #2c3e4e;
+                    letter-spacing: 1px;
                 }
                 
+                .pie-certificado {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    width: 75%;
+                    margin: 30px auto 0;
+                }
+
                 .fecha {
-                    margin: 40px 0 20px;
+                    margin: 0;
+                    font-size: 17px;
+                    color: #2c3e4e;
+                    text-align: left;
                 }
-                
+
                 .firma {
-                    margin-top: 50px;
+                    margin: 0;
+                    font-size: 16px;
+                    color: #2c3e4e;
+                    text-align: center;
                 }
-                
+
+                .espacio-firma {
+                    height: 55px;
+                }
+
                 .firma-linea {
-                    width: 200px;
-                    border-top: 1px solid #333;
+                    width: 220px;
+                    border-top: 1px solid #2c3e4e;
                     margin: 0 auto 8px auto;
                 }
                 
@@ -197,11 +237,16 @@ $mes = $meses[$mes];
                     background: #c9a03d;
                 }
                 
-                @media print {
+                /* Estilos que se aplican al imprimir o guardar el certificado como PDF */
+                
+                @media print { 
+
                 body {
                     background: white;
                     padding: 0;
                     margin: 0;
+                    min-height: auto;
+                    display: block;
                 }
 
                 .btn-imprimir {
@@ -209,33 +254,48 @@ $mes = $meses[$mes];
                 }
 
                 .certificado {
-                    box-shadow: none;
-                    border: 8px double #c9a03d;
+                    width: 297mm;
+                    height: 210mm;
+                    min-height: 0;
+                    padding: 15mm 25mm 25mm 25mm;
+                    border: 10px solid #1c5889;
+                    box-shadow: inset 0 0 0 4px white, inset 0 0 0 6px #1c5889;
+                    page-break-inside: avoid;
                 }
             }
-            </style>
+                
+             </style>
         </head>
         <body>
             <div>
                 <div class="certificado">
                     <div class="iglesia">
+                 <img src="images/marca_agua_logo.png" alt="Logo Iglesia Dios en Casa" class="logo-certificado">
                         <h1>IGLESIA DIOS EN CASA</h1>
                         <h3>Escuela de Formación Bíblica</h3>
                     </div>
                     
-                    <div class="subtitulo" style="font-size: 30px; margin: 20px 0; letter-spacing: 4px;">
-                        C E R T I F I C A D O
+                    <div class="subtitulo"> 
+                       C E R T I F I C A D O
                     </div>
                     
                     <div class="certifica">
                         <p>Se certifica que</p>
                     </div>
                     
-                    <div class="nombre">
                     <?php
-                    echo htmlspecialchars( mb_strtoupper($datos_certificado['nombre'] . ' ' . $datos_certificado['apellido'],'UTF-8'));
+                    $nombre_completo = mb_strtoupper($datos_certificado['nombre'] . ' ' . $datos_certificado['apellido'],'UTF-8');
+
+                    $clase_nombre = 'nombre';
+
+                    if (mb_strlen($nombre_completo, 'UTF-8') > 28) {
+                        $clase_nombre = 'nombre nombre-largo';
+                    }
                     ?>
-                </div>
+
+                    <div class="<?php echo $clase_nombre; ?>">
+                        <?php echo htmlspecialchars($nombre_completo); ?>
+                    </div>
                                     
                     <div class="descripcion">
                         <p>Ha cursado y aprobado satisfactoriamente el nivel de formación</p>
@@ -247,17 +307,19 @@ $mes = $meses[$mes];
                         </strong>
                 </div>
                     
-                    <div class="fecha">
-                        Caracas, <?php echo $dia . ' de ' . $mes . ' de ' . $anio; ?>
-                    </div>
-                    
+                    <div class="pie-certificado">
+
+                <div class="fecha">
+                    Caracas, <?php echo $dia . ' de ' . $mes . ' de ' . $anio; ?>
+                </div>
+
                     <div class="firma">
+                        <div class="espacio-firma"></div>
                         <div class="firma-linea"></div>
                         <p>Coordinación Académica</p>
                     </div>
                 </div>
-                
-        <div class="btn-imprimir">
+                     <div class="btn-imprimir">
             <button onclick="window.print();">🖨️ IMPRIMIR / GUARDAR COMO PDF</button>
          <a href="../admin/estudiantes/certificados_estudiante.php?id_estudiante=<?php echo $datos_certificado['id_estudiante']; ?>">
         ← Volver
