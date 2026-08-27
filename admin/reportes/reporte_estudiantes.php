@@ -26,22 +26,25 @@ if (isset($_GET['mes'])) {
 }
 
 // Buscar estudiantes inscritos
+
 $consulta = "
     SELECT
         inscripciones.id_inscripcion,
+        inscripciones.id_estudiante,
+        inscripciones.id_nivel,
+        inscripciones.fecha_inscripcion,
         personas.cedula,
         personas.nombre,
         personas.apellido,
         niveles.nivel_academico,
-        inscripciones.estado,
-        estudiantes.id_estudiante
+        inscripciones.estado
     FROM inscripciones
     INNER JOIN estudiantes 
         ON inscripciones.id_estudiante = estudiantes.id_estudiante
     INNER JOIN personas 
         ON estudiantes.id_persona = personas.id_persona
     INNER JOIN niveles
-        ON estudiantes.id_nivel = niveles.id_nivel    
+        ON inscripciones.id_nivel = niveles.id_nivel
 ";
 $consulta_niveles = "
     SELECT id_nivel, nivel_academico
@@ -64,26 +67,27 @@ $resultado_anios = $conexion->query($consulta_anios);
 $resultado_meses = $conexion->query($consulta_meses);
 
 if ($filtro_estado !== "") {
-   $condiciones[] = "inscripciones.estado = $filtro_estado";
+    $condiciones[] = "inscripciones.estado = $filtro_estado";
 }
 
 if ($filtro_nivel !== "") {
-   $condiciones[] = "estudiantes.id_nivel = $filtro_nivel";
+    $condiciones[] = "inscripciones.id_nivel = $filtro_nivel";
 }
+
 if ($filtro_anio !== "") {
-   $condiciones[] = "YEAR(inscripciones.fecha_inscripcion) = $filtro_anio";
+    $condiciones[] = "YEAR(inscripciones.fecha_inscripcion) = $filtro_anio";
 }
 
 if ($filtro_mes !== "") {
-   $condiciones[] = "MONTH(inscripciones.fecha_inscripcion) = $filtro_mes";
+    $condiciones[] = "MONTH(inscripciones.fecha_inscripcion) = $filtro_mes";
 }
 
-if(count($condiciones) > 0) {
+if (count($condiciones) > 0) {
     $consulta .= " WHERE ";
-    $consulta .= implode (" AND ", $condiciones);
+    $consulta .= implode(" AND ", $condiciones);
 }
 
-$consulta .= " ORDER BY personas.apellido ASC ";
+$consulta .= " ORDER BY personas.apellido ASC, personas.nombre ASC, inscripciones.fecha_inscripcion DESC ";
 
 $resultado = $conexion->query($consulta);
 
@@ -93,6 +97,7 @@ if (!$resultado) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,6 +106,7 @@ if (!$resultado) {
     <link rel="stylesheet" href="../../css/mystyle.css">
     <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
+
 <body>
 
     <!-- Menú lateral unificado -->
@@ -119,8 +125,12 @@ if (!$resultado) {
                     <label for="estado">Filtrar por estado:</label>
                     <select name="estado" id="estado" class="reportes-select">
                         <option value="">Todos</option>
-                        <option value="1" <?php if($filtro_estado === "1"){ echo "selected"; } ?>>Activos</option>
-                        <option value="0" <?php if($filtro_estado === "0"){ echo "selected"; } ?>>Inactivos</option>
+                        <option value="1" <?php if ($filtro_estado === "1") {
+                                                echo "selected";
+                                            } ?>>Activos</option>
+                        <option value="0" <?php if ($filtro_estado === "0") {
+                                                echo "selected";
+                                            } ?>>Inactivos</option>
                     </select>
                 </div>
 
@@ -128,8 +138,10 @@ if (!$resultado) {
                     <label for="nivel">Nivel académico:</label>
                     <select name="nivel" id="nivel" class="reportes-select">
                         <option value="">Todos</option>
-                        <?php while($nivel = $resultado_niveles->fetch_assoc()) { ?>
-                            <option value="<?php echo $nivel['id_nivel']; ?>" <?php if($filtro_nivel == $nivel['id_nivel']){ echo "selected"; } ?>>
+                        <?php while ($nivel = $resultado_niveles->fetch_assoc()) { ?>
+                            <option value="<?php echo $nivel['id_nivel']; ?>" <?php if ($filtro_nivel == $nivel['id_nivel']) {
+                                                                                    echo "selected";
+                                                                                } ?>>
                                 <?php echo $nivel['nivel_academico']; ?>
                             </option>
                         <?php } ?>
@@ -140,8 +152,10 @@ if (!$resultado) {
                     <label for="anio">Año de inscripción:</label>
                     <select name="anio" id="anio" class="reportes-select">
                         <option value="">Todos</option>
-                        <?php while($anio = $resultado_anios->fetch_assoc()) { ?>
-                            <option value="<?php echo $anio['anio']; ?>" <?php if($filtro_anio == $anio['anio']){ echo "selected"; } ?>>
+                        <?php while ($anio = $resultado_anios->fetch_assoc()) { ?>
+                            <option value="<?php echo $anio['anio']; ?>" <?php if ($filtro_anio == $anio['anio']) {
+                                                                                echo "selected";
+                                                                            } ?>>
                                 <?php echo $anio['anio']; ?>
                             </option>
                         <?php } ?>
@@ -154,12 +168,23 @@ if (!$resultado) {
                         <option value="">Todos</option>
                         <?php
                         $nombre_meses = [
-                            1 => "Enero", 2 => "Febrero", 3 => "Marzo", 4 => "Abril",
-                            5 => "Mayo", 6 => "Junio", 7 => "Julio", 8 => "Agosto",
-                            9 => "Septiembre", 10 => "Octubre", 11 => "Noviembre", 12 => "Diciembre"
-                        ]; 
-                        while($mes = $resultado_meses->fetch_assoc()) { ?>
-                            <option value="<?php echo $mes['mes']; ?>" <?php if($filtro_mes == $mes['mes']){ echo "selected"; } ?>>
+                            1 => "Enero",
+                            2 => "Febrero",
+                            3 => "Marzo",
+                            4 => "Abril",
+                            5 => "Mayo",
+                            6 => "Junio",
+                            7 => "Julio",
+                            8 => "Agosto",
+                            9 => "Septiembre",
+                            10 => "Octubre",
+                            11 => "Noviembre",
+                            12 => "Diciembre"
+                        ];
+                        while ($mes = $resultado_meses->fetch_assoc()) { ?>
+                            <option value="<?php echo $mes['mes']; ?>" <?php if ($filtro_mes == $mes['mes']) {
+                                                                            echo "selected";
+                                                                        } ?>>
                                 <?php echo $nombre_meses[$mes['mes']]; ?>
                             </option>
                         <?php } ?>
@@ -189,21 +214,21 @@ if (!$resultado) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while($fila = $resultado->fetch_assoc()) { ?>
+                    <?php while ($fila = $resultado->fetch_assoc()) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($fila['cedula']); ?></td>
                             <td><?php echo htmlspecialchars(ucwords(strtolower($fila['nombre']))); ?></td>
                             <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
                             <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
                             <td>
-                                <?php if($fila['estado'] == 1): ?>
+                                <?php if ($fila['estado'] == 1): ?>
                                     <span class="reportes-badge reportes-badge-active">Activo</span>
                                 <?php else: ?>
                                     <span class="reportes-badge reportes-badge-inactive">Inactivo</span>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <a class="reportes-link-action" href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&estado=<?php echo $filtro_estado; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>"> 
+                                <a class="reportes-link-action" href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&estado=<?php echo $filtro_estado; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>">
                                     Ver detalles
                                 </a>
                             </td>
@@ -218,4 +243,5 @@ if (!$resultado) {
     <?php include '../../script-seguridad.php'; ?>
 
 </body>
+
 </html>

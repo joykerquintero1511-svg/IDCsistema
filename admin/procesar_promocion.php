@@ -4,7 +4,7 @@ require_once('../conexion.php'); // Ajusta la ruta a tu conexion.php
 
 // Verificamos que se haya enviado el formulario por POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+
     // Verificamos si seleccionaron al menos un estudiante y el nivel destino
     if (!isset($_POST['estudiantes']) || empty($_POST['id_nivel_nuevo'])) {
         die("Error: Debes seleccionar al menos un estudiante y el nivel al que serán promovidos.");
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $estudiantes_seleccionados = $_POST['estudiantes']; // Esto es un array de IDs
     // Capturar y validar el nivel nuevo
-        $id_nivel_nuevo = intval($_POST['id_nivel_nuevo']);
+    $id_nivel_nuevo = intval($_POST['id_nivel_nuevo']);
 
     // Buscar el nombre del nivel nuevo para mostrarlo en el mensaje final
     $sql_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel_nuevo'";
@@ -23,9 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $exitos = 0; // Para contar cuántos se promovieron
 
     // INICIAMOS EL BUCLE: Recorremos cada estudiante seleccionado
+
     foreach ($estudiantes_seleccionados as $id_estudiante) {
-        
-       $id_estudiante = intval($id_estudiante); // porque id_estudiante también debe ser un número
+
+        $id_estudiante = intval($id_estudiante); // porque id_estudiante también debe ser un número
+
+        // Colocar como inactiva la inscripción anterior del estudiante
+        $sql_inactivar = "UPDATE inscripciones 
+                  SET estado = 0 
+                  WHERE id_estudiante = '$id_estudiante' 
+                  AND estado = 1";
+
+        mysqli_query($conexion, $sql_inactivar);
 
         // 1. Actualizamos su nivel en la tabla 'estudiantes'
         $sql_update = "UPDATE estudiantes SET id_nivel = '$id_nivel_nuevo' WHERE id_estudiante = '$id_estudiante'";
@@ -33,10 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Crear una nueva inscripción para el nivel promovido con un QR nuevo
         $token_qr = md5(uniqid(rand(), true)); // Nuevo token para su nueva entrada
-        
+
         $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante,id_nivel,fecha_inscripcion,estado,estatus_presencial,token_qr)
             VALUES ('$id_estudiante','$id_nivel_nuevo',NOW(),1,'pendiente','$token_qr')";
-        
+
         if (mysqli_query($conexion, $sql_inscripcion)) {
             $exitos++;
         }
@@ -52,8 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
     ";
-
 } else {
     echo "Acceso denegado.";
 }
-?>
