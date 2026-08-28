@@ -284,7 +284,7 @@
                                     Estado
                                 </th>
                             </tr>
-                        </thead>s
+                        </thead>
 
                         <tbody>
 
