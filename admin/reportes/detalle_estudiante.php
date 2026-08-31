@@ -64,7 +64,9 @@
         INNER JOIN niveles
             ON inscripciones.id_nivel = niveles.id_nivel
         WHERE inscripciones.id_estudiante = $id_estudiante
-        ORDER BY inscripciones.fecha_inscripcion DESC
+       ORDER BY inscripciones.estado DESC,
+            inscripciones.fecha_inscripcion DESC,
+            inscripciones.id_inscripcion DESC
     ";
 
     $resultado_historial = $conexion->query($consulta_historial);
@@ -133,6 +135,20 @@
 
             .btn-volver:hover {
                 background-color: #333333;
+            }
+
+            .btn-reiniciar {
+                display: inline-block;
+                padding: 10px 18px;
+                background-color: #0d6efd;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+
+            .btn-reiniciar:hover {
+                background-color: #0b5ed7;
             }
         </style>
     </head>
@@ -332,6 +348,11 @@
                 <p>No hay historial académico registrado.</p>
 
             <?php endif; ?>
+            <br>
+
+            <a href="reiniciar_historial.php?id_estudiante=<?php echo $fila['id_estudiante']; ?>&id_inscripcion=<?php echo $id_inscripcion; ?>" class="btn-reiniciar">
+                ↻ Reiniciar recorrido académico
+            </a>
 
             <a href="reporte_estudiantes.php?estado=<?php echo $estado; ?>&nivel=<?php echo urlencode($nivel); ?>&anio=<?php echo $anio; ?>&mes=<?php echo $mes; ?>" class="btn-volver">
                 ← Volver al reporte
