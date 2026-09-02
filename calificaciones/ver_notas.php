@@ -45,7 +45,6 @@ if ($_SESSION['rol'] === 'admin') {
         FROM niveles
         ORDER BY nivel_academico ASC
     ";
-
 } else {
 
     $sql = "
@@ -54,7 +53,6 @@ if ($_SESSION['rol'] === 'admin') {
         WHERE id_nivel = '$id_nivel_profesor'
         ORDER BY nivel_academico ASC
     ";
-
 }
 
 $resultado = mysqli_query($conexion, $sql);
@@ -81,14 +79,16 @@ $resultado = mysqli_query($conexion, $sql);
             margin: 0;
             padding: 20px;
         }
+
         .contenedor-principal {
             max-width: 1100px;
             margin: 0 auto;
             background: #c0c0c1ac;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
         }
+
         .boton-volver {
             display: inline-block;
             background: #f1f5f9;
@@ -102,9 +102,11 @@ $resultado = mysqli_query($conexion, $sql);
             transition: 0.3s;
             margin-bottom: 20px;
         }
+
         .boton-volver:hover {
             background: #e2e8f0;
         }
+
         .cabecera {
             display: flex;
             flex-direction: column;
@@ -113,15 +115,20 @@ $resultado = mysqli_query($conexion, $sql);
             border-bottom: 2px solid #f1f5f9;
             padding-bottom: 20px;
         }
+
         .cabecera img {
-            width: 100px; /* Tamaño del logo */
+            width: 100px;
+            /* Tamaño del logo */
             margin-bottom: 15px;
         }
+
         .cabecera h1 {
-            color: #0b2545; /* Azul principal */
+            color: #0b2545;
+            /* Azul principal */
             margin: 0;
             font-size: 28px;
         }
+
         .panel-filtros {
             background: #f8fafc;
             padding: 20px;
@@ -129,23 +136,28 @@ $resultado = mysqli_query($conexion, $sql);
             border: 1px solid #e2e8f0;
             margin-bottom: 25px;
         }
+
         .grid-filtros {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             align-items: end;
         }
+
         .grupo-form {
             display: flex;
             flex-direction: column;
         }
+
         .grupo-form label {
             font-weight: 600;
             font-size: 14px;
             color: #475569;
             margin-bottom: 6px;
         }
-        .grupo-form select, .grupo-form input {
+
+        .grupo-form select,
+        .grupo-form input {
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
@@ -153,13 +165,17 @@ $resultado = mysqli_query($conexion, $sql);
             outline: none;
             transition: border 0.3s;
         }
-        .grupo-form select:focus, .grupo-form input:focus {
+
+        .grupo-form select:focus,
+        .grupo-form input:focus {
             border-color: #0b2545;
         }
+
         .botones-filtro {
             display: flex;
             gap: 10px;
         }
+
         .btn-buscar {
             background: #0b2545;
             color: white;
@@ -171,9 +187,11 @@ $resultado = mysqli_query($conexion, $sql);
             transition: 0.3s;
             flex-grow: 1;
         }
+
         .btn-buscar:hover {
             background: #071a30;
         }
+
         .btn-limpiar {
             background: #ffffff;
             color: #475569;
@@ -185,19 +203,23 @@ $resultado = mysqli_query($conexion, $sql);
             font-weight: bold;
             transition: 0.3s;
         }
+
         .btn-limpiar:hover {
             background: #f1f5f9;
         }
+
         .tabla-responsive {
             overflow-x: auto;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
         }
+
         th {
             background: #0b2545;
             color: white;
@@ -206,15 +228,18 @@ $resultado = mysqli_query($conexion, $sql);
             font-size: 14px;
             white-space: nowrap;
         }
+
         td {
             padding: 12px 15px;
             border-bottom: 1px solid #e2e8f0;
             font-size: 14px;
             color: #334155;
         }
+
         tr:hover {
             background-color: #f8fafc;
         }
+
         .btn-editar {
             color: #2563eb;
             text-decoration: none;
@@ -224,9 +249,11 @@ $resultado = mysqli_query($conexion, $sql);
             border-radius: 4px;
             transition: 0.3s;
         }
+
         .btn-editar:hover {
             background: #dbeafe;
         }
+
         .badge-info {
             background: #e0e7ff;
             color: #3730a3;
@@ -237,6 +264,7 @@ $resultado = mysqli_query($conexion, $sql);
             font-weight: 600;
             font-size: 14px;
         }
+
         .panel-exportar {
             display: flex;
             justify-content: center;
@@ -246,6 +274,7 @@ $resultado = mysqli_query($conexion, $sql);
             padding-top: 20px;
             border-top: 1px solid #e2e8f0;
         }
+
         .btn-exportar {
             padding: 10px 20px;
             color: white;
@@ -256,37 +285,48 @@ $resultado = mysqli_query($conexion, $sql);
             align-items: center;
             gap: 8px;
             transition: transform 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .btn-exportar:hover {
             transform: translateY(-2px);
         }
-        .btn-print { background: #0b2545; }
-        .btn-pdf { background: #dc2626; }
-        .btn-excel { background: #16a34a; }
+
+        .btn-print {
+            background: #0b2545;
+        }
+
+        .btn-pdf {
+            background: #dc2626;
+        }
+
+        .btn-excel {
+            background: #16a34a;
+        }
     </style>
 </head>
 
 <body>
-        
+
     <div class="contenedor-principal">
-                        
-           <?php
 
-                if (
-                    isset($_GET['origen']) && $_GET['origen'] === 'admin' && $_SESSION['rol'] === 'admin') {
-                ?>
+        <?php
 
-                    <a href="../admin/index.php">← Volver al Inicio</a>
+        if (
+            isset($_GET['origen']) && $_GET['origen'] === 'admin' && $_SESSION['rol'] === 'admin'
+        ) {
+        ?>
 
-                <?php
-                } else {
-                ?>
+            <a href="../admin/index.php">← Volver al Inicio</a>
 
-                    <a href="index.php">← Volver al Inicio</a>
+        <?php
+        } else {
+        ?>
 
-                <?php
-                }
+            <a href="index.php">← Volver al Inicio</a>
+
+        <?php
+        }
         ?>
 
         <div class="cabecera">
@@ -296,24 +336,26 @@ $resultado = mysqli_query($conexion, $sql);
         </div>
 
         <form method="GET" class="panel-filtros">
-         
-         <?php if (
-        isset($_GET['origen']) &&
-        $_GET['origen'] === 'admin'
-    ) { ?>
 
-        <input type="hidden" name="origen" value="admin">
+            <?php if (
+                isset($_GET['origen']) &&
+                $_GET['origen'] === 'admin'
+            ) { ?>
 
-    <?php } ?>
+                <input type="hidden" name="origen" value="admin">
+
+            <?php } ?>
             <div class="grid-filtros">
-                
+
                 <div class="grupo-form">
                     <label>Nivel Académico:</label>
                     <select name="id_nivel" required onchange="this.form.submit();">
                         <option value="">Seleccione un nivel</option>
                         <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
                             <option value="<?php echo $fila['id_nivel']; ?>"
-                                <?php if (isset($_GET['id_nivel']) && $_GET['id_nivel'] == $fila['id_nivel']){ echo "selected"; } ?>>
+                                <?php if (isset($_GET['id_nivel']) && $_GET['id_nivel'] == $fila['id_nivel']) {
+                                    echo "selected";
+                                } ?>>
                                 <?php echo htmlspecialchars($fila['nivel_academico']); ?>
                             </option>
                         <?php } ?>
@@ -326,19 +368,19 @@ $resultado = mysqli_query($conexion, $sql);
                         <option value="">Seleccione una evaluación</option>
                         <?php
                         if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
-                        // Convertir el nivel recibido por la URL en un número entero
-                        $id_nivel_seleccionado = intval($_GET['id_nivel']); 
-                        
-                        // Evitar que un profesor consulte otro nivel modificando la URL
-                        if ($_SESSION['rol'] === 'profesor') {
+                            // Convertir el nivel recibido por la URL en un número entero
+                            $id_nivel_seleccionado = intval($_GET['id_nivel']);
 
-                            if ($id_nivel_seleccionado != $id_nivel_profesor) {
+                            // Evitar que un profesor consulte otro nivel modificando la URL
+                            if ($_SESSION['rol'] === 'profesor') {
 
-                                header("Location: ver_notas.php");
-                                exit();
+                                if ($id_nivel_seleccionado != $id_nivel_profesor) {
+
+                                    header("Location: ver_notas.php");
+                                    exit();
+                                }
                             }
-                        }  
-                            
+
                             $sql_evaluaciones = "SELECT DISTINCT evaluacion FROM calificaciones WHERE id_nivel = '$id_nivel_seleccionado' AND evaluacion != '' ORDER BY evaluacion ASC";
                             $resultado_evaluaciones = mysqli_query($conexion, $sql_evaluaciones);
 
@@ -358,7 +400,9 @@ $resultado = mysqli_query($conexion, $sql);
 
                 <div class="grupo-form">
                     <label>Buscar estudiante:</label>
-                    <input type="text" name="buscar" placeholder="Ej. Juan Pérez" value="<?php if(isset($_GET['buscar'])){ echo htmlspecialchars($_GET['buscar']); } ?>">
+                    <input type="text" name="buscar" placeholder="Ej. Juan Pérez" value="<?php if (isset($_GET['buscar'])) {
+                                                                                                echo htmlspecialchars($_GET['buscar']);
+                                                                                            } ?>">
                 </div>
 
                 <div class="botones-filtro">
@@ -382,119 +426,161 @@ $resultado = mysqli_query($conexion, $sql);
             }
 
             $sql_calificaciones = "
-                SELECT
-                    calificaciones.id_calificacion,
-                    personas.nombre,
-                    personas.apellido,
-                    calificaciones.descripcion_nota_1,
-                    calificaciones.descripcion_nota_2,
-                    calificaciones.nota_1,
-                    calificaciones.nota_2,
-                    calificaciones.nota_final,
-                    calificaciones.observacion
-                FROM calificaciones
-                INNER JOIN estudiantes ON calificaciones.id_estudiante = estudiantes.id_estudiante
-                INNER JOIN personas ON estudiantes.id_persona = personas.id_persona
-                WHERE calificaciones.id_nivel = '$id_nivel'
-            ";
+            SELECT
+                calificaciones.id_calificacion,
+                personas.nombre,
+                personas.apellido,
+                calificaciones.descripcion_nota_1,
+                calificaciones.descripcion_nota_2,
+                calificaciones.nota_1,
+                calificaciones.nota_2,
+                calificaciones.nota_final,
+                calificaciones.observacion
 
-            if ($evaluacion !== "") {
-                $sql_calificaciones .= " AND calificaciones.evaluacion = '$evaluacion'";
-            }
+            FROM inscripciones
+
+            INNER JOIN estudiantes
+            ON inscripciones.id_estudiante = estudiantes.id_estudiante
+
+            INNER JOIN personas
+            ON estudiantes.id_persona = personas.id_persona
+
+            LEFT JOIN calificaciones
+            ON calificaciones.id_estudiante = estudiantes.id_estudiante
+            AND calificaciones.id_nivel = inscripciones.id_nivel
+            AND calificaciones.evaluacion = '$evaluacion'
+
+            WHERE inscripciones.id_nivel = '$id_nivel'
+            AND inscripciones.estado = 1
+        ";
             if ($buscar != "") {
                 $sql_calificaciones .= " AND (personas.nombre LIKE '%$buscar%' OR personas.apellido LIKE '%$buscar%')";
             }
-            
+
             $sql_calificaciones .= " ORDER BY personas.apellido ASC";
-        
-            $resultado_calificaciones = mysqli_query($conexion,$sql_calificaciones);
+
+            $resultado_calificaciones = mysqli_query($conexion, $sql_calificaciones);
 
             if (!$resultado_calificaciones) {
                 die("Error al consultar las calificaciones: " . mysqli_error($conexion));
             }
         ?>
 
-        <?php if (mysqli_num_rows($resultado_calificaciones) > 0) { ?>
+            <?php if (mysqli_num_rows($resultado_calificaciones) > 0) { ?>
 
-            <h3 style="color: #0b2545; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Resultados de Búsqueda</h3>
+                <h3 style="color: #0b2545; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Resultados de Búsqueda</h3>
 
-            <?php if ($evaluacion != "") { ?>
-                <span class="badge-info">Evaluación: <?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?></span>
-            <?php } ?>
+                <?php if ($evaluacion != "") { ?>
+                    <span class="badge-info">Evaluación: <?php echo htmlspecialchars(ucwords(strtolower($evaluacion))); ?></span>
+                <?php } ?>
 
-            <?php
-            $fila_encabezado = mysqli_fetch_assoc($resultado_calificaciones);
+                <?php
+                $fila_encabezado = mysqli_fetch_assoc($resultado_calificaciones);
 
-            $nombre_actividad_1 = "Nota 1";
-            $nombre_actividad_2 = "Nota 2";
+                $nombre_actividad_1 = "Nota 1";
+                $nombre_actividad_2 = "Nota 2";
 
-            if ($fila_encabezado['descripcion_nota_1'] != "") {
-                $nombre_actividad_1 = ucwords(strtolower($fila_encabezado['descripcion_nota_1']));
-            }
-            if ($fila_encabezado['descripcion_nota_2'] != "") {
-                $nombre_actividad_2 = ucwords(strtolower($fila_encabezado['descripcion_nota_2']));
-            }
+                if ($fila_encabezado['descripcion_nota_1'] != "") {
+                    $nombre_actividad_1 = ucwords(strtolower($fila_encabezado['descripcion_nota_1']));
+                }
+                if ($fila_encabezado['descripcion_nota_2'] != "") {
+                    $nombre_actividad_2 = ucwords(strtolower($fila_encabezado['descripcion_nota_2']));
+                }
 
-            mysqli_data_seek($resultado_calificaciones, 0);
-            ?>
+                mysqli_data_seek($resultado_calificaciones, 0);
+                ?>
 
-            <div class="tabla-responsive">
-                <table>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th><?php echo htmlspecialchars($nombre_actividad_1); ?></th>
-                        <th><?php echo htmlspecialchars($nombre_actividad_2); ?></th>
-                        <th>Nota Final</th>
-                        <th>Observación</th>
-                        <th>Acción</th>
-                    </tr>
-
-                    <?php while ($fila_calificacion = mysqli_fetch_assoc($resultado_calificaciones)) { ?>
+                <div class="tabla-responsive">
+                    <table>
                         <tr>
-                            <td><?php echo htmlspecialchars(ucwords(strtolower($fila_calificacion['nombre']))); ?></td>
-                            <td><?php echo htmlspecialchars(ucwords(strtolower($fila_calificacion['apellido']))); ?></td>
-                            <td><?php echo htmlspecialchars($fila_calificacion['nota_1']); ?></td>
-                            <td>
-                                <?php
-                                if ($fila_calificacion['nota_2'] === null) {
-                                    echo "<span style='color: #94a3b8; font-style: italic;'>No registrada</span>";
-                                } else {
-                                    echo htmlspecialchars($fila_calificacion['nota_2']);
-                                }
-                                ?>
-                            </td>
-                            <td><strong><?php echo htmlspecialchars($fila_calificacion['nota_final']); ?></strong></td>
-                            <td>
-                                <?php
-                                if ($fila_calificacion['observacion'] === null || $fila_calificacion['observacion'] === "") {
-                                    echo "<span style='color: #94a3b8; font-style: italic;'>Sin observación</span>";
-                                } else {
-                                    echo htmlspecialchars(ucwords(strtolower($fila_calificacion['observacion'])));
-                                }
-                                ?>
-                            </td>
-                            <td>
-                                <a href="editar_notas.php?id_calificacion=<?php echo $fila_calificacion['id_calificacion']; ?>" class="btn-editar">Editar</a>
-                            </td>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th><?php echo htmlspecialchars($nombre_actividad_1); ?></th>
+                            <th><?php echo htmlspecialchars($nombre_actividad_2); ?></th>
+                            <th>Nota Final</th>
+                            <th>Observación</th>
+                            <th>Acción</th>
                         </tr>
-                    <?php } ?>
-                </table>
-            </div>
 
-            <div class="panel-exportar">
-                <a href="imprimir_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-print">🖨 Imprimir</a>
-                
-                <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-pdf">📄 Exportar PDF</a>
-                
+                        <?php while ($fila_calificacion = mysqli_fetch_assoc($resultado_calificaciones)) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars(ucwords(strtolower($fila_calificacion['nombre']))); ?></td>
+                                <td><?php echo htmlspecialchars(ucwords(strtolower($fila_calificacion['apellido']))); ?></td>
 
-            </div>
+                                <td>
+                                    <?php
+                                    if ($fila_calificacion['nota_1'] === null) {
+                                        echo "<span style='color: #94a3b8; font-style: italic;'>No registrada</span>";
+                                    } else {
+                                        echo htmlspecialchars($fila_calificacion['nota_1']);
+                                    }
+                                    ?>
+                                </td>
 
-        <?php } else { ?>
-            <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">
-                <p style="margin: 0;">No se encontraron calificaciones para ese nivel y evaluación.</p>
-            </div>
-        <?php } ?>
+                                <td>
+                                    <?php
+                                    if ($fila_calificacion['nota_2'] === null) {
+                                        echo "<span style='color: #94a3b8; font-style: italic;'>No registrada</span>";
+                                    } else {
+                                        echo htmlspecialchars($fila_calificacion['nota_2']);
+                                    }
+                                    ?>
+                                </td>
+
+                                <td>
+                                    <?php
+                                    if ($fila_calificacion['nota_final'] === null) {
+                                        echo "<span style='color: #94a3b8; font-style: italic;'>No registrada</span>";
+                                    } else {
+                                        echo "<strong>" . htmlspecialchars($fila_calificacion['nota_final']) . "</strong>";
+                                    }
+                                    ?>
+                                </td>
+
+                                <td>
+                                    <?php
+                                    if ($fila_calificacion['observacion'] === null || $fila_calificacion['observacion'] === "") {
+                                        echo "<span style='color: #94a3b8; font-style: italic;'>Sin observación</span>";
+                                    } else {
+                                        echo htmlspecialchars(ucwords(strtolower($fila_calificacion['observacion'])));
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+
+                                    <?php if ($fila_calificacion['id_calificacion'] !== null) { ?>
+
+                                        <a href="editar_notas.php?id_calificacion=<?php echo $fila_calificacion['id_calificacion']; ?>" class="btn-editar">
+                                            Editar
+                                        </a>
+
+                                    <?php } else { ?>
+
+                                        <span style="color: #94a3b8; font-style: italic;">
+                                            Sin calificación
+                                        </span>
+
+                                    <?php } ?>
+
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                </div>
+
+                <div class="panel-exportar">
+                    <a href="imprimir_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-print">🖨 Imprimir</a>
+
+                    <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-pdf">📄 Exportar PDF</a>
+
+
+                </div>
+
+            <?php } else { ?>
+                <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">
+                    <p style="margin: 0;">No se encontraron calificaciones para ese nivel y evaluación.</p>
+                </div>
+            <?php } ?>
 
         <?php } ?>
 

@@ -2,16 +2,11 @@
     include '../../session-start.php';
 
     require_once '../../conexion.php';
-    $filtro_estado = "";
     $filtro_nivel = "";
     $filtro_anio = "";
     $filtro_mes = "";
 
     $condiciones = [];
-
-    if (isset($_GET['estado'])) {
-        $filtro_estado = $_GET['estado'];
-    }
 
     if (isset($_GET['nivel'])) {
         $filtro_nivel = $_GET['nivel'];
@@ -34,7 +29,6 @@
             personas.nombre,
             personas.apellido,
             niveles.nivel_academico,
-            inscripciones.estado,
             estudiantes.id_estudiante
         FROM inscripciones
         INNER JOIN estudiantes
@@ -193,7 +187,6 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Nivel</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -205,14 +198,7 @@
                                 <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
                                 <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
                                 <td>
-                                    <?php if ($fila['estado'] == 1): ?>
-                                        <span class="reportes-badge reportes-badge-active">Activo</span>
-                                    <?php else: ?>
-                                        <span class="reportes-badge reportes-badge-inactive">Inactivo</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <a class="reportes-link-action" href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&estado=<?php echo $filtro_estado; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>">
+                                    <a class="reportes-link-action" href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>">
                                         Ver detalles
                                     </a>
                                 </td>
