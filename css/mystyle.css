@@ -1779,3 +1779,25 @@ input[type=number].table-input {
     /* Ocultar botones al imprimir */
     .idc-impresion-acciones { display: none !important; }
 }
+
+/* =========================================
+   ESTILO BOTÓN INICIAR SESIÓN (EXCLUSIVO)
+   ========================================= */
+a.btn-login-efb {
+    background-color: #0976fc !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    padding: 8px 18px !important;
+    border-radius: 20px !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    line-height: 1.2 !important;
+    transition: all 0.3s ease !important;
+}
+
+a.btn-login-efb:hover {
+    background-color: #0052cc !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(9, 118, 252, 0.4);
+}
