@@ -59,6 +59,29 @@ ORDER BY personas.apellido ASC
     $fila_nivel = mysqli_fetch_assoc($resultado_nivel);
     $nombre_nivel = $fila_nivel['nivel_academico'];
 
+    // Ruta del logo principal de la EFB
+    $ruta_logo = realpath('../certificados/images/marca_agua_logo.png');
+
+    // Convertir el logo a Base64 para mostrarlo correctamente en el PDF
+    $logo_base64 = '';
+
+    if ($ruta_logo !== false) {
+        $tipo_logo = pathinfo($ruta_logo, PATHINFO_EXTENSION);
+        $datos_logo = file_get_contents($ruta_logo);
+        $logo_base64 = 'data:image/' . $tipo_logo . ';base64,' . base64_encode($datos_logo);
+    }
+
+    // Preparar el logo EFB para usarlo como marca de agua
+    $ruta_marca_agua = realpath('../certificados/images/marca_logo3.png');
+
+    $marca_agua_base64 = '';
+
+    if ($ruta_marca_agua !== false) {
+        $tipo_marca_agua = pathinfo($ruta_marca_agua, PATHINFO_EXTENSION);
+        $datos_marca_agua = file_get_contents($ruta_marca_agua);
+        $marca_agua_base64 = 'data:image/' . $tipo_marca_agua . ';base64,' . base64_encode($datos_marca_agua);
+    }
+
     // Preparar los nombres de las actividades
 
     $nombre_actividad_1 = "Nota 1";
@@ -124,12 +147,27 @@ ORDER BY personas.apellido ASC
         color: #333;
     }
 
+    .logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 5px;
+    }
+
     .encabezado {
         text-align: center;
-        border-bottom: 2px solid #555;
+        border-bottom: 2px solid #006da8;
         padding-bottom: 10px;
         margin-bottom: 20px;
     }
+
+    .iglesia {
+    font-family: "Times New Roman", serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #005f91;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+}
 
     .encabezado h1 {
         margin: 0;
@@ -146,14 +184,17 @@ ORDER BY personas.apellido ASC
         color: #555;
     }
 
-    .info-seccion {
-        margin-bottom: 20px;
-    }
+   .info-seccion {
+    border-left: 4px solid #006da8;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+}
 
-    .info-seccion p {
-        margin: 5px 0;
-        font-size: 13px;
-    }
+.info-seccion p {
+    margin: 3px 0;
+    font-size: 12px;
+    color: #333;
+}
 
     table {
         width: 100%;
@@ -162,21 +203,45 @@ ORDER BY personas.apellido ASC
     }
 
     th, td {
-        border: 1px solid #999;
-        padding: 8px;
-        text-align: center;
+    border: 1px solid #b8c4cc;
+    padding: 9px 8px;
+    text-align: center;
     }
 
     th {
-        background-color: #e5e5e5;
-        color: #333;
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: 11px;
+    background-color: #eeeeee;
+    color: #222;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+
+    .pie-pagina {
+    position: fixed;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    border-top: 1px solid #006da8;
+    padding-top: 7px;
+    font-size: 10px;
+    color: #777;
     }
 
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
+    .marca-agua {
+    position: fixed;
+    top: 180px;
+    left: 50%;
+    margin-left: -250px;
+    width: 500px;
+    text-align: center;
+    opacity: 0.085;
+    z-index: -1;
+}
+
+    .marca-agua img {
+        width: 500px;
+        height: auto;
     }
 
     </style>
@@ -184,7 +249,15 @@ ORDER BY personas.apellido ASC
 
     <body>
 
+    <div class="marca-agua">
+         <img src="' . $marca_agua_base64 . '">
+    </div>
+
     <div class="encabezado">
+        <img src="' . $logo_base64 . '" class="logo">
+
+    <div class="iglesia">IGLESIA DIOS EN CASA</div>
+
         <h1>Escuela de Formación Bíblica</h1>
         <h2>Reporte de Calificaciones</h2>
     </div>
@@ -269,6 +342,9 @@ ORDER BY personas.apellido ASC
 
     $html .= '
     </table>
+    <div class="pie-pagina">
+        Escuela de Formación Bíblica &nbsp; | &nbsp; Iglesia Dios en Casa
+    </div>
 
     </body>
     </html>
