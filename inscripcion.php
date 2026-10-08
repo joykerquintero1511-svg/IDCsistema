@@ -82,6 +82,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                                     <input class="u-fullwidth" type="text" name="cedula" id="cedula" placeholder="00000000" required maxlength="8" pattern="[0-9]{7,8}" title="La cédula debe contener mínimo 7 y máximo 8 números"
                                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                            style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
+                                           <span id="msg-cedula" class="mensaje-validacion"></span>
                                 </div>
                             </div>
 
@@ -98,6 +99,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Correo Electrónico</label>
                                 <input class="u-fullwidth" type="email" id="email" name="email" placeholder="nombre@correo.com" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
+                                <span id="msg-email" class="mensaje-validacion"></span>
                             </div>
 
                             <div style="margin-bottom: 2rem;">
@@ -241,4 +243,50 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 </script>
 
 </body>
+<script>
+// Función genérica para validar mediante AJAX
+function validarCampoAJAX(inputId, spanId, campoPOST) {
+    let inputElement = document.getElementById(inputId);
+    let spanElement = document.getElementById(spanId);
+
+    if (!inputElement || !spanElement) return;
+
+    inputElement.addEventListener('blur', function() {
+        let valor = this.value.trim();
+
+        if (valor === '') {
+            spanElement.textContent = '';
+            this.style.borderColor = '';
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append(campoPOST, valor);
+
+        fetch('validar_campo.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            spanElement.textContent = data.mensaje;
+
+            if (data.status === 'error') {
+                spanElement.style.color = '#ff4d4d';
+                this.style.borderColor = '#ff4d4d';
+            } else {
+                spanElement.style.color = '#2ecc71';
+                this.style.borderColor = '#2ecc71';
+            }
+        })
+        .catch(error => {
+            console.error('Error en la validación:', error);
+        });
+    });
+}
+
+// Activamos la validación para Cédula y Correo
+validarCampoAJAX('cedula', 'msg-cedula', 'cedula');
+validarCampoAJAX('correo', 'msg-correo', 'correo');
+</script>
 </html>
