@@ -22,7 +22,8 @@ $nombre = mysqli_real_escape_string($conexion, $nombre);
 $email = strtolower(trim($_POST['email']));
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    die("Error: El correo electrónico no es válido. <a href='registro_usuarios.php'>Volver</a>");
+    header("Location: registro_usuarios.php?error=correo_duplicado");
+exit();
 }
 
 $email = mysqli_real_escape_string($conexion, $email);

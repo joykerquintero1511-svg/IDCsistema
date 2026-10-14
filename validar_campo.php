@@ -47,4 +47,36 @@ if (isset($_POST['correo'])) {
     }
     exit();
 }
+
+// VALIDAR EMAIL EN REGISTRO DE USUARIOS
+if (isset($_POST['email'])) {
+    $email = mysqli_real_escape_string($conexion, trim($_POST['email']));
+
+    if (empty($email)) {
+        echo json_encode(['status' => 'error', 'mensaje' => 'El correo no puede estar vacío.']);
+        exit();
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(['status' => 'error', 'mensaje' => '❌ Formato de correo inválido.']);
+        exit();
+    }
+
+    // Consultamos en la tabla de usuarios
+    $sql = "SELECT id_usuario FROM usuarios WHERE correo = '$email'";
+    $resultado = mysqli_query($conexion, $sql);
+
+    if (mysqli_num_rows($resultado) > 0) {
+        echo json_encode([
+            'status' => 'error', 
+            'mensaje' => '❌ Este correo ya está registrado por otro usuario.'
+        ]);
+    } else {
+        echo json_encode([
+            'status' => 'success', 
+            'mensaje' => '✓ Correo disponible para registro.'
+        ]);
+    }
+    exit();
+}
 ?>

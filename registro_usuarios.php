@@ -85,10 +85,10 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
                 </div>
 
                 <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input class="u-fullwidth" type="email" name="email" required placeholder="correo@ejemplo.com">
-                </div>
-
+    <label>Correo Electrónico</label>
+    <input class="u-fullwidth" type="email" name="email" id="email" required placeholder="correo@ejemplo.com">
+    <span id="msg-email" class="mensaje-validacion"></span>
+</div>
                 <div class="form-group">
                 <label>Nivel Académico</label>
                 <select class="form-control" name="id_nivel">
@@ -153,5 +153,156 @@ $result_niveles = mysqli_query($conexion, $query_niveles);
             }
         }
     </script>
+
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let esCorreoValido = false;
+
+    const inputEmail = document.getElementById('email');
+    const spanMensaje = document.getElementById('msg-email');
+    const miFormulario = inputEmail ? inputEmail.closest('form') : document.querySelector('form');
+
+    // 1. INYECCIÓN AUTOMÁTICA DE ESTILOS (Hace que la alerta sea 100% independiente del CSS)
+    if (!document.getElementById('estilos-alerta-autonomos')) {
+        const estiloModal = document.createElement('style');
+        estiloModal.id = 'estilos-alerta-autonomos';
+        estiloModal.innerHTML = `
+            .modal-alerta-bg {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                background: rgba(0, 0, 0, 0.8) !important;
+                backdrop-filter: blur(4px) !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                z-index: 999999 !important;
+            }
+            .modal-alerta-box {
+                background: #1e293b !important;
+                border: 1px solid #334155 !important;
+                border-radius: 12px !important;
+                padding: 28px 24px !important;
+                max-width: 380px !important;
+                width: 90% !important;
+                text-align: center !important;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+                color: #ffffff !important;
+                font-family: system-ui, -apple-system, sans-serif !important;
+            }
+            .modal-alerta-box h3 {
+                margin: 12px 0 8px 0 !important;
+                color: #ffffff !important;
+                font-size: 1.25rem !important;
+                font-weight: bold !important;
+            }
+            .modal-alerta-box p {
+                color: #cbd5e1 !important;
+                font-size: 0.95rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 22px !important;
+            }
+            .modal-alerta-btn {
+                background: linear-gradient(135deg, #0976fc 0%, #0042a5 100%) !important;
+                color: #ffffff !important;
+                border: none !important;
+                padding: 10px 26px !important;
+                border-radius: 20px !important;
+                font-weight: bold !important;
+                font-size: 0.9rem !important;
+                cursor: pointer !important;
+                box-shadow: 0 4px 12px rgba(9, 118, 252, 0.4) !important;
+            }
+            .modal-alerta-btn:hover {
+                background: linear-gradient(135deg, #1d82ff 0%, #0052cc 100%) !important;
+            }
+        `;
+        document.head.appendChild(estiloModal);
+    }
+
+    // 2. FUNCIÓN PARA MOSTRAR EL MODAL
+    function mostrarAlerta(mensaje, titulo = 'Atención', icono = '❌') {
+        let overlay = document.getElementById('modal-alerta-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'modal-alerta-overlay';
+            overlay.className = 'modal-alerta-bg';
+            document.body.appendChild(overlay);
+        }
+
+        overlay.innerHTML = `
+            <div class="modal-alerta-box">
+                <div style="font-size: 2.8rem; line-height: 1;">${icono}</div>
+                <h3>${titulo}</h3>
+                <p>${mensaje}</p>
+                <button type="button" class="modal-alerta-btn" onclick="cerrarModalAlerta()">Entendido</button>
+            </div>
+        `;
+        overlay.style.display = 'flex';
+    }
+
+    // FUNCIÓN GLOBAL PARA CERRAR
+    window.cerrarModalAlerta = function() {
+        const overlay = document.getElementById('modal-alerta-overlay');
+        if (overlay) overlay.style.display = 'none';
+    };
+
+    // 3. VALIDACIÓN AJAX AL PERDER EL FOCO (BLUR)
+    if (inputEmail) {
+        inputEmail.addEventListener('blur', function() {
+            let valor = this.value.trim();
+
+            if (valor === '') {
+                if (spanMensaje) spanMensaje.textContent = '';
+                this.style.borderColor = '';
+                esCorreoValido = false;
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('email', valor);
+
+            fetch('validar_campo.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (spanMensaje) spanMensaje.textContent = data.mensaje;
+
+                if (data.status === 'error') {
+                    if (spanMensaje) spanMensaje.style.color = '#ff4d4d';
+                    this.style.borderColor = '#ff4d4d';
+                    esCorreoValido = false;
+                } else {
+                    if (spanMensaje) spanMensaje.style.color = '#2ecc71';
+                    this.style.borderColor = '#2ecc71';
+                    esCorreoValido = true;
+                }
+            })
+            .catch(err => console.error('Error en validación AJAX:', err));
+        });
+    }
+
+    // 4. INTERCEPCIÓN DEL BOTÓN ENVIAR (SUBMIT)
+    if (miFormulario) {
+        miFormulario.addEventListener('submit', function(e) {
+            if (!esCorreoValido) {
+                e.preventDefault(); // Bloquea el envío del formulario
+                
+                mostrarAlerta(
+                    'El correo ingresado ya existe en la base de datos o aún no ha sido validado.',
+                    'Correo No Disponible',
+                    '❌'
+                );
+                
+                if (inputEmail) inputEmail.focus();
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>
