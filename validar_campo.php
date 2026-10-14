@@ -12,6 +12,15 @@ if (isset($_POST['cedula'])) {
         exit();
     }
 
+    // Comprobamos que la cédula tenga entre 7 y 8 números
+    if (!preg_match('/^[0-9]{7,8}$/', $cedula)) {
+        echo json_encode([
+            'status' => 'error',
+            'mensaje' => '❌ La cédula debe tener 7 u 8 números.'
+        ]);
+        exit();
+    }
+
     $sql = "SELECT id_persona FROM personas WHERE cedula = '$cedula'";
     $resultado = mysqli_query($conexion, $sql);
 
@@ -37,45 +46,14 @@ if (isset($_POST['correo'])) {
         exit();
     }
 
-    $sql = "SELECT id_persona FROM personas WHERE correo = '$correo'";
+    // Buscar el correo en la tabla de estudiantes
+    $sql = "SELECT id_estudiante FROM estudiantes WHERE email = '$correo'";
     $resultado = mysqli_query($conexion, $sql);
 
     if (mysqli_num_rows($resultado) > 0) {
         echo json_encode(['status' => 'error', 'mensaje' => '❌ Este correo ya está registrado.']);
     } else {
         echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo disponible.']);
-    }
-    exit();
-}
-
-// VALIDAR EMAIL EN REGISTRO DE USUARIOS
-if (isset($_POST['email'])) {
-    $email = mysqli_real_escape_string($conexion, trim($_POST['email']));
-
-    if (empty($email)) {
-        echo json_encode(['status' => 'error', 'mensaje' => 'El correo no puede estar vacío.']);
-        exit();
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(['status' => 'error', 'mensaje' => '❌ Formato de correo inválido.']);
-        exit();
-    }
-
-    // Consultamos en la tabla de usuarios
-    $sql = "SELECT id_usuario FROM usuarios WHERE correo = '$email'";
-    $resultado = mysqli_query($conexion, $sql);
-
-    if (mysqli_num_rows($resultado) > 0) {
-        echo json_encode([
-            'status' => 'error', 
-            'mensaje' => '❌ Este correo ya está registrado por otro usuario.'
-        ]);
-    } else {
-        echo json_encode([
-            'status' => 'success', 
-            'mensaje' => '✓ Correo disponible para registro.'
-        ]);
     }
     exit();
 }
