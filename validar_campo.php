@@ -12,6 +12,15 @@ if (isset($_POST['cedula'])) {
         exit();
     }
 
+    // Comprobamos que la cédula tenga entre 7 y 8 números
+    if (!preg_match('/^[0-9]{7,8}$/', $cedula)) {
+        echo json_encode([
+            'status' => 'error',
+            'mensaje' => '❌ La cédula debe tener 7 u 8 números.'
+        ]);
+        exit();
+    }
+
     $sql = "SELECT id_persona FROM personas WHERE cedula = '$cedula'";
     $resultado = mysqli_query($conexion, $sql);
 
@@ -37,7 +46,8 @@ if (isset($_POST['correo'])) {
         exit();
     }
 
-    $sql = "SELECT id_persona FROM personas WHERE correo = '$correo'";
+    // Buscar el correo en la tabla de estudiantes
+    $sql = "SELECT id_estudiante FROM estudiantes WHERE email = '$correo'";
     $resultado = mysqli_query($conexion, $sql);
 
     if (mysqli_num_rows($resultado) > 0) {
@@ -47,4 +57,3 @@ if (isset($_POST['correo'])) {
     }
     exit();
 }
-?>

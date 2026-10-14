@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require_once('conexion.php');
 
@@ -30,6 +30,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
 <!DOCTYPE html>
 <html lang="es" class="no-js">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,9 +66,9 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                     </h5>
 
                     <div style="max-width: 600px; margin: 0 auto; background: rgba(255, 255, 255, 0.02); padding: 4rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
-                        
+
                         <form action="registrar_estudiantes.php" method="POST" style="text-align: left;">
-                            
+
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">
                                     Cédula / Documento de Identidad
@@ -80,9 +81,9 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                                     </select>
 
                                     <input class="u-fullwidth" type="text" name="cedula" id="cedula" placeholder="00000000" required maxlength="8" pattern="[0-9]{7,8}" title="La cédula debe contener mínimo 7 y máximo 8 números"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                                           style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
-                                           <span id="msg-cedula" class="mensaje-validacion"></span>
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                        style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px; flex: 1; height: 5.4rem; margin-bottom: 0;">
+                                    <span id="msg-cedula" class="mensaje-validacion"></span>
                                 </div>
                             </div>
 
@@ -115,7 +116,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Género</label>
 
-                                <select name="genero"  id="genero" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
+                                <select name="genero" id="genero" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
                                     <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu género</option>
                                     <option value="F" style="background: #142132; color: #fff;">F (Femenino)</option>
                                     <option value="M" style="background: #142132; color: #fff;">M (Masculino)</option>
@@ -124,16 +125,17 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Número de Teléfono</label>
+
                                 <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required maxlength="11" pattern="[0-9]{11}" title="El número de teléfono debe contener exactamente 11 números"
-                                oninput="this.value = this.value.replace(/[^0-9]/g,'');"
-                                style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
+                                    oninput="this.value = this.value.replace(/[^0-9]/g,'');"
+                                    style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Contacto de Emergencia</label>
                                 <input class="u-fullwidth" type="text" id="contacto_emergencia" name="contacto_emergencia" placeholder="Número de contacto" required maxlength="11" pattern="[0-9]{11}" title="El número de teléfono debe contener exactamente 11 números"
-                                oninput="this.value = this.value.replace(/[^0-9]/g,'');"
-                                style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
+                                    oninput="this.value = this.value.replace(/[^0-9]/g,'');"
+                                    style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
                             </div>
 
                             <div style="margin-bottom: 2rem;">
@@ -151,24 +153,24 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             </div>
 
                             <div style="margin-bottom: 2rem;">
-    <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel a Cursar</label>
-    
-    <select name="id_nivel" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer; width: 100%;">
-        
-        <!-- Opción por defecto (igual que en tu otro menú) -->
-        <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">
-            Selecciona el nivel a cursar
-        </option>
-        
-        <!-- Opciones generadas desde la Base de Datos -->
-        <?php while($fila = mysqli_fetch_assoc($resultado)): ?>
-            <option value="<?php echo $fila['id_nivel']; ?>" style="background: #142132; color: #fff;">
-                <?php echo $fila['nivel_academico']; ?>
-            </option>
-        <?php endwhile; ?>
-        
-    </select>
-</div>
+                                <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel a Cursar</label>
+
+                                <select name="id_nivel" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer; width: 100%;">
+
+                                    <!-- Opción por defecto (igual que en tu otro menú) -->
+                                    <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">
+                                        Selecciona el nivel a cursar
+                                    </option>
+
+                                    <!-- Opciones generadas desde la Base de Datos -->
+                                    <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+                                        <option value="<?php echo $fila['id_nivel']; ?>" style="background: #142132; color: #fff;">
+                                            <?php echo $fila['nivel_academico']; ?>
+                                        </option>
+                                    <?php endwhile; ?>
+
+                                </select>
+                            </div>
 
                             <button type="submit" class="btn btn--primary u-fullwidth" style="font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase; height: 5.5rem; line-height: 5.5rem;">
                                 Registrarse
@@ -182,19 +184,19 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                     <?php if (isset($_GET['origen']) && $_GET['origen'] === 'admin') { ?>
 
-                    <a href="admin/estudiantes/listar.php"
-                    style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;"onmouseover="this.style.color='#fff'"onmouseout="this.style.color='rgba(255,255,255,0.4)'">
-                        ← Volver a la lista de estudiantes
-                    </a>
+                        <a href="admin/estudiantes/listar.php"
+                            style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                            ← Volver a la lista de estudiantes
+                        </a>
 
                     <?php } else { ?>
 
-                    <a href="index.php"
-                    style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;"onmouseover="this.style.color='#fff'"onmouseout="this.style.color='rgba(255,255,255,0.4)'">
-                        ← Volver a la página principal
-                    </a>
+                        <a href="index.php"
+                            style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                            ← Volver a la página principal
+                        </a>
 
-                <?php } ?>
+                    <?php } ?>
 
                 </div>
             </div>
@@ -202,91 +204,93 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
     </main>
 
     <script>
-    document.getElementById('cedula').addEventListener('blur', function() {
-        let cedula = this.value;
-        
-        if (cedula.length >= 6) { // Solo buscar si escribió una cédula válida
-            let formData = new FormData();
-            formData.append('cedula', cedula);
+        document.getElementById('cedula').addEventListener('blur', function() {
+            let cedula = this.value;
 
-            fetch('buscar_cedula.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    // Rellenar los campos automáticamente
-                    if(data.nacionalidad) document.getElementById('nacionalidad').value = data.nacionalidad;
-                    document.getElementById('nombre').value = data.nombre;
-                    document.getElementById('apellidos').value = data.apellido;
-                    document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento;
-                    if(data.genero) document.getElementById('genero').value = data.genero;
-                    document.getElementById('telefono').value = data.telefono;
-                    document.getElementById('contacto_emergencia').value = data.contacto_emergencia;
-                    document.getElementById('direccion').value = data.direccion;
-                    
-                    if(data.email) document.getElementById('email').value = data.email;
-                    if(data.nivel_instruccion) document.getElementById('nivel_instruccion').value = data.nivel_instruccion;
+            if (cedula.length >= 7) { // Solo buscar si escribió una cédula válida
+                let formData = new FormData();
+                formData.append('cedula', cedula);
 
-                    // Efecto visual: Ponemos los campos con un borde azul para que note el autorrelleno
-                    let campos = ['nombre', 'apellidos', 'fecha_nacimiento', 'telefono', 'contacto_emergencia', 'direccion', 'email'];
-                    campos.forEach(id => {
-                        document.getElementById(id).style.borderColor = '#3b82f6';
-                        document.getElementById(id).style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
-                    });
-                }
-            })
-            .catch(error => console.error('Error en la búsqueda:', error));
-        }
-    });
-</script>
+                fetch('buscar_cedula.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.error) {
+                            // Rellenar los campos automáticamente
+                            if (data.nacionalidad) document.getElementById('nacionalidad').value = data.nacionalidad;
+                            document.getElementById('nombre').value = data.nombre;
+                            document.getElementById('apellidos').value = data.apellido;
+                            document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento;
+                            if (data.genero) document.getElementById('genero').value = data.genero;
+                            document.getElementById('telefono').value = data.telefono;
+                            document.getElementById('contacto_emergencia').value = data.contacto_emergencia;
+                            document.getElementById('direccion').value = data.direccion;
+
+                            if (data.email) document.getElementById('email').value = data.email;
+                            if (data.nivel_instruccion) document.getElementById('nivel_instruccion').value = data.nivel_instruccion;
+
+                            // Efecto visual: Ponemos los campos con un borde azul para que note el autorrelleno
+                            let campos = ['nombre', 'apellidos', 'fecha_nacimiento', 'telefono', 'contacto_emergencia', 'direccion', 'email'];
+                            campos.forEach(id => {
+                                document.getElementById(id).style.borderColor = '#3b82f6';
+                                document.getElementById(id).style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error en la búsqueda:', error));
+            }
+        });
+    </script>
 
 </body>
 <script>
-// Función genérica para validar mediante AJAX
-function validarCampoAJAX(inputId, spanId, campoPOST) {
-    let inputElement = document.getElementById(inputId);
-    let spanElement = document.getElementById(spanId);
+    // Función genérica para validar mediante AJAX
+    function validarCampoAJAX(inputId, spanId, campoPOST) {
+        let inputElement = document.getElementById(inputId);
+        let spanElement = document.getElementById(spanId);
 
-    if (!inputElement || !spanElement) return;
+        if (!inputElement || !spanElement) return;
 
-    inputElement.addEventListener('blur', function() {
-        let valor = this.value.trim();
+        // Blur 
+        inputElement.addEventListener('blur', function() {
+            let valor = this.value.trim();
 
-        if (valor === '') {
-            spanElement.textContent = '';
-            this.style.borderColor = '';
-            return;
-        }
-
-        let formData = new FormData();
-        formData.append(campoPOST, valor);
-
-        fetch('validar_campo.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            spanElement.textContent = data.mensaje;
-
-            if (data.status === 'error') {
-                spanElement.style.color = '#ff4d4d';
-                this.style.borderColor = '#ff4d4d';
-            } else {
-                spanElement.style.color = '#2ecc71';
-                this.style.borderColor = '#2ecc71';
+            if (valor === '') {
+                spanElement.textContent = '';
+                this.style.borderColor = '';
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error en la validación:', error);
-        });
-    });
-}
 
-// Activamos la validación para Cédula y Correo
-validarCampoAJAX('cedula', 'msg-cedula', 'cedula');
-validarCampoAJAX('correo', 'msg-correo', 'correo');
+            let formData = new FormData();
+            formData.append(campoPOST, valor);
+
+            fetch('validar_campo.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    spanElement.textContent = data.mensaje;
+
+                    if (data.status === 'error') {
+                        spanElement.style.color = '#ff4d4d';
+                        this.style.borderColor = '#ff4d4d';
+                    } else {
+                        spanElement.style.color = '#2ecc71';
+                        this.style.borderColor = '#2ecc71';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la validación:', error);
+                });
+        });
+    }
+
+    // Activamos la validación para Cédula y Correo
+    validarCampoAJAX('cedula', 'msg-cedula', 'cedula');
+    validarCampoAJAX('email', 'msg-email', 'correo');
 </script>
+
 </html>
