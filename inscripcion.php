@@ -251,7 +251,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
         let inputElement = document.getElementById(inputId);
         let spanElement = document.getElementById(spanId);
 
-        if (!inputElement || !spanElement) return;
+        if (!inputElement ||+ !spanElement) return;
 
         // Blur 
         inputElement.addEventListener('blur', function() {
