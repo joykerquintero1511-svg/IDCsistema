@@ -35,6 +35,27 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inscripción EFB</title>
+
+    <style>
+        /* Estilo base para los mensajes (ocultos o limpios por defecto) */
+        #msg-email,
+        #msg-cedula {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Solo muestra el fondo y los márgenes si el span tiene texto adentro */
+        #msg-email:not(:empty),
+        #msg-cedula:not(:empty) {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+    </style>
+
+
     <link rel="icon" type="image/png" href="images/EFB.png">
 
     <script>
