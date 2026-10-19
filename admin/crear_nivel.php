@@ -6,17 +6,26 @@ $mensaje = "";
 $tipo_alerta = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){ 
+    // Convertimos a mayúsculas y eliminamos cualquier carácter que no sea A-Z o 0-9
+    $codigo_nivel = strtoupper(trim($_POST['codigo_nivel']));
+    $codigo_nivel = preg_replace('/[^A-Z0-9]/', '', $codigo_nivel);
     $nombre_nivel = trim($_POST['nombre_nivel']);
-    $codigo_nivel = trim($_POST['codigo_nivel']);
-    $nivel_academico = trim($_POST['nivel_academico']);
+    
+    // Concatenación automática en PHP por seguridad
+    $nivel_academico = !empty($_POST['nivel_academico']) 
+        ? trim($_POST['nivel_academico']) 
+        : $codigo_nivel . ' - ' . $nombre_nivel;
+        
     $periodo_academico = date("Y"); 
 
-    if(!empty($nombre_nivel) && !empty($codigo_nivel) && !empty($nivel_academico)){
+    if(!empty($nombre_nivel) && !empty($codigo_nivel)){
         $nombre_seguro = mysqli_real_escape_string($conexion, $nombre_nivel);
         $codigo_seguro = mysqli_real_escape_string($conexion, $codigo_nivel);
         $academico_seguro = mysqli_real_escape_string($conexion, $nivel_academico);
 
-        $sql = "INSERT INTO niveles (nivel_academico, codigo_nivel, periodo_academico) VALUES ('$academico_seguro', '$codigo_seguro', '$periodo_academico')"; 
+        // Guardamos en la base de datos
+        $sql = "INSERT INTO niveles (nivel_academico, codigo_nivel, periodo_academico) 
+                VALUES ('$academico_seguro', '$codigo_seguro', '$periodo_academico')"; 
         
         if (mysqli_query($conexion, $sql)) { 
             $mensaje = "¡Nivel guardado con éxito!";
@@ -26,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             $tipo_alerta = "error";
         }
     } else {
-        $mensaje = "Por favor, completa todos los campos.";
+        $mensaje = "Por favor, completa los campos requeridos.";
         $tipo_alerta = "warning";
     }
 }
@@ -46,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     <!-- Menú lateral unificado -->
     <?php include 'sidebaradmin.php'; ?>
 
-    <!-- Contenedor Principal con la clase que respeta el sidebar -->
+    <!-- Contenedor Principal -->
     <main class="main-content">
         
         <div class="nivel-wrapper">
@@ -66,21 +75,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                 <form action="crear_nivel.php" method="POST">
                     
                     <div class="nivel-form-group">
-                        <label>Nombre del Nivel</label>
-                        <input class="nivel-input" type="text" name="nombre_nivel" placeholder="Ej. Escuela para Bautismo" required>
+                        <label for="codigo_nivel">Código del Nivel</label>
+                        <input class="nivel-input" type="text" id="codigo_nivel" name="codigo_nivel" placeholder="Ej. 1A" required autocomplete="off">
                     </div>
 
                     <div class="nivel-form-group">
-                        <label>Código del Nivel</label>
-                        <input class="nivel-input" type="text" name="codigo_nivel" placeholder="Ej. 1A" required>
+                        <label for="nombre_nivel">Nombre del Nivel</label>
+                        <input class="nivel-input" type="text" id="nombre_nivel" name="nombre_nivel" placeholder="Ej. Escuela para Bautismo" required autocomplete="off">
                     </div>
 
                     <div class="nivel-form-group">
-                        <label>Nivel Académico</label>
-                        <input class="nivel-input" type="text" name="nivel_academico" placeholder="Ej. 1A-Escuela para Bautismo" required>
+                        <label for="nivel_academico">Nivel Académico (Automático)</label>
+                        <input class="nivel-input" type="text" id="nivel_academico" name="nivel_academico" placeholder="Ej. 1A - Escuela para Bautismo" readonly style="background-color: rgba(255, 255, 255, 0.05); color: #94a3b8; cursor: not-allowed;">
                     </div>
-
-                    <button type="submit" class="nivel-btn-submit">Guardar Nivel</button>
+<div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+    <button type="submit" class="nivel-btn-submit">Guardar Nivel</button>
+    <a href="gestion_niveles.php" class="nivel-btn-cancel">Cancelar</a>
+</div>
                     
                 </form>
 
@@ -90,5 +101,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     </main>
 
     <?php include '../script-seguridad.php'; ?>
+
+   <!-- JS CON RESTRICCIONES Y CONCATENACIÓN AUTOMÁTICA -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputCodigo = document.getElementById('codigo_nivel');
+    const inputNombre = document.getElementById('nombre_nivel');
+    const inputAcademico = document.getElementById('nivel_academico');
+
+    // 1. RESTRICCIÓN EN TIEMPO REAL PARA EL CÓDIGO DEL NIVEL
+    inputCodigo.addEventListener('input', function() {
+        // Convierte todo a mayúsculas
+        let valor = this.value.toUpperCase();
+
+        // Elimina todo lo que NO sea letra (A-Z) o número (0-9)
+        // Se descartan automáticamente: !, ?, -, _, ., espacios y otros símbolos
+        this.value = valor.replace(/[^A-Z0-9]/g, '');
+
+        // Actualiza el campo concatenado
+        concatenarNivel();
+    });
+
+    // 2. EVENTO PARA EL NOMBRE DEL NIVEL
+    inputNombre.addEventListener('input', concatenarNivel);
+
+    // 3. FUNCIÓN DE CONCATENACIÓN
+    function concatenarNivel() {
+        const codigo = inputCodigo.value.trim();
+        const nombre = inputNombre.value.trim();
+
+        if (codigo !== '' && nombre !== '') {
+            inputAcademico.value = codigo + ' - ' + nombre;
+        } else if (codigo !== '') {
+            inputAcademico.value = codigo;
+        } else if (nombre !== '') {
+            inputAcademico.value = nombre;
+        } else {
+            inputAcademico.value = '';
+        }
+    }
+});
+</script>
 </body>
 </html>

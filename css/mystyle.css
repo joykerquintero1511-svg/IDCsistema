@@ -1883,3 +1883,17 @@ a.btn-login-efb:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(9, 118, 252, 0.6);
 }
+
+.nivel-btn-cancel {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #ffffff;
+    border: none;
+    padding: 1.5rem 2.2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
