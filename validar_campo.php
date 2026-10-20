@@ -51,9 +51,9 @@ if (isset($_POST['correo'])) {
     $resultado = mysqli_query($conexion, $sql);
 
     if (mysqli_num_rows($resultado) > 0) {
-        echo json_encode(['status' => 'error', 'mensaje' => '❌ Este correo ya está registrado.']);
+        echo json_encode(['status' => 'info', 'mensaje' => 'ℹ️ Este correo ya existe en nuestra base de datos.']);
     } else {
-        echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo disponible.']);
+        echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo válido y no registrado en el sistema.']);
     }
     exit();
 }
