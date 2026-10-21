@@ -2,6 +2,35 @@
 include '../session-start.php';
 include '../conexion.php';
 
+// Buscar el período académico activo definido por el administrador.
+$sql_periodo = "
+    SELECT id_periodo, nombre_periodo
+    FROM periodos_academicos
+    WHERE estado = 1
+    LIMIT 1
+";
+
+// Ejecutar la consulta para obtener el período activo.
+$resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+// Comprobar que la consulta se ejecutó correctamente.
+if (!$resultado_periodo) {
+    die("Error al consultar el período académico.");
+}
+
+// Comprobar que exista un período académico activo.
+if (mysqli_num_rows($resultado_periodo) == 0) {
+    die("No hay un período académico activo.");
+}
+
+// Guardar los datos del período encontrado.
+$periodo_activo = mysqli_fetch_assoc($resultado_periodo);
+
+// Guardar el identificador y el nombre del período.
+$id_periodo_activo = $periodo_activo['id_periodo'];
+$nombre_periodo_activo = $periodo_activo['nombre_periodo'];
+
+
 // Para que el prof vea unicamente su nivel
 
 $id_usuario = $_SESSION['id_usuario'];
@@ -111,6 +140,7 @@ if (isset($_GET['id_nivel'])) {
     SELECT DISTINCT evaluacion
     FROM calificaciones
     WHERE id_nivel = '$id_nivel'
+    AND id_periodo = '$id_periodo_activo'
     AND evaluacion != ''
     ORDER BY evaluacion ASC
 ";
@@ -127,6 +157,7 @@ if (isset($_GET['id_nivel'])) {
     SELECT descripcion_nota_1, descripcion_nota_2
     FROM calificaciones
     WHERE id_nivel = '$id_nivel'
+    AND id_periodo = '$id_periodo_activo'
     AND evaluacion = '$evaluacion'
     LIMIT 1
 ";
@@ -163,7 +194,7 @@ if (isset($_GET['id_nivel'])) {
     $fila_nivel = mysqli_fetch_assoc($resultado_nivel);
     $nombre_nivel = $fila_nivel['nivel_academico'];
 
-
+    // Consultar los estudiantes y sus calificaciones del período activo.
     $sql_estudiantes = "
     SELECT 
         estudiantes.id_estudiante,
@@ -174,20 +205,25 @@ if (isset($_GET['id_nivel'])) {
         calificaciones.nota_final,
         calificaciones.observacion
 
-    FROM estudiantes
+        FROM estudiantes
 
-    INNER JOIN personas
-        ON estudiantes.id_persona = personas.id_persona
+        INNER JOIN personas
+            ON estudiantes.id_persona = personas.id_persona
 
-    LEFT JOIN calificaciones
-        ON estudiantes.id_estudiante = calificaciones.id_estudiante
-        AND calificaciones.id_nivel = '$id_nivel'
-        AND calificaciones.evaluacion = '$evaluacion'
+        INNER JOIN inscripciones
+            ON inscripciones.id_estudiante = estudiantes.id_estudiante
+            AND inscripciones.id_nivel = '$id_nivel'
+            AND inscripciones.id_periodo = '$id_periodo_activo'
+            AND inscripciones.estado = 1
 
-    WHERE estudiantes.id_nivel = '$id_nivel'
+        LEFT JOIN calificaciones
+            ON estudiantes.id_estudiante = calificaciones.id_estudiante
+            AND calificaciones.id_nivel = '$id_nivel'
+            AND calificaciones.id_periodo = '$id_periodo_activo'
+            AND calificaciones.evaluacion = '$evaluacion'
 
-    ORDER BY personas.apellido ASC
-";
+        ORDER BY personas.apellido ASC
+    ";
 
     $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 }
@@ -223,6 +259,11 @@ if (isset($_GET['id_nivel'])) {
             <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <h1 style="margin: 0; font-size: 1.8rem;">Registrar Calificaciones</h1>
 
+                <!-- Mostrar el período académico activo definido por el administrador -->
+                <p style="color: #3b82f6; font-weight: bold;">
+                    Período activo:
+                    <?php echo htmlspecialchars($nombre_periodo_activo); ?>
+                </p>
                 <?php // Para q el boton lo rediriga depende de su rol
 
                 if ($_SESSION['rol'] === 'admin') { ?>
@@ -337,6 +378,9 @@ if (isset($_GET['id_nivel'])) {
                     <form method="POST" action="guardar_notas.php">
                         <input type="hidden" name="id_nivel" value="<?php echo $id_nivel; ?>">
                         <input type="hidden" name="evaluacion" value="<?php echo htmlspecialchars($evaluacion); ?>">
+
+                        <!-- Enviar el identificador del período académico activo -->
+                        <input type="hidden" name="id_periodo" value="<?php echo $id_periodo_activo; ?>">
 
                         <input type="hidden" name="descripcion_nota_1" id="descripcion_nota_1_oculta" value="<?php echo htmlspecialchars($descripcion_nota_1); ?>">
                         <input type="hidden" name="descripcion_nota_2" id="descripcion_nota_2_oculta" value="<?php echo htmlspecialchars($descripcion_nota_2); ?>">

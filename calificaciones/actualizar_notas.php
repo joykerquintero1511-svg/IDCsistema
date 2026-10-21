@@ -25,6 +25,32 @@ $nota_final = $_POST['nota_final'];
 
 $observacion = trim($_POST['observacion']);
 
+// Verificar que el profesor tenga permiso para editar el nivel de esta calificación.
+if ($_SESSION['rol'] === 'profesor') {
+
+    $id_usuario = intval($_SESSION['id_usuario']);
+    $id_calificacion = intval($id_calificacion);
+
+    $sql_permiso = "
+        SELECT calificaciones.id_calificacion
+        FROM calificaciones
+        INNER JOIN profesores
+        ON calificaciones.id_nivel = profesores.id_nivel
+        INNER JOIN periodos_academicos
+        ON calificaciones.id_periodo = periodos_academicos.id_periodo
+        WHERE calificaciones.id_calificacion = '$id_calificacion'
+        AND profesores.id_usuario = '$id_usuario'
+        AND periodos_academicos.estado = 1
+        LIMIT 1
+    ";
+
+    $resultado_permiso = mysqli_query($conexion, $sql_permiso);
+
+    if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
+        die("No tienes permiso para modificar esta calificación.");
+    }
+}
+
 // Preparar Nota 1 para MySQL
 if ($nota_1 === "") {
     $valor_nota_1 = "NULL";

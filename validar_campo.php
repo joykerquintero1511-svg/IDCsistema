@@ -55,13 +55,10 @@ if (isset($_POST['correo']) || isset($_POST['email'])) {
     $sql_usuarios = "SELECT id_usuario FROM usuarios WHERE email = '$correo'";
     $res_usuarios = mysqli_query($conexion, $sql_usuarios);
 
-    $existe_estudiante = ($res_estudiantes && mysqli_num_rows($res_estudiantes) > 0);
-    $existe_usuario = ($res_usuarios && mysqli_num_rows($res_usuarios) > 0);
-
-    if ($existe_estudiante || $existe_usuario) {
+    if (mysqli_num_rows($resultado) > 0) {
         echo json_encode(['status' => 'error', 'mensaje' => '❌ Este correo ya está registrado.']);
     } else {
-        echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo disponible.']);
+        echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo válido y no registrado en el sistema.']);
     }
     exit();
 }

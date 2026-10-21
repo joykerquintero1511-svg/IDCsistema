@@ -11,14 +11,42 @@ if (
     exit();
 }
 
-$id_calificacion = $_GET['id_calificacion'];
+// Verificar que el profesor pueda abrir la calificación de su nivel y período activo.
+$id_calificacion = intval($_GET['id_calificacion']);
+
+if ($_SESSION['rol'] === 'profesor') {
+
+    $id_usuario = intval($_SESSION['id_usuario']);
+
+    $sql_permiso = "
+        SELECT calificaciones.id_calificacion
+        FROM calificaciones
+        INNER JOIN profesores
+        ON calificaciones.id_nivel = profesores.id_nivel
+        INNER JOIN periodos_academicos
+        ON calificaciones.id_periodo = periodos_academicos.id_periodo
+        WHERE calificaciones.id_calificacion = '$id_calificacion'
+        AND profesores.id_usuario = '$id_usuario'
+        AND periodos_academicos.estado = 1
+        LIMIT 1
+    ";
+
+    $resultado_permiso = mysqli_query($conexion, $sql_permiso);
+
+    if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
+        die("No tienes permiso para editar esta calificación.");
+    }
+}
 
 $sql = "
+
+
     SELECT
 
     calificaciones.id_calificacion,
     calificaciones.id_estudiante,
     calificaciones.id_nivel,
+    calificaciones.id_periodo,
     calificaciones.evaluacion,
     calificaciones.descripcion_nota_1,
     calificaciones.descripcion_nota_2,
@@ -41,7 +69,13 @@ $sql = "
     WHERE calificaciones.id_calificacion = '$id_calificacion'
     ";
 
+// Comprobar que la calificación exista antes de mostrar el formulario.
 $resultado = mysqli_query($conexion, $sql);
+
+if (!$resultado || mysqli_num_rows($resultado) == 0) {
+    die("No se encontró la calificación solicitada.");
+}
+
 $fila = mysqli_fetch_assoc($resultado);
 ?>
 
@@ -63,6 +97,18 @@ $fila = mysqli_fetch_assoc($resultado);
             <div class="edit-notas-header">
                 <h2>Editar Calificación</h2>
                 <p>Modificación de notas y observaciones</p>
+
+                <!-- Mostrar el identificador del período de la calificación. -->
+                <p>
+                    Período académico:
+                    <?php
+                    if ($fila['id_periodo'] === null) {
+                        echo "Registro anterior sin período asignado";
+                    } else {
+                        echo htmlspecialchars($fila['id_periodo']);
+                    }
+                    ?>
+                </p>
             </div>
 
             <form method="POST" action="actualizar_notas.php">

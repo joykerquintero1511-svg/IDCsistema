@@ -5,7 +5,19 @@ global $conexion;
 // =========================================================================
 // BLOQUEO DE SEGURIDAD: Verificar si las inscripciones están abiertas
 // =========================================================================
-$q_inscrip = mysqli_query($conexion, "SELECT id_periodo, inscripciones_abiertas FROM periodos_academicos ORDER BY id_periodo DESC LIMIT 1");
+// Buscar el período académico activo y comprobar si permite inscripciones.
+// Consultar el período activo para comprobar si permite inscripciones.
+$q_inscrip = mysqli_query($conexion, "
+    SELECT id_periodo, inscripciones_abiertas
+    FROM periodos_academicos
+    WHERE estado = 1
+    LIMIT 1
+");
+
+if (!$q_inscrip) {
+    die("Error al consultar el período académico.");
+}
+
 $periodo = mysqli_fetch_assoc($q_inscrip);
 if (!$periodo || $periodo['inscripciones_abiertas'] == 0) {
     die("
@@ -119,8 +131,10 @@ if (mysqli_num_rows($res_est) > 0) {
 $token_qr = md5(uniqid(rand(), true));
 
 // <-- Ahora insertamos el id_nivel en lugar del texto
-$sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, id_nivel, fecha_inscripcion, estado, estatus_presencial, token_qr) 
-        VALUES ('$id_estudiante', '$id_nivel', NOW(), '$estado_inscripcion', 'pendiente', '$token_qr')";
+// Guardar la inscripción asociada al período académico correspondiente.
+// Registrar la inscripción del estudiante en el período académico activo.
+$sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, id_nivel, id_periodo, fecha_inscripcion, estado, estatus_presencial, token_qr)
+    VALUES ('$id_estudiante', '$id_nivel', '$periodo[id_periodo]', NOW(), '$estado_inscripcion', 'pendiente', '$token_qr')";
 
 if (!mysqli_query($conexion, $sql_inscripcion)) {
     die("Error al guardar inscripción: " . mysqli_error($conexion));

@@ -294,15 +294,27 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                 .then(response => response.json())
                 .then(data => {
                     spanElement.textContent = data.mensaje;
-
                     if (data.status === 'error') {
+
+                        // Muestra el mensaje y el borde en rojo.
                         spanElement.style.color = '#ff4d4d';
                         this.style.borderColor = '#ff4d4d';
+
+                        // Comprueba si el correo ya existe y solo debemos informar.
+                    } else if (data.status === 'info') {
+
+                        // Muestra el mensaje y el borde en azul.
+                        spanElement.style.color = '#3b82f6';
+                        this.style.borderColor = '#3b82f6';
+
                     } else {
+
+                        // Muestra el mensaje y el borde en verde cuando está disponible.
                         spanElement.style.color = '#2ecc71';
                         this.style.borderColor = '#2ecc71';
                     }
                 })
+
                 .catch(error => {
                     console.error('Error en la validación:', error);
                 });
