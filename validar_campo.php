@@ -3,7 +3,7 @@ require_once 'conexion.php';
 
 header('Content-Type: application/json');
 
-// VALIDAR CÉDULA
+// 1. VALIDAR CÉDULA (Inscripción / Personas)
 if (isset($_POST['cedula'])) {
     $cedula = mysqli_real_escape_string($conexion, trim($_POST['cedula']));
 
@@ -32,9 +32,11 @@ if (isset($_POST['cedula'])) {
     exit();
 }
 
-// VALIDAR CORREO
-if (isset($_POST['correo'])) {
-    $correo = mysqli_real_escape_string($conexion, trim($_POST['correo']));
+// 2. VALIDAR CORREO (Acepta 'correo' o 'email' desde AJAX)
+if (isset($_POST['correo']) || isset($_POST['email'])) {
+    // Captura el valor venga con la clave 'correo' o 'email'
+    $correo_input = isset($_POST['correo']) ? $_POST['correo'] : $_POST['email'];
+    $correo = mysqli_real_escape_string($conexion, trim($correo_input));
 
     if (empty($correo)) {
         echo json_encode(['status' => 'error', 'mensaje' => 'El correo es requerido.']);
@@ -46,11 +48,17 @@ if (isset($_POST['correo'])) {
         exit();
     }
 
-    // Buscar el correo en la tabla de estudiantes
-    $sql = "SELECT id_estudiante FROM estudiantes WHERE email = '$correo'";
-    $resultado = mysqli_query($conexion, $sql);
+    // Consulta unificada: verifica si el correo existe en la tabla 'estudiantes' O en la tabla 'usuarios'
+    $sql_estudiantes = "SELECT id_estudiante FROM estudiantes WHERE email = '$correo'";
+    $res_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 
-    if (mysqli_num_rows($resultado) > 0) {
+    $sql_usuarios = "SELECT id_usuario FROM usuarios WHERE email = '$correo'";
+    $res_usuarios = mysqli_query($conexion, $sql_usuarios);
+
+    $existe_estudiante = ($res_estudiantes && mysqli_num_rows($res_estudiantes) > 0);
+    $existe_usuario = ($res_usuarios && mysqli_num_rows($res_usuarios) > 0);
+
+    if ($existe_estudiante || $existe_usuario) {
         echo json_encode(['status' => 'error', 'mensaje' => '❌ Este correo ya está registrado.']);
     } else {
         echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo disponible.']);

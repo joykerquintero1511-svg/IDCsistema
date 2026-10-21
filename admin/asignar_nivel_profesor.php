@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// 1. Validar que sea administrador
+// Validar que sea administrador
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../login.php");
     exit();
@@ -12,43 +12,81 @@ include("../conexion.php");
 $mensaje = "";
 $clase_alerta = "";
 
-// 2. Procesar la asignación cuando se envía el formulario
+// 1. PROCESAR ACCIONES (ASIGNAR O DESASIGNAR)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_profesor = intval($_POST['id_profesor']);
-    $id_nivel    = intval($_POST['id_nivel']);
+    $accion = isset($_POST['accion']) ? $_POST['accion'] : '';
 
-    $sql_update = "UPDATE profesores SET id_nivel = $id_nivel WHERE id_profesor = $id_profesor";
-    
-    if (mysqli_query($conexion, $sql_update)) {
-        $mensaje = "¡Profesor asignado al nivel correctamente!";
-        $clase_alerta = "background: #065f46; color: #d1fae5; border: 1px solid #10b981;";
-    } else {
-        $mensaje = "Error al actualizar la asignación: " . mysqli_error($conexion);
-        $clase_alerta = "background: #7f1d1d; color: #fee2e2; border: 1px solid #ef4444;";
+    // ASIGNAR NIVEL
+    if ($accion === 'asignar') {
+        $id_profesor = intval($_POST['id_profesor']);
+        $id_nivel    = intval($_POST['id_nivel']);
+
+        if ($id_profesor > 0 && $id_nivel > 0) {
+            // Verificar que no exista ya la asignación
+            $check_sql = "SELECT id FROM profesor_nivel WHERE id_profesor = $id_profesor AND id_nivel = $id_nivel";
+            $res_check = mysqli_query($conexion, $check_sql);
+
+            if (mysqli_num_rows($res_check) == 0) {
+                $sql_insert = "INSERT INTO profesor_nivel (id_profesor, id_nivel) VALUES ($id_profesor, $id_nivel)";
+                if (mysqli_query($conexion, $sql_insert)) {
+                    $mensaje = "¡Nivel asignado con éxito al docente!";
+                    $clase_alerta = "background: #065f46; color: #d1fae5; border: 1px solid #10b981;";
+                } else {
+                    $mensaje = "Error al asignar el nivel: " . mysqli_error($conexion);
+                    $clase_alerta = "background: #7f1d1d; color: #fee2e2; border: 1px solid #ef4444;";
+                }
+            } else {
+                $mensaje = "El docente ya tiene asignado este nivel actualmente.";
+                $clase_alerta = "background: #854d0e; color: #fef08a; border: 1px solid #eab308;";
+            }
+        }
+    }
+
+    // DESASIGNAR NIVEL
+    if ($accion === 'desasignar') {
+        $id_profesor = intval($_POST['id_profesor']);
+        $id_nivel    = intval($_POST['id_nivel']);
+
+        $sql_delete = "DELETE FROM profesor_nivel WHERE id_profesor = $id_profesor AND id_nivel = $id_nivel";
+        if (mysqli_query($conexion, $sql_delete)) {
+            $mensaje = "¡Nivel desasignado correctamente del docente!";
+            $clase_alerta = "background: #065f46; color: #d1fae5; border: 1px solid #10b981;";
+        } else {
+            $mensaje = "Error al quitar la asignación: " . mysqli_error($conexion);
+            $clase_alerta = "background: #7f1d1d; color: #fee2e2; border: 1px solid #ef4444;";
+        }
     }
 }
 
-// 3. Obtener listado de profesores y niveles
-$query_profs = "SELECT p.id_profesor, p.nombre, p.apellido, p.id_usuario, p.id_nivel, 
-                n.nivel_academico AS nivel_actual
+// 2. OBTENER PROFESORES Y SUS NIVELES ASIGNADOS (CON GROUP_CONCAT)
+$query_profs = "SELECT p.id_profesor, p.nombre, p.apellido, p.id_usuario,
+                GROUP_CONCAT(n.id_nivel SEPARATOR '||') AS ids_niveles,
+                GROUP_CONCAT(n.nivel_academico SEPARATOR '||') AS nombres_niveles
                 FROM profesores p
-                LEFT JOIN niveles n ON p.id_nivel = n.id_nivel";
+                LEFT JOIN profesor_nivel pn ON p.id_profesor = pn.id_profesor
+                LEFT JOIN niveles n ON pn.id_nivel = n.id_nivel
+                GROUP BY p.id_profesor
+                ORDER BY p.nombre ASC";
 $res_profs = mysqli_query($conexion, $query_profs);
 
-// Obtener todos los usuarios para hacer un cruce inteligente en PHP
+// 3. OBTENER USUARIOS PARA CRUZAR CORREOS
 $query_usuarios = "SELECT id_usuario, usuario, email FROM usuarios";
 $res_usuarios = mysqli_query($conexion, $query_usuarios);
 $usuarios_list = [];
-while($u = mysqli_fetch_assoc($res_usuarios)) {
-    $usuarios_list[] = $u;
+if ($res_usuarios) {
+    while($u = mysqli_fetch_assoc($res_usuarios)) {
+        $usuarios_list[] = $u;
+    }
 }
 
-// 4. Obtener listado de niveles disponibles
-$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles";
+// 4. OBTENER NIVELES DISPONIBLES
+$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles ORDER BY id_nivel ASC";
 $res_niveles = mysqli_query($conexion, $query_niveles);
 $niveles_array = [];
-while($row_n = mysqli_fetch_assoc($res_niveles)) {
-    $niveles_array[] = $row_n;
+if ($res_niveles) {
+    while($row_n = mysqli_fetch_assoc($res_niveles)) {
+        $niveles_array[] = $row_n;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -63,12 +101,12 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
 </head>
 <body style="background: #0b0f19; color: white; font-family: sans-serif; margin: 0; padding: 20px;">
 
-    <div style="max-width: 900px; margin: 40px auto; background: #1e293b; padding: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <div style="max-width: 950px; margin: 40px auto; background: #1e293b; padding: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
         
         <div style="text-align: center; margin-bottom: 30px;">
             <img src="../images/EFB.png" alt="Logo EFB" style="width: 70px; height: auto; margin-bottom: 10px;">
             <h2 style="color: #38bdf8; margin: 0;">Gestión de Asignación: Profesores y Niveles</h2>
-            <p style="color: #94a3b8; font-size: 14px;">Asocia a los docentes con el nivel académico correspondiente en el sistema.</p>
+            <p style="color: #94a3b8; font-size: 14px;">Asocia a los docentes con uno o varios niveles académicos en el sistema.</p>
         </div>
 
         <?php if (!empty($mensaje)): ?>
@@ -77,7 +115,9 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
             </div>
         <?php endif; ?>
 
+        <!-- FORMULARIO DE ASIGNACIÓN -->
         <form action="asignar_nivel_profesor.php" method="POST" style="background: #0f172a; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.05);">
+            <input type="hidden" name="accion" value="asignar">
             <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
                 
                 <div style="flex: 1; min-width: 250px;">
@@ -88,7 +128,6 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
                         if ($res_profs) {
                             mysqli_data_seek($res_profs, 0);
                             while($p = mysqli_fetch_assoc($res_profs)): 
-                                // Buscar correo de forma inteligente
                                 $correo_mostrar = 'Sin correo';
                                 foreach($usuarios_list as $u) {
                                     if (!empty($p['id_usuario']) && $p['id_usuario'] == $u['id_usuario']) {
@@ -125,14 +164,15 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
 
                 <div>
                     <button type="submit" style="background: #3b82f6; color: white; border: none; padding: 11px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
-                        Guardar Asignación
+                        + Asignar Nivel
                     </button>
                 </div>
 
             </div>
         </form>
 
-        <h3 style="color: #f1f5f9; border-bottom: 2px solid #334155; padding-bottom: 8px; margin-top: 20px;">Listado Actual de Docentes</h3>
+        <!-- TABLA DE DOCENTES Y NIVELES ASIGNADOS -->
+        <h3 style="color: #f1f5f9; border-bottom: 2px solid #334155; padding-bottom: 8px; margin-top: 20px;">Listado Actual de Docentes y sus Niveles</h3>
         
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left;">
@@ -140,7 +180,7 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
                     <tr style="background: #0f172a; color: #94a3b8; border-bottom: 1px solid #334155;">
                         <th style="padding: 12px;">Profesor</th>
                         <th style="padding: 12px;">Correo</th>
-                        <th style="padding: 12px;">Nivel Asignado Actual</th>
+                        <th style="padding: 12px;">Niveles Asignados</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -149,7 +189,6 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
                         mysqli_data_seek($res_profs, 0);
                         if (mysqli_num_rows($res_profs) > 0):
                             while($row = mysqli_fetch_assoc($res_profs)): 
-                                // Cruzar correo para la tabla también
                                 $correo_tabla = 'N/A';
                                 foreach($usuarios_list as $u) {
                                     if (!empty($row['id_usuario']) && $row['id_usuario'] == $u['id_usuario']) {
@@ -161,18 +200,35 @@ while($row_n = mysqli_fetch_assoc($res_niveles)) {
                                         $correo_tabla = $u['email'];
                                     }
                                 }
+
+                                $array_ids = !empty($row['ids_niveles']) ? explode('||', $row['ids_niveles']) : [];
+                                $array_nombres = !empty($row['nombres_niveles']) ? explode('||', $row['nombres_niveles']) : [];
                     ?>
                         <tr style="border-bottom: 1px solid #1e293b; color: #e2e8f0;">
                             <td style="padding: 12px; font-weight: 500;"><?php echo $row['nombre'] . " " . $row['apellido']; ?></td>
                             <td style="padding: 12px; color: #94a3b8;"><?php echo $correo_tabla; ?></td>
                             <td style="padding: 12px;">
-                                <?php if (!empty($row['nivel_actual'])): ?>
-                                    <span style="background: #0369a1; color: #e0f2fe; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold;">
-                                        <?php echo $row['nivel_actual']; ?>
-                                    </span>
+                                <?php if (!empty($array_nombres)): ?>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <?php for ($i = 0; $i < count($array_nombres); $i++): ?>
+                                            <div style="background: #0369a1; color: #e0f2fe; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                                                <span><?php echo htmlspecialchars($array_nombres[$i]); ?></span>
+                                                
+                                                <!-- FORMULARIO DE DESASIGNACIÓN INDIVIDUAL -->
+                                                <form action="asignar_nivel_profesor.php" method="POST" style="display: inline; margin: 0; padding: 0;">
+                                                    <input type="hidden" name="accion" value="desasignar">
+                                                    <input type="hidden" name="id_profesor" value="<?php echo $row['id_profesor']; ?>">
+                                                    <input type="hidden" name="id_nivel" value="<?php echo $array_ids[$i]; ?>">
+                                                    <button type="submit" onclick="return confirm('¿Deseas desasignar el nivel \'<?php echo htmlspecialchars($array_nombres[$i]); ?>\' de este docente?');" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;" title="Quitar asignación">
+                                                        ✕
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        <?php endfor; ?>
+                                    </div>
                                 <?php else: ?>
                                     <span style="background: #78350f; color: #fef3c7; padding: 4px 10px; border-radius: 4px; font-size: 13px;">
-                                        Sin nivel asignado
+                                        Sin niveles asignados
                                     </span>
                                 <?php endif; ?>
                             </td>
