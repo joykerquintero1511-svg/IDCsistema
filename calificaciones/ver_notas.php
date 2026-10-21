@@ -4,6 +4,29 @@ require_once '../conexion.php';
 
 session_start();
 
+// Buscar el período académico activo para consultar sus calificaciones.
+$sql_periodo = "
+    SELECT id_periodo, nombre_periodo
+    FROM periodos_academicos
+    WHERE estado = 1
+    LIMIT 1
+";
+
+$resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+if (!$resultado_periodo) {
+    die("Error al consultar el período académico.");
+}
+
+if (mysqli_num_rows($resultado_periodo) == 0) {
+    die("No hay un período académico activo.");
+}
+
+$fila_periodo = mysqli_fetch_assoc($resultado_periodo);
+$id_periodo_activo = $fila_periodo['id_periodo'];
+$nombre_periodo_activo = $fila_periodo['nombre_periodo'];
+
+
 if (
     !isset($_SESSION['rol']) ||
     ($_SESSION['rol'] !== 'profesor' && $_SESSION['rol'] !== 'admin')
@@ -335,6 +358,12 @@ $resultado = mysqli_query($conexion, $sql);
             <h1>Panel de Calificaciones</h1>
         </div>
 
+        <!-- Mostrar el período académico activo definido por el administrador. -->
+        <p style="color: #0b2545; font-weight: bold;">
+            Período activo:
+            <?php echo htmlspecialchars($nombre_periodo_activo); ?>
+        </p>
+
         <form method="GET" class="panel-filtros">
 
             <?php if (
@@ -381,7 +410,16 @@ $resultado = mysqli_query($conexion, $sql);
                                 }
                             }
 
-                            $sql_evaluaciones = "SELECT DISTINCT evaluacion FROM calificaciones WHERE id_nivel = '$id_nivel_seleccionado' AND evaluacion != '' ORDER BY evaluacion ASC";
+                            // Buscar las evaluaciones del nivel seleccionado y del período activo.
+                            $sql_evaluaciones = "
+                                SELECT DISTINCT evaluacion
+                                FROM calificaciones
+                                WHERE id_nivel = '$id_nivel_seleccionado'
+                                AND id_periodo = '$id_periodo_activo'
+                                AND evaluacion != ''
+                                ORDER BY evaluacion ASC
+                            ";
+
                             $resultado_evaluaciones = mysqli_query($conexion, $sql_evaluaciones);
 
                             while ($fila_evaluacion = mysqli_fetch_assoc($resultado_evaluaciones)) {
@@ -425,6 +463,7 @@ $resultado = mysqli_query($conexion, $sql);
                 $buscar = trim($_GET['buscar']);
             }
 
+            // Consultar las calificaciones correspondientes al período académico activo.
             $sql_calificaciones = "
             SELECT
                 calificaciones.id_calificacion,
@@ -448,6 +487,7 @@ $resultado = mysqli_query($conexion, $sql);
             LEFT JOIN calificaciones
             ON calificaciones.id_estudiante = estudiantes.id_estudiante
             AND calificaciones.id_nivel = inscripciones.id_nivel
+            AND calificaciones.id_periodo = '$id_periodo_activo'
             AND calificaciones.evaluacion = '$evaluacion'
 
             WHERE inscripciones.id_nivel = '$id_nivel'

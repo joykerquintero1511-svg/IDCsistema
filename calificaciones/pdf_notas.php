@@ -15,38 +15,93 @@
 
     use Dompdf\Dompdf;
 
-    $id_nivel = $_GET['id_nivel'];
-    $evaluacion = $_GET['evaluacion'];
+    // Buscar el período académico activo para generar el reporte de calificaciones.
+    $sql_periodo = "
+            SELECT id_periodo, nombre_periodo
+            FROM periodos_academicos
+            WHERE estado = 1
+            LIMIT 1
+        ";
+
+    $resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+    if (!$resultado_periodo) {
+        die("Error al consultar el período académico.");
+    }
+
+    if (mysqli_num_rows($resultado_periodo) == 0) {
+        die("No hay un período académico activo.");
+    }
+
+    $fila_periodo = mysqli_fetch_assoc($resultado_periodo);
+
+    $id_periodo_activo = $fila_periodo['id_periodo'];
+    $nombre_periodo_activo = $fila_periodo['nombre_periodo'];
+
+    $id_nivel = intval($_GET['id_nivel']);
+    $evaluacion = trim($_GET['evaluacion']);
+
+    if ($id_nivel <= 0 || $evaluacion == '') {
+        die("Datos incompletos para generar el PDF.");
+    }
+
+    // Verificar que el profesor solo pueda exportar el PDF de su nivel.
+    if ($_SESSION['rol'] === 'profesor') {
+        $id_usuario = intval($_SESSION['id_usuario']);
+
+        $sql_permiso = "
+        SELECT id_nivel
+        FROM profesores
+        WHERE id_usuario = '$id_usuario'
+        LIMIT 1
+    ";
+
+        $resultado_permiso = mysqli_query($conexion, $sql_permiso);
+
+        if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
+            die("No tienes permiso para exportar este PDF.");
+        }
+
+        $fila_permiso = mysqli_fetch_assoc($resultado_permiso);
+        $id_nivel_profesor = intval($fila_permiso['id_nivel']);
+
+        if ($id_nivel_profesor != $id_nivel) {
+            die("No tienes permiso para exportar este PDF.");
+        }
+    }
 
     $sql = "
-SELECT
-personas.nombre,
-personas.apellido,
-calificaciones.descripcion_nota_1,
-calificaciones.descripcion_nota_2,
-calificaciones.nota_1,
-calificaciones.nota_2,
-calificaciones.nota_final,
-calificaciones.observacion
+    SELECT
+    personas.nombre,
+    personas.apellido,
+    calificaciones.descripcion_nota_1,
+    calificaciones.descripcion_nota_2,
+    calificaciones.nota_1,
+    calificaciones.nota_2,
+    calificaciones.nota_final,
+    calificaciones.observacion
 
-FROM inscripciones
+    FROM inscripciones
 
-INNER JOIN estudiantes
-ON inscripciones.id_estudiante = estudiantes.id_estudiante
+    INNER JOIN estudiantes
+    ON inscripciones.id_estudiante = estudiantes.id_estudiante
 
-INNER JOIN personas
-ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN personas
+    ON estudiantes.id_persona = personas.id_persona
 
-LEFT JOIN calificaciones
-ON calificaciones.id_estudiante = estudiantes.id_estudiante
-AND calificaciones.id_nivel = inscripciones.id_nivel
-AND calificaciones.evaluacion = '$evaluacion'
 
-WHERE inscripciones.id_nivel = '$id_nivel'
-AND inscripciones.estado = 1
+    LEFT JOIN calificaciones
+    ON calificaciones.id_estudiante = estudiantes.id_estudiante
+    AND calificaciones.id_nivel = inscripciones.id_nivel
+    AND calificaciones.id_periodo = '$id_periodo_activo'
+    AND calificaciones.evaluacion = '$evaluacion'
 
-ORDER BY personas.apellido ASC
-";
+    WHERE inscripciones.id_nivel = '$id_nivel'
+    AND inscripciones.id_periodo = '$id_periodo_activo'
+    AND inscripciones.estado = 1
+
+    ORDER BY personas.apellido ASC
+    ";
 
     $resultado = mysqli_query($conexion, $sql);
 
@@ -263,8 +318,11 @@ ORDER BY personas.apellido ASC
     </div>
 
     <div class="info-seccion">
-        <p><strong>Nivel Académico:</strong> ' . htmlspecialchars($nombre_nivel) . '</p>
-        <p><strong>Evaluación:</strong> ' . htmlspecialchars(ucwords(strtolower($evaluacion))) . '</p>
+    
+    <p><strong>Período Académico:</strong> ' . htmlspecialchars($nombre_periodo_activo) . '</p>
+    <p><strong>Nivel Académico:</strong> ' . htmlspecialchars($nombre_nivel) . '</p>
+    <p><strong>Evaluación:</strong> ' . htmlspecialchars(ucwords(strtolower($evaluacion))) . '</p>
+    
     </div>
 
     <table>

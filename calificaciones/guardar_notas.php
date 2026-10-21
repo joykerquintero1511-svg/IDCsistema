@@ -15,8 +15,53 @@
         die("Acceso no permitido");
     }
 
-    $id_nivel = $_POST['id_nivel'];
-    $evaluacion = trim($_POST['evaluacion']); // trim() elimina espacios sobrantes al inicio y al final.
+    $id_nivel = intval($_POST['id_nivel']);
+    $evaluacion = trim($_POST['evaluacion']);
+
+    // Comprobar que el profesor tenga asignado el nivel donde registrará las notas.
+    if ($_SESSION['rol'] === 'profesor') {
+
+        $id_usuario = intval($_SESSION['id_usuario']);
+
+        $sql_permiso = "
+        SELECT id_profesor
+        FROM profesores
+        WHERE id_usuario = '$id_usuario'
+        AND id_nivel = '$id_nivel'
+        LIMIT 1
+    ";
+
+        $resultado_permiso = mysqli_query($conexion, $sql_permiso);
+
+        if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
+            die("No tienes permiso para registrar notas en este nivel.");
+        }
+    }
+
+    // Buscar el período académico activo definido por el administrador.
+    $sql_periodo = "
+    SELECT id_periodo
+    FROM periodos_academicos
+    WHERE estado = 1
+    LIMIT 1
+";
+
+    // Ejecutar la consulta.
+    $resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+    // Comprobar si ocurrió un error al consultar.
+    if (!$resultado_periodo) {
+        die("Error al consultar el período académico.");
+    }
+
+    // Impedir guardar notas si no existe un período activo.
+    if (mysqli_num_rows($resultado_periodo) == 0) {
+        die("No hay un período académico activo.");
+    }
+
+    // Obtener el identificador del período activo.
+    $fila_periodo = mysqli_fetch_assoc($resultado_periodo);
+    $id_periodo_activo = $fila_periodo['id_periodo'];
 
     // Evitar guardar calificaciones sin un nombre de registro
     if ($evaluacion === "") {
@@ -119,15 +164,17 @@
             $valor_nota_final = "'$nota_final'";
         }
 
-        // Buscar si ya existe una calificación de este estudiante
+        // Buscar si el estudiante ya tiene una calificación
+        // en el mismo nivel, período y registro de evaluación.
         $sql_buscar = "
-                SELECT id_calificacion
-                FROM calificaciones
-                WHERE id_estudiante = '$id_estudiante'
-                AND id_nivel = '$id_nivel'
-                AND evaluacion = '$evaluacion'
-                LIMIT 1
-            ";
+            SELECT id_calificacion
+            FROM calificaciones
+            WHERE id_estudiante = '$id_estudiante'
+            AND id_nivel = '$id_nivel'
+            AND id_periodo = '$id_periodo_activo'
+            AND evaluacion = '$evaluacion'
+            LIMIT 1
+        ";
 
         $resultado_buscar = mysqli_query($conexion, $sql_buscar);
 
@@ -155,22 +202,24 @@
                 ";
         } else {
 
-            // Si no existe, crearla
-            $sql_guardar = "
-                    INSERT INTO calificaciones
-                    (id_estudiante, id_nivel, evaluacion, descripcion_nota_1, descripcion_nota_2, nota_1, nota_2, nota_final, observacion)
 
-                    VALUES
-                    ('$id_estudiante',
-                    '$id_nivel',
-                    '$evaluacion',
-                    '$descripcion_nota_1',
-                    '$descripcion_nota_2',
-                    $valor_nota_1,
-                    $valor_nota_2,
-                    $valor_nota_final,
-                    '$observacion')
-                ";
+            // Crear una nueva calificación asociada al período académico activo.
+            $sql_guardar = "
+                INSERT INTO calificaciones
+                (id_estudiante, id_nivel, id_periodo, evaluacion, descripcion_nota_1, descripcion_nota_2, nota_1, nota_2, nota_final, observacion)
+
+                VALUES
+                ('$id_estudiante',
+                '$id_nivel',
+                '$id_periodo_activo',
+                '$evaluacion',
+                '$descripcion_nota_1',
+                '$descripcion_nota_2',
+                $valor_nota_1,
+                $valor_nota_2,
+                $valor_nota_final,
+                '$observacion')
+            ";
         }
 
         // Ejecutar INSERT o UPDATE
