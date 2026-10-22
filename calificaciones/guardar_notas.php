@@ -16,7 +16,11 @@
     }
 
     $id_nivel = intval($_POST['id_nivel']);
+
+
+    // Quitar espacios y puntos finales del nombre de la evaluación.
     $evaluacion = trim($_POST['evaluacion']);
+    $evaluacion = rtrim($evaluacion, " ."); // Elimina los espacios y puntos que estén al final del texto.
 
     // Comprobar que el profesor tenga asignado el nivel donde registrará las notas.
     if ($_SESSION['rol'] === 'profesor') {

@@ -118,8 +118,9 @@ if (isset($_GET['id_nivel'])) {
         }
     }
 
+    // Limpiar el nombre de la evaluación antes de buscar las notas.
     if (isset($_GET['evaluacion'])) {
-        $evaluacion = trim($_GET['evaluacion']);
+        $evaluacion = rtrim(trim($_GET['evaluacion']), " ."); // PHP elimina los puntos finales
     } else {
         $evaluacion = "";
     }
@@ -136,12 +137,16 @@ if (isset($_GET['id_nivel'])) {
         $descripcion_nota_2 = "";
     }
 
+
+    // Mostrar los nombres de las evaluaciones sin repetir variantes por puntos finales.
     $sql_registros = "
-    SELECT DISTINCT evaluacion
+    SELECT
+    TRIM(TRAILING '.' FROM TRIM(evaluacion)) AS evaluacion
     FROM calificaciones
     WHERE id_nivel = '$id_nivel'
     AND id_periodo = '$id_periodo_activo'
-    AND evaluacion != ''
+    AND TRIM(evaluacion) != ''
+    GROUP BY TRIM(TRAILING '.' FROM TRIM(evaluacion))
     ORDER BY evaluacion ASC
 ";
 
@@ -220,8 +225,7 @@ if (isset($_GET['id_nivel'])) {
             ON estudiantes.id_estudiante = calificaciones.id_estudiante
             AND calificaciones.id_nivel = '$id_nivel'
             AND calificaciones.id_periodo = '$id_periodo_activo'
-            AND calificaciones.evaluacion = '$evaluacion'
-
+            AND TRIM(TRAILING '.' FROM TRIM(calificaciones.evaluacion)) = '$evaluacion'
         ORDER BY personas.apellido ASC
     ";
 
@@ -243,17 +247,25 @@ if (isset($_GET['id_nivel'])) {
 
 <body>
 
-    <?php
-    if (isset($_GET['guardado']) && $_GET['guardado'] == 1) {
-        echo "<p>Las notas fueron guardadas correctamente.</p>";
-    }
-    ?>
-
-
     <main class="main-content-class">
 
         <!-- CONTENEDOR MAESTRO QUE CENTRA TODO -->
         <div class="calificaciones-wrapper">
+
+            <?php
+            // Mostrar un mensaje de confirmación después de guardar las calificaciones.
+            if (isset($_GET['guardado']) && $_GET['guardado'] == 1) {
+            ?>
+                <div style="background-color:#e8f7ee; color:#216e42; padding:15px;
+                border:1px solid #b7e4c7; border-radius:8px;
+                margin-bottom:20px; text-align:center; font-weight:600;">
+
+                    ✓ Las calificaciones se guardaron correctamente.
+
+                </div>
+            <?php
+            }
+            ?>
 
             <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
             <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -309,7 +321,33 @@ if (isset($_GET['id_nivel'])) {
                         }
                         ?>
 
-                        <input type="text" name="evaluacion" id="evaluacion" class="form-control" value="<?php echo $textoEvaluacion; ?>" placeholder="Ej: Primer trimestre" required>
+                        <!-- Permitir escribir una evaluación o seleccionar una existente. -->
+                        <input
+                            type="text"
+                            name="evaluacion"
+                            id="evaluacion"
+                            class="form-control"
+                            autocomplete="off"
+                            list="lista_evaluaciones"
+                            value="<?php echo $textoEvaluacion; ?>"
+                            placeholder="Escriba o seleccione una evaluación"
+                            required>
+
+
+                        <datalist id="lista_evaluaciones">
+                            <?php
+                            if (isset($resultado_registros)) {
+                                mysqli_data_seek($resultado_registros, 0);
+
+                                while ($registro = mysqli_fetch_assoc($resultado_registros)) {
+                                    echo '<option value="' . htmlspecialchars($registro['evaluacion'], ENT_QUOTES, 'UTF-8') . '">';
+                                }
+
+                                mysqli_data_seek($resultado_registros, 0);
+                            }
+                            ?>
+                        </datalist>
+
                         <br><br>
 
                         <label>Actividad 1:</label>
@@ -334,7 +372,14 @@ if (isset($_GET['id_nivel'])) {
                         </button>
 
                     <?php } ?>
+
                     <button type="submit" class="btn-block">Buscar estudiantes</button>
+
+                    <!-- Limpiar la búsqueda y comenzar un nuevo registro. -->
+                    <a href="index.php" class="btn-block" style="display:inline-block; text-decoration:none; margin-left:10px;">
+                        Limpiar
+                    </a>
+
                     <?php
                     if (isset($resultado_registros) && $evaluacion == "" && mysqli_num_rows($resultado_registros) > 0) {
                     ?>
@@ -356,8 +401,48 @@ if (isset($_GET['id_nivel'])) {
                     <?php
                     }
                     ?>
+
                 </form>
+
+                <!-- Cambiar el nombre de una evaluación existente. -->
+                <?php if ($registro_existente) { ?>
+
+                    <form method="POST" action="renombrar_evaluacion.php"
+                        style="margin-top:20px;">
+
+                        <!-- Identificar el nivel y la evaluación original. -->
+                        <input type="hidden" name="id_nivel"
+                            value="<?php echo htmlspecialchars((string) ($id_nivel ?? '')); ?>">
+
+                        <input type="hidden" name="nombre_anterior" id="nombre_anterior">
+
+                        <script>
+                            document.getElementById('nombre_anterior').value =
+                                document.getElementById('evaluacion').value;
+                        </script>
+
+
+                        <label for="nombre_nuevo">Nuevo nombre de la evaluación:</label>
+
+                        <input type="text"
+                            name="nombre_nuevo"
+                            id="nombre_nuevo"
+                            class="form-control"
+                            placeholder="Escriba el nuevo nombre"
+                            required>
+
+                        <button type="submit" class="btn-block"
+                            style="margin-top:10px;">
+                            Cambiar nombre
+                        </button>
+
+                    </form>
+
+                <?php } ?>
+
             </div>
+
+            <!-- TARJETA 2: LISTADO DE ESTUDIANTES (MISMA CUADRATURA Y BORDES) -->
 
             <!-- TARJETA 2: LISTADO DE ESTUDIANTES (MISMA CUADRATURA Y BORDES) -->
             <?php if (isset($resultado_estudiantes)) { ?>
@@ -445,7 +530,8 @@ if (isset($_GET['id_nivel'])) {
                             </table>
                         </div>
                         <div style="display:flex;justify-content:center;gap:15px;margin-top:20px;">
-                            <button type="submit" class="btn-block" style="width:auto;padding:12px 22px;" onclick="return confirmarGuardado();">Guardar notas</button>
+                            <!-- Guardar las calificaciones sin mostrar una ventana de confirmación. -->
+                            <button type="submit" class="btn-block" style="width:auto;padding:12px 22px;">Guardar notas</button>
                             <a href="ver_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" class="btn-block" style="display:inline-block;width:auto;padding:12px 22px;text-decoration:none;">Ver Calificaciones</a>
                         </div>
                     </form>
@@ -455,14 +541,13 @@ if (isset($_GET['id_nivel'])) {
         </div> <!-- FIN DEL WRAPPER -->
     </main>
     <script>
-        function confirmarGuardado() {
-            return confirm("¿Está seguro de que desea guardar las notas?");
-        }
-
         document.getElementById('id_nivel').addEventListener('change', function() {
             document.getElementById('evaluacion').value = '';
             document.getElementById('descripcion_nota_1_visible').value = '';
             document.getElementById('descripcion_nota_2_visible').value = '';
+
+            // Buscar las evaluaciones del nivel seleccionado.
+            cargarEvaluaciones(); // Aquí estamos llamando a la función
         });
 
         document.getElementById('descripcion_nota_1_visible').addEventListener('input', function() {
@@ -489,6 +574,43 @@ if (isset($_GET['id_nivel'])) {
                 botonEditarRegistro.textContent = 'Edición habilitada';
                 botonEditarRegistro.disabled = true;
             });
+        }
+
+        // Consultar las evaluaciones del nivel seleccionado.
+        function cargarEvaluaciones() {
+
+            let nivel = document.getElementById('id_nivel').value;
+            let lista = document.getElementById('lista_evaluaciones');
+
+            // Limpiar las opciones anteriores.
+            lista.innerHTML = '';
+
+            if (nivel === '') {
+                return;
+            }
+
+            // Enviar el nivel al archivo PHP.
+            let formData = new FormData();
+            formData.append('id_nivel', nivel);
+
+            fetch('buscar_evaluaciones.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    // Mostrar las evaluaciones recibidas.
+                    data.forEach(function(evaluacion) { // Recorre las evaluaciones para colocarlas en la lista. Este es el único concepto nuevo importante de este fragmento.
+                        let opcion = document.createElement('option');
+                        opcion.value = evaluacion;
+                        lista.appendChild(opcion);
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error al buscar evaluaciones:', error);
+                });
         }
     </script>
 
