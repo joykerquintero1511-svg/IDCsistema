@@ -25,10 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['token'])) {
 
     if (!empty($busqueda)) {
         // Cruce de 3 tablas: inscripciones -> estudiantes -> personas
-        $sql = "SELECT i.*, per.nombre, per.apellido, per.cedula 
-                FROM inscripciones i 
+       // Cruce de 4 tablas: inscripciones -> estudiantes -> personas -> niveles
+        $sql = "SELECT i.*, per.nombre, per.apellido, per.cedula, n.nivel_academico 
+                FROM inscripciones i
                 INNER JOIN estudiantes e ON i.id_estudiante = e.id_estudiante
                 INNER JOIN personas per ON e.id_persona = per.id_persona
+                LEFT JOIN niveles n ON e.id_nivel = n.id_nivel
                 WHERE per.cedula = ? OR i.token_qr = ? LIMIT 1";
                 
         $stmt = mysqli_prepare($conexion, $sql);
@@ -74,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['token'])) {
     <title>Validación de Asistencia - EFB</title>
     <!-- Enlace a tu hoja de estilos centralizada -->
     <link rel="stylesheet" href="css/mystyle.css">
+    <link rel="icon" type="image/x-icon" href="images/EFB.png">
     <!-- Librería para escanear QR con la cámara -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
    
@@ -103,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['token'])) {
             <div class="efb-card-result">
                 <p><strong>Estudiante:</strong> <?= htmlspecialchars($estudiante['nombre'] . ' ' . $estudiante['apellido']); ?></p>
                 <p><strong>Cédula:</strong> <?= htmlspecialchars($estudiante['cedula']); ?></p>
-                <p><strong>Nivel:</strong> <?= htmlspecialchars($estudiante['nivel_academico']); ?></p>
+                <p><strong>Nivel:</strong> <?= htmlspecialchars($estudiante['nivel_academico'] ?? 'Sin nivel asignado'); ?></p>
                 <p><strong>Estatus Actual:</strong> <span style="color: <?= $estudiante['estatus_presencial'] === 'asistido' ? '#34d399' : '#fbbf24'; ?>; font-weight: bold; text-transform: uppercase;"><?= htmlspecialchars($estudiante['estatus_presencial']); ?></span></p>
             </div>
         <?php endif; ?>
