@@ -31,33 +31,31 @@ $id_periodo_activo = $periodo_activo['id_periodo'];
 $nombre_periodo_activo = $periodo_activo['nombre_periodo'];
 
 
-// Para que el prof vea unicamente su nivel
+// Identificar al usuario que inició sesión.
+$id_usuario = intval($_SESSION['id_usuario']);
 
-$id_usuario = $_SESSION['id_usuario'];
-
-$id_nivel_profesor = null;
+// Obtener todos los niveles asignados al profesor.
 
 if ($_SESSION['rol'] === 'profesor') {
 
     $sql_profesor = "
-
-    SELECT id_nivel
-
-    FROM profesores
-
-    WHERE id_usuario = '$id_usuario'
-
-    LIMIT 1
-
+        SELECT profesor_nivel.id_nivel
+        FROM profesor_nivel
+        INNER JOIN profesores
+            ON profesor_nivel.id_profesor = profesores.id_profesor
+        WHERE profesores.id_usuario = '$id_usuario'
     ";
 
     $resultado_profesor = mysqli_query($conexion, $sql_profesor);
 
-    if ($resultado_profesor && mysqli_num_rows($resultado_profesor) > 0) {
+    $niveles_profesor = [];
 
-        $fila_profesor = mysqli_fetch_assoc($resultado_profesor);
+    if ($resultado_profesor) {
 
-        $id_nivel_profesor = $fila_profesor['id_nivel'];
+        while ($fila_profesor = mysqli_fetch_assoc($resultado_profesor)) {
+
+            $niveles_profesor[] = $fila_profesor['id_nivel'];
+        }
     }
 }
 
@@ -75,21 +73,27 @@ $descripcion_nota_2 = "";
 $evaluacion = "";
 $registro_existente = false;
 
-# Esta consulta muestra todos los niveles al administrador
-# Y solamente el nivel asignado al profesor
+// Mostrar todos los niveles al administrador.
+// Mostrar solamente los niveles asignados al profesor.
 
 if ($_SESSION['rol'] === 'admin') {
 
     $sql = "
         SELECT id_nivel, nivel_academico
         FROM niveles
+        ORDER BY id_nivel ASC
     ";
 } else {
 
     $sql = "
-        SELECT id_nivel, nivel_academico
+        SELECT niveles.id_nivel, niveles.nivel_academico
         FROM niveles
-        WHERE id_nivel = '$id_nivel_profesor'
+        INNER JOIN profesor_nivel
+            ON niveles.id_nivel = profesor_nivel.id_nivel
+        INNER JOIN profesores
+            ON profesor_nivel.id_profesor = profesores.id_profesor
+        WHERE profesores.id_usuario = '$id_usuario'
+        ORDER BY niveles.id_nivel ASC
     ";
 }
 
@@ -99,24 +103,17 @@ if (isset($_GET['id_nivel'])) {
 
     $id_nivel = intval($_GET['id_nivel']);
 
+    // Comprobar que el nivel seleccionado esté asignado al profesor.
     if ($_SESSION['rol'] === 'profesor') {
 
-        if ($id_nivel != $id_nivel_profesor) {
+        if (!in_array($id_nivel, $niveles_profesor)) {
 
             header("Location: index.php");
             exit();
         }
     }
 
-    // Evita que un profesor acceda a otro nivel modificando la URL
-    if ($_SESSION['rol'] === 'profesor') {
-
-        if ($id_nivel !== intval($id_nivel_profesor)) { // Intval : Es una función de PHP que convierte cualquier dato en un número entero.
-
-            header("Location: index.php");
-            exit();
-        }
-    }
+    // Limpiar el nombre de la evaluación antes de buscar las notas.
 
     // Limpiar el nombre de la evaluación antes de buscar las notas.
     if (isset($_GET['evaluacion'])) {
@@ -253,7 +250,8 @@ if (isset($_GET['id_nivel'])) {
         <div class="calificaciones-wrapper">
 
             <?php
-            // Mostrar un mensaje de confirmación después de guardar las calificaciones.
+
+            // Mostrar un mensaje cuando se guarden las calificaciones.
             if (isset($_GET['guardado']) && $_GET['guardado'] == 1) {
             ?>
                 <div style="background-color:#e8f7ee; color:#216e42; padding:15px;
@@ -265,7 +263,20 @@ if (isset($_GET['id_nivel'])) {
                 </div>
             <?php
             }
+            // Mostrar un mensaje cuando se cambie el nombre de una evaluación.
+            if (isset($_GET['renombrada']) && $_GET['renombrada'] == 1) {
             ?>
+                <div style="background-color:#e8f7ee; color:#216e42; padding:15px;
+                border:1px solid #b7e4c7; border-radius:8px;
+                margin-bottom:20px; text-align:center; font-weight:600;">
+
+                    ✓ El nombre de la evaluación se actualizó correctamente.
+
+                </div>
+            <?php
+            }
+            ?>
+
 
             <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
             <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -414,13 +425,8 @@ if (isset($_GET['id_nivel'])) {
                         <input type="hidden" name="id_nivel"
                             value="<?php echo htmlspecialchars((string) ($id_nivel ?? '')); ?>">
 
-                        <input type="hidden" name="nombre_anterior" id="nombre_anterior">
-
-                        <script>
-                            document.getElementById('nombre_anterior').value =
-                                document.getElementById('evaluacion').value;
-                        </script>
-
+                        <!-- Enviar el nombre original de la evaluación seleccionada. -->
+                        <input type="hidden" name="nombre_anterior" value="<?php echo htmlspecialchars($evaluacion, ENT_QUOTES, 'UTF-8'); ?>">
 
                         <label for="nombre_nuevo">Nuevo nombre de la evaluación:</label>
 

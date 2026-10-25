@@ -31,15 +31,18 @@ if ($id_nivel <= 0) {
     exit();
 }
 
-// Comprobar que el profesor consulte únicamente su nivel.
+// Comprobar que el profesor consulte únicamente sus niveles asignados.
 if ($_SESSION['rol'] === 'profesor') {
+
     $id_usuario = intval($_SESSION['id_usuario']);
 
     $sql_permiso = "
-        SELECT id_profesor
-        FROM profesores
-        WHERE id_usuario = '$id_usuario'
-        AND id_nivel = '$id_nivel'
+        SELECT profesor_nivel.id_nivel
+        FROM profesor_nivel
+        INNER JOIN profesores
+            ON profesor_nivel.id_profesor = profesores.id_profesor
+        WHERE profesores.id_usuario = '$id_usuario'
+        AND profesor_nivel.id_nivel = '$id_nivel'
         LIMIT 1
     ";
 

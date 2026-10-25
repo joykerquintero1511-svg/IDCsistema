@@ -17,10 +17,12 @@
 
     $id_nivel = intval($_POST['id_nivel']);
 
-
     // Quitar espacios y puntos finales del nombre de la evaluación.
     $evaluacion = trim($_POST['evaluacion']);
-    $evaluacion = rtrim($evaluacion, " ."); // Elimina los espacios y puntos que estén al final del texto.
+    $evaluacion = rtrim($evaluacion, " .");
+
+    // Proteger el nombre de la evaluación para las consultas SQL.
+    $evaluacion_sql = mysqli_real_escape_string($conexion, $evaluacion);
 
     // Comprobar que el profesor tenga asignado el nivel donde registrará las notas.
     if ($_SESSION['rol'] === 'profesor') {
@@ -28,12 +30,14 @@
         $id_usuario = intval($_SESSION['id_usuario']);
 
         $sql_permiso = "
-        SELECT id_profesor
-        FROM profesores
-        WHERE id_usuario = '$id_usuario'
-        AND id_nivel = '$id_nivel'
-        LIMIT 1
-    ";
+                SELECT profesor_nivel.id_nivel
+                FROM profesor_nivel
+                INNER JOIN profesores
+                    ON profesor_nivel.id_profesor = profesores.id_profesor
+                WHERE profesores.id_usuario = '$id_usuario'
+                AND profesor_nivel.id_nivel = '$id_nivel'
+                LIMIT 1
+            ";
 
         $resultado_permiso = mysqli_query($conexion, $sql_permiso);
 
@@ -72,13 +76,21 @@
         die("Debe indicar el nombre del registro de calificación.");
     }
 
+    // Capturar las descripciones de las actividades.
     $descripcion_nota_1 = trim($_POST['descripcion_nota_1']);
     $descripcion_nota_2 = trim($_POST['descripcion_nota_2']);
+
+    // Proteger las descripciones antes de guardarlas en MySQL.
+    $descripcion_nota_1 = mysqli_real_escape_string($conexion, $descripcion_nota_1);
+    $descripcion_nota_2 = mysqli_real_escape_string($conexion, $descripcion_nota_2);
 
     $notas_1 = $_POST['nota_1'];
     $notas_2 = $_POST['nota_2'];
     $notas_finales = $_POST['nota_final'];
     $observaciones = $_POST['observacion'];
+
+    // Contar cuántas calificaciones se guardaron.
+    $calificaciones_guardadas = 0;
 
     foreach ($notas_1 as $id_estudiante => $nota_1) {
 
@@ -120,8 +132,34 @@
 
         // Si toda la fila está vacía, ignorar este estudiante
         if ($nota_1 === null && $nota_2 === null && $nota_final === null && $observacion === "") {
-            continue; // Pasa al siguiente estudiante sin guardar nada.
+            continue;
         }
+
+        // Comprobar que el estudiante esté inscrito en el nivel y período activo.
+        $id_estudiante = intval($id_estudiante);
+
+        $sql_inscripcion = "
+            SELECT id_inscripcion
+            FROM inscripciones
+            WHERE id_estudiante = '$id_estudiante'
+            AND id_nivel = '$id_nivel'
+            AND id_periodo = '$id_periodo_activo'
+            AND estado = 1
+            LIMIT 1
+        ";
+
+        $resultado_inscripcion = mysqli_query($conexion, $sql_inscripcion);
+
+        if (!$resultado_inscripcion) {
+            die("Error al verificar la inscripción: " . mysqli_error($conexion));
+        }
+
+        if (mysqli_num_rows($resultado_inscripcion) == 0) {
+            die("El estudiante con ID $id_estudiante no tiene una inscripción activa en este nivel y período.");
+        }
+
+        // Proteger la observación antes de guardarla en MySQL.
+        $observacion = mysqli_real_escape_string($conexion, $observacion);
 
         // Validar Nota 1 solamente si fue escrita
         if ($nota_1 !== null) {
@@ -170,13 +208,14 @@
 
         // Buscar si el estudiante ya tiene una calificación
         // en el mismo nivel, período y registro de evaluación.
+        // Ignorar los puntos y espacios sobrantes al final del nombre.
         $sql_buscar = "
             SELECT id_calificacion
             FROM calificaciones
             WHERE id_estudiante = '$id_estudiante'
             AND id_nivel = '$id_nivel'
             AND id_periodo = '$id_periodo_activo'
-            AND evaluacion = '$evaluacion'
+            AND TRIM(TRAILING '.' FROM TRIM(evaluacion)) = '$evaluacion_sql'
             LIMIT 1
         ";
 
@@ -212,11 +251,11 @@
                 INSERT INTO calificaciones
                 (id_estudiante, id_nivel, id_periodo, evaluacion, descripcion_nota_1, descripcion_nota_2, nota_1, nota_2, nota_final, observacion)
 
-                VALUES
+            VALUES
                 ('$id_estudiante',
                 '$id_nivel',
                 '$id_periodo_activo',
-                '$evaluacion',
+                '$evaluacion_sql',
                 '$descripcion_nota_1',
                 '$descripcion_nota_2',
                 $valor_nota_1,
@@ -226,13 +265,21 @@
             ";
         }
 
-        // Ejecutar INSERT o UPDATE
+        // Ejecutar INSERT o UPDATE.
         $resultado_guardar = mysqli_query($conexion, $sql_guardar);
 
         if (!$resultado_guardar) {
             die("Error al guardar las notas: " . mysqli_error($conexion));
         }
-    } // todo está dentro del foreach.Porque cada vuelta del foreach trabaja con un estudiante diferente.Por eso esas variables no pueden estar fuera del foreach, ya que cambiarán en cada estudiante.
 
-    header("Location: index.php?guardado=1"); // Regresa nuevamente a index.php."
+        // Contar esta calificación porque la consulta se ejecutó correctamente.
+        $calificaciones_guardadas++;
+    }
+
+    // Evitar mostrar éxito cuando no se guardó ninguna calificación.
+    if ($calificaciones_guardadas == 0) {
+        die("No se guardaron calificaciones porque todas las notas estaban vacías.");
+    }
+
+    header("Location: index.php?guardado=1");
     exit();

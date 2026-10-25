@@ -35,32 +35,36 @@ if (
     exit();
 }
 
-// Esto obtiene el nivel asignado al profesor
+// Identificar al usuario que inició sesión.
+$id_usuario = intval($_SESSION['id_usuario']);
 
-$id_usuario = $_SESSION['id_usuario'];
-
-$id_nivel_profesor = null;
+// Obtener todos los niveles asignados al profesor.
+$niveles_profesor = [];
 
 if ($_SESSION['rol'] === 'profesor') {
 
     $sql_profesor = "
-        SELECT id_nivel
-        FROM profesores
-        WHERE id_usuario = '$id_usuario'
-        LIMIT 1
+        SELECT profesor_nivel.id_nivel
+        FROM profesor_nivel
+        INNER JOIN profesores
+        ON profesor_nivel.id_profesor = profesores.id_profesor
+        WHERE profesores.id_usuario = '$id_usuario'
     ";
 
     $resultado_profesor = mysqli_query($conexion, $sql_profesor);
 
-    if ($resultado_profesor && mysqli_num_rows($resultado_profesor) > 0) {
+    if ($resultado_profesor) {
 
-        $fila_profesor = mysqli_fetch_assoc($resultado_profesor);
+        while ($fila_profesor = mysqli_fetch_assoc($resultado_profesor)) {
 
-        $id_nivel_profesor = $fila_profesor['id_nivel'];
+            $niveles_profesor[] = $fila_profesor['id_nivel'];
+        }
     }
 }
 
-// Consulta para llenar el select de niveles
+// Mostrar todos los niveles al administrador.
+// Mostrar solamente los niveles asignados al profesor.
+
 if ($_SESSION['rol'] === 'admin') {
 
     $sql = "
@@ -71,14 +75,40 @@ if ($_SESSION['rol'] === 'admin') {
 } else {
 
     $sql = "
-        SELECT id_nivel, nivel_academico
+        SELECT niveles.id_nivel, niveles.nivel_academico
         FROM niveles
-        WHERE id_nivel = '$id_nivel_profesor'
-        ORDER BY nivel_academico ASC
+        INNER JOIN profesor_nivel
+            ON niveles.id_nivel = profesor_nivel.id_nivel
+        INNER JOIN profesores
+            ON profesor_nivel.id_profesor = profesores.id_profesor
+        WHERE profesores.id_usuario = '$id_usuario'
+        ORDER BY niveles.nivel_academico ASC
     ";
 }
 
+// Ejecutar la consulta que obtiene los niveles académicos.
 $resultado = mysqli_query($conexion, $sql);
+
+// Comprobar si hubo un error en la consulta.
+if (!$resultado) {
+    die("Error al consultar los niveles: " . mysqli_error($conexion));
+}
+
+// Comprobar que el profesor tenga permiso para consultar el nivel seleccionado.
+if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
+
+    $id_nivel_seleccionado = intval($_GET['id_nivel']);
+
+    if ($_SESSION['rol'] === 'profesor') {
+
+        if (!in_array($id_nivel_seleccionado, $niveles_profesor)) {
+
+            header("Location: ver_notas.php");
+            exit();
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -397,18 +427,8 @@ $resultado = mysqli_query($conexion, $sql);
                         <option value="">Seleccione una evaluación</option>
                         <?php
                         if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
-                            // Convertir el nivel recibido por la URL en un número entero
+                            // Obtener el nivel seleccionado para buscar sus evaluaciones.
                             $id_nivel_seleccionado = intval($_GET['id_nivel']);
-
-                            // Evitar que un profesor consulte otro nivel modificando la URL
-                            if ($_SESSION['rol'] === 'profesor') {
-
-                                if ($id_nivel_seleccionado != $id_nivel_profesor) {
-
-                                    header("Location: ver_notas.php");
-                                    exit();
-                                }
-                            }
 
                             // Buscar las evaluaciones del nivel seleccionado y del período activo.
                             $sql_evaluaciones = "
@@ -455,46 +475,62 @@ $resultado = mysqli_query($conexion, $sql);
         // Este bloque solo se ejecuta cuando el usuario pulsa Buscar
         if (isset($_GET['id_nivel']) && isset($_GET['evaluacion'])) {
 
-            $id_nivel = $_GET['id_nivel'];
+            // Convertir el identificador del nivel en un número entero.
+            $id_nivel = intval($_GET['id_nivel']);
+
+            // Obtener el nombre de la evaluación seleccionada.
             $evaluacion = trim($_GET['evaluacion']);
+
+            // Normalizar el nombre de la evaluación.
+            $evaluacion = rtrim($evaluacion, " .");
+
+            // Proteger el valor antes de utilizarlo en la consulta SQL.
+            $evaluacion_sql = mysqli_real_escape_string($conexion, $evaluacion);
+
+            // Capturar el nombre o apellido escrito en el buscador.
             $buscar = "";
 
             if (isset($_GET['buscar'])) {
                 $buscar = trim($_GET['buscar']);
             }
 
-            // Consultar las calificaciones correspondientes al período académico activo.
+            // Consultar las calificaciones de los estudiantes inscritos
+            // En el nivel y período académico activo
             $sql_calificaciones = "
-            SELECT
-                calificaciones.id_calificacion,
-                personas.nombre,
-                personas.apellido,
-                calificaciones.descripcion_nota_1,
-                calificaciones.descripcion_nota_2,
-                calificaciones.nota_1,
-                calificaciones.nota_2,
-                calificaciones.nota_final,
-                calificaciones.observacion
+                SELECT
+                    calificaciones.id_calificacion,
+                    personas.nombre,
+                    personas.apellido,
+                    calificaciones.descripcion_nota_1,
+                    calificaciones.descripcion_nota_2,
+                    calificaciones.nota_1,
+                    calificaciones.nota_2,
+                    calificaciones.nota_final,
+                    calificaciones.observacion
 
-            FROM inscripciones
+                FROM inscripciones
 
-            INNER JOIN estudiantes
-            ON inscripciones.id_estudiante = estudiantes.id_estudiante
+                INNER JOIN estudiantes
+                    ON inscripciones.id_estudiante = estudiantes.id_estudiante
 
-            INNER JOIN personas
-            ON estudiantes.id_persona = personas.id_persona
+                INNER JOIN personas
+                    ON estudiantes.id_persona = personas.id_persona
 
-            LEFT JOIN calificaciones
-            ON calificaciones.id_estudiante = estudiantes.id_estudiante
-            AND calificaciones.id_nivel = inscripciones.id_nivel
-            AND calificaciones.id_periodo = '$id_periodo_activo'
-            AND calificaciones.evaluacion = '$evaluacion'
+                LEFT JOIN calificaciones
+                    ON calificaciones.id_estudiante = estudiantes.id_estudiante
+                    AND calificaciones.id_nivel = inscripciones.id_nivel
+                    AND calificaciones.id_periodo = '$id_periodo_activo'
+                    AND TRIM(TRAILING '.' FROM TRIM(calificaciones.evaluacion)) = '$evaluacion_sql'
 
-            WHERE inscripciones.id_nivel = '$id_nivel'
-            AND inscripciones.estado = 1
-        ";
+                WHERE inscripciones.id_nivel = '$id_nivel'
+                AND inscripciones.id_periodo = '$id_periodo_activo'
+                AND inscripciones.estado = 1
+            ";
+            // Proteger el nombre o apellido escrito en el buscador.
+            $buscar_sql = mysqli_real_escape_string($conexion, $buscar);
+
             if ($buscar != "") {
-                $sql_calificaciones .= " AND (personas.nombre LIKE '%$buscar%' OR personas.apellido LIKE '%$buscar%')";
+                $sql_calificaciones .= " AND (personas.nombre LIKE '%$buscar_sql%' OR personas.apellido LIKE '%$buscar_sql%')";
             }
 
             $sql_calificaciones .= " ORDER BY personas.apellido ASC";

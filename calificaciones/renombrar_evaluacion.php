@@ -59,39 +59,40 @@ if (!$resultado_periodo || mysqli_num_rows($resultado_periodo) == 0) {
 $periodo = mysqli_fetch_assoc($resultado_periodo);
 $id_periodo = $periodo['id_periodo'];
 
-// Comprobar que el profesor tenga asignado ese nivel.
+// Comprobar que el profesor tenga asignado el nivel seleccionado.
 if ($_SESSION['rol'] == 'profesor') {
 
-    $id_usuario = $_SESSION['id_usuario'];
+    $id_usuario = intval($_SESSION['id_usuario']);
 
-    $sql_profesor = "
-        SELECT id_nivel
-        FROM profesores
-        WHERE id_usuario = ?
+    // Buscar si el nivel pertenece al profesor.
+    $sql_permiso = "
+        SELECT profesor_nivel.id_nivel
+        FROM profesor_nivel
+        INNER JOIN profesores
+        ON profesor_nivel.id_profesor = profesores.id_profesor
+        WHERE profesores.id_usuario = '$id_usuario'
+        AND profesor_nivel.id_nivel = '$id_nivel'
         LIMIT 1
     ";
 
-    $consulta_profesor = mysqli_prepare($conexion, $sql_profesor);
-    mysqli_stmt_bind_param($consulta_profesor, "i", $id_usuario);
-    mysqli_stmt_execute($consulta_profesor);
+    $resultado_permiso = mysqli_query($conexion, $sql_permiso);
 
-    $resultado_profesor = mysqli_stmt_get_result($consulta_profesor);
-    $profesor = mysqli_fetch_assoc($resultado_profesor);
+    // Impedir que modifique un nivel que no tiene asignado.
+    if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
 
-    if (!$profesor || $profesor['id_nivel'] != $id_nivel) {
-        die("No tiene permiso para modificar este nivel.");
+        die("No tienes permiso para modificar este nivel.");
     }
 }
 
 // Comprobar que exista la evaluación original.
 $sql_original = "
-    SELECT id_calificacion
-    FROM calificaciones
-    WHERE id_nivel = ?
-    AND id_periodo = ?
-    AND TRIM(TRAILING '.' FROM TRIM(evaluacion)) = ?
-    LIMIT 1
-";
+        SELECT id_calificacion
+        FROM calificaciones
+        WHERE id_nivel = ?
+        AND id_periodo = ?
+        AND TRIM(TRAILING '.' FROM TRIM(evaluacion)) = ?
+        LIMIT 1
+    ";
 
 $consulta_original = mysqli_prepare($conexion, $sql_original);
 mysqli_stmt_bind_param(
@@ -139,9 +140,10 @@ if (strcasecmp($nombre_anterior, $nombre_nuevo) != 0) {
 }
 
 // Cambiar solamente el nombre de la evaluación.
+// os ? son lugares reservados para valores que PHP enviará de manera segura.
 $sql_actualizar = "
     UPDATE calificaciones
-    SET evaluacion = ?
+    SET evaluacion = ? 
     WHERE id_nivel = ?
     AND id_periodo = ?
     AND TRIM(TRAILING '.' FROM TRIM(evaluacion)) = ?
@@ -149,8 +151,9 @@ $sql_actualizar = "
 
 $consulta_actualizar = mysqli_prepare($conexion, $sql_actualizar);
 
-mysqli_stmt_bind_param(
+mysqli_stmt_bind_param( // sirve para colocar de forma segura los valores en los signos ? de una consulta preparada
     $consulta_actualizar,
+    // "siis" indica los tipos de datos: texto, entero, entero y texto.
     "siis",
     $nombre_nuevo,
     $id_nivel,
@@ -159,9 +162,12 @@ mysqli_stmt_bind_param(
 );
 
 if (mysqli_stmt_execute($consulta_actualizar)) {
-    header("Location: index.php?renombrada=1");
+
+    // Regresar al nivel y a la evaluación con su nuevo nombre.
+    header("Location: index.php?id_nivel=$id_nivel&evaluacion=" . urlencode($nombre_nuevo) . "&renombrada=1");
     exit();
 } else {
+
     die("No se pudo cambiar el nombre de la evaluación.");
 }
 ?>

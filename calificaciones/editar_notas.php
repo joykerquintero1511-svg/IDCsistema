@@ -10,10 +10,27 @@ if (
     header("Location: ../login.php");
     exit();
 }
-
-// Verificar que el profesor pueda abrir la calificación de su nivel y período activo.
+// Identificar la calificación que se desea editar.
 $id_calificacion = intval($_GET['id_calificacion']);
 
+// Comprobar que la calificación pertenezca al período activo.
+$sql_periodo = "
+    SELECT calificaciones.id_calificacion
+    FROM calificaciones
+    INNER JOIN periodos_academicos
+        ON calificaciones.id_periodo = periodos_academicos.id_periodo
+    WHERE calificaciones.id_calificacion = '$id_calificacion'
+    AND periodos_academicos.estado = 1
+    LIMIT 1
+";
+
+$resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+if (!$resultado_periodo || mysqli_num_rows($resultado_periodo) == 0) {
+    die("Esta calificación no pertenece al período académico activo.");
+}
+
+// Verificar que el profesor tenga asignado el nivel de la calificación.
 if ($_SESSION['rol'] === 'profesor') {
 
     $id_usuario = intval($_SESSION['id_usuario']);
@@ -21,13 +38,12 @@ if ($_SESSION['rol'] === 'profesor') {
     $sql_permiso = "
         SELECT calificaciones.id_calificacion
         FROM calificaciones
+        INNER JOIN profesor_nivel
+            ON calificaciones.id_nivel = profesor_nivel.id_nivel
         INNER JOIN profesores
-        ON calificaciones.id_nivel = profesores.id_nivel
-        INNER JOIN periodos_academicos
-        ON calificaciones.id_periodo = periodos_academicos.id_periodo
+            ON profesor_nivel.id_profesor = profesores.id_profesor
         WHERE calificaciones.id_calificacion = '$id_calificacion'
         AND profesores.id_usuario = '$id_usuario'
-        AND periodos_academicos.estado = 1
         LIMIT 1
     ";
 

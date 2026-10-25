@@ -39,36 +39,50 @@
     $nombre_periodo_activo = $fila_periodo['nombre_periodo'];
 
     $id_nivel = intval($_GET['id_nivel']);
+
+    // Obtener el nombre de la evaluación seleccionada.
     $evaluacion = trim($_GET['evaluacion']);
+
+    // Eliminar espacios y puntos sobrantes al final.
+    $evaluacion = rtrim($evaluacion, " .");
+
+    // Proteger el nombre antes de utilizarlo en SQL.
+    $evaluacion_sql = mysqli_real_escape_string($conexion, $evaluacion);
 
     if ($id_nivel <= 0 || $evaluacion == '') {
         die("Datos incompletos para generar el PDF.");
     }
 
-    // Verificar que el profesor solo pueda exportar el PDF de su nivel.
+    // Verificar que el profesor tenga asignado el nivel
+    // del cual desea generar el reporte PDF.
     if ($_SESSION['rol'] === 'profesor') {
+
         $id_usuario = intval($_SESSION['id_usuario']);
 
         $sql_permiso = "
-        SELECT id_nivel
-        FROM profesores
-        WHERE id_usuario = '$id_usuario'
-        LIMIT 1
-    ";
+                SELECT profesor_nivel.id_nivel
+                FROM profesor_nivel
+                INNER JOIN profesores
+                    ON profesor_nivel.id_profesor = profesores.id_profesor
+                WHERE profesores.id_usuario = '$id_usuario'
+                AND profesor_nivel.id_nivel = '$id_nivel'
+                LIMIT 1
+            ";
 
         $resultado_permiso = mysqli_query($conexion, $sql_permiso);
 
         if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
-            die("No tienes permiso para exportar este PDF.");
-        }
-
-        $fila_permiso = mysqli_fetch_assoc($resultado_permiso);
-        $id_nivel_profesor = intval($fila_permiso['id_nivel']);
-
-        if ($id_nivel_profesor != $id_nivel) {
-            die("No tienes permiso para exportar este PDF.");
+            die("No tienes permiso para exportar las calificaciones de este nivel.");
         }
     }
+
+    $fila_permiso = mysqli_fetch_assoc($resultado_permiso);
+    $id_nivel_profesor = intval($fila_permiso['id_nivel']);
+
+    if ($id_nivel_profesor != $id_nivel) {
+        die("No tienes permiso para exportar este PDF.");
+    }
+
 
     $sql = "
     SELECT
@@ -91,16 +105,16 @@
 
 
     LEFT JOIN calificaciones
-    ON calificaciones.id_estudiante = estudiantes.id_estudiante
-    AND calificaciones.id_nivel = inscripciones.id_nivel
-    AND calificaciones.id_periodo = '$id_periodo_activo'
-    AND calificaciones.evaluacion = '$evaluacion'
+        ON calificaciones.id_estudiante = estudiantes.id_estudiante
+        AND calificaciones.id_nivel = inscripciones.id_nivel
+        AND calificaciones.id_periodo = '$id_periodo_activo'
+        AND TRIM(TRAILING '.' FROM TRIM(calificaciones.evaluacion)) = '$evaluacion_sql'
 
-    WHERE inscripciones.id_nivel = '$id_nivel'
-    AND inscripciones.id_periodo = '$id_periodo_activo'
-    AND inscripciones.estado = 1
+        WHERE inscripciones.id_nivel = '$id_nivel'
+        AND inscripciones.id_periodo = '$id_periodo_activo'
+        AND inscripciones.estado = 1
 
-    ORDER BY personas.apellido ASC
+        ORDER BY personas.apellido ASC
     ";
 
     $resultado = mysqli_query($conexion, $sql);
