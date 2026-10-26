@@ -263,6 +263,7 @@ if (isset($_GET['id_nivel'])) {
                 </div>
             <?php
             }
+
             // Mostrar un mensaje cuando se cambie el nombre de una evaluación.
             if (isset($_GET['renombrada']) && $_GET['renombrada'] == 1) {
             ?>
@@ -276,7 +277,53 @@ if (isset($_GET['id_nivel'])) {
             <?php
             }
             ?>
+            <?php
+            // Preparar el mensaje de error.
+            $mensaje_error = "";
 
+            // Comprobar si se recibió un error al guardar las notas.
+            if (isset($_GET['error'])) {
+
+                // Avisar cuando no se recibieron estudiantes.
+                if ($_GET['error'] == 'sin_estudiantes') {
+                    $mensaje_error = "No hay estudiantes disponibles para guardar calificaciones.";
+                }
+
+                // Avisar cuando no se ingresaron calificaciones.
+                if ($_GET['error'] == 'sin_calificaciones') {
+                    $mensaje_error = "No se ingresaron calificaciones para guardar.";
+                }
+
+                // Avisar cuando el administrador cambió el período.
+                if ($_GET['error'] == 'periodo_cambiado') {
+                    $mensaje_error = "El período académico cambió. " .
+                        "No se guardaron las notas. " .
+                        "Solo puedes registrar calificaciones en el período activo.";
+                }
+                if ($_GET['error'] == 'inscripcion_inactiva') {
+                    $mensaje_error = "No se pudieron guardar las calificaciones porque la inscripción de un estudiante ya no está activa.";
+                }
+
+                // Avisar cuando ocurre un error durante el guardado.
+                if ($_GET['error'] == 'error_guardado') {
+                    $mensaje_error = "Ocurrió un error al guardar las calificaciones. No se guardaron los cambios.";
+                }
+            }
+
+            // Mostrar el aviso dentro del diseño de Calificaciones.
+            if ($mensaje_error != "") {
+            ?>
+                <div style="background-color:#fff3cd; color:#856404;
+                padding:15px; border:1px solid #ffeeba;
+                border-radius:8px; margin-bottom:20px;
+                text-align:center; font-weight:600;">
+
+                    <?php echo htmlspecialchars($mensaje_error); ?>
+
+                </div>
+            <?php
+            }
+            ?>
 
             <!-- CABECERA PRINCIPAL CON BOTÓN VOLVER -->
             <div class="welcome-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">

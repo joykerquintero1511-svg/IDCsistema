@@ -71,6 +71,20 @@
     $fila_periodo = mysqli_fetch_assoc($resultado_periodo);
     $id_periodo_activo = $fila_periodo['id_periodo'];
 
+    // Preparar la dirección para regresar al formulario.
+    $url_regreso = "index.php?id_nivel=" . $id_nivel .
+        "&evaluacion=" . urlencode($evaluacion);
+
+    // Comprobar si el administrador cambió el período académico.
+    if (
+        !isset($_POST['id_periodo']) ||
+        intval($_POST['id_periodo']) != intval($id_periodo_activo)
+    ) {
+
+        header("Location: " . $url_regreso . "&error=periodo_cambiado");
+        exit();
+    }
+
     // Evitar guardar calificaciones sin un nombre de registro
     if ($evaluacion === "") {
         die("Debe indicar el nombre del registro de calificación.");
@@ -84,61 +98,93 @@
     $descripcion_nota_1 = mysqli_real_escape_string($conexion, $descripcion_nota_1);
     $descripcion_nota_2 = mysqli_real_escape_string($conexion, $descripcion_nota_2);
 
-    $notas_1 = $_POST['nota_1'];
-    $notas_2 = $_POST['nota_2'];
-    $notas_finales = $_POST['nota_final'];
-    $observaciones = $_POST['observacion'];
+    // Obtener las notas enviadas desde el formulario.
+    if (isset($_POST['nota_1'])) {
+        $notas_1 = $_POST['nota_1'];
+    } else {
+        $notas_1 = [];
+    }
 
+    if (isset($_POST['nota_2'])) {
+        $notas_2 = $_POST['nota_2'];
+    } else {
+        $notas_2 = [];
+    }
+
+    if (isset($_POST['nota_final'])) {
+        $notas_finales = $_POST['nota_final'];
+    } else {
+        $notas_finales = [];
+    }
+
+    if (isset($_POST['observacion'])) {
+        $observaciones = $_POST['observacion'];
+    } else {
+        $observaciones = [];
+    }
+
+
+    // Impedir guardar si no se recibieron estudiantes.
+    if (!is_array($notas_1) || count($notas_1) == 0) {
+
+        header("Location: " . $url_regreso . "&error=sin_estudiantes");
+        exit();
+    }
     // Contar cuántas calificaciones se guardaron.
     $calificaciones_guardadas = 0;
 
-    foreach ($notas_1 as $id_estudiante => $nota_1) {
+    // Iniciar una transacción para proteger todas las calificaciones.
+    mysqli_begin_transaction($conexion);
 
-        // Obtener Nota 1
-        if ($nota_1 === "") {
-            $nota_1 = null;
-        }
+    try {
 
-        // Obtener Nota 2
-        if (isset($notas_2[$id_estudiante])) {
+        foreach ($notas_1 as $id_estudiante => $nota_1) {
 
-            if ($notas_2[$id_estudiante] === "") {
+            // Obtener Nota 1
+            if ($nota_1 === "") {
+                $nota_1 = null;
+            }
+
+            // Obtener Nota 2
+            if (isset($notas_2[$id_estudiante])) {
+
+                if ($notas_2[$id_estudiante] === "") {
+                    $nota_2 = null;
+                } else {
+                    $nota_2 = $notas_2[$id_estudiante];
+                }
+            } else {
                 $nota_2 = null;
-            } else {
-                $nota_2 = $notas_2[$id_estudiante];
             }
-        } else {
-            $nota_2 = null;
-        }
 
-        // Obtener Nota Final
-        if (isset($notas_finales[$id_estudiante])) {
+            // Obtener Nota Final
+            if (isset($notas_finales[$id_estudiante])) {
 
-            if ($notas_finales[$id_estudiante] === "") {
+                if ($notas_finales[$id_estudiante] === "") {
+                    $nota_final = null;
+                } else {
+                    $nota_final = $notas_finales[$id_estudiante];
+                }
+            } else {
                 $nota_final = null;
-            } else {
-                $nota_final = $notas_finales[$id_estudiante];
             }
-        } else {
-            $nota_final = null;
-        }
 
-        // Obtener Observación
-        if (isset($observaciones[$id_estudiante])) {
-            $observacion = trim($observaciones[$id_estudiante]);
-        } else {
-            $observacion = "";
-        }
+            // Obtener Observación
+            if (isset($observaciones[$id_estudiante])) {
+                $observacion = trim($observaciones[$id_estudiante]);
+            } else {
+                $observacion = "";
+            }
 
-        // Si toda la fila está vacía, ignorar este estudiante
-        if ($nota_1 === null && $nota_2 === null && $nota_final === null && $observacion === "") {
-            continue;
-        }
+            // Si toda la fila está vacía, ignorar este estudiante
+            if ($nota_1 === null && $nota_2 === null && $nota_final === null && $observacion === "") {
+                continue;
+            }
 
-        // Comprobar que el estudiante esté inscrito en el nivel y período activo.
-        $id_estudiante = intval($id_estudiante);
+            // Comprobar que el estudiante esté inscrito en el nivel y período activo.
+            $id_estudiante = intval($id_estudiante);
 
-        $sql_inscripcion = "
+            $sql_inscripcion = "
             SELECT id_inscripcion
             FROM inscripciones
             WHERE id_estudiante = '$id_estudiante'
@@ -148,68 +194,73 @@
             LIMIT 1
         ";
 
-        $resultado_inscripcion = mysqli_query($conexion, $sql_inscripcion);
+            $resultado_inscripcion = mysqli_query($conexion, $sql_inscripcion);
 
-        if (!$resultado_inscripcion) {
-            die("Error al verificar la inscripción: " . mysqli_error($conexion));
-        }
-
-        if (mysqli_num_rows($resultado_inscripcion) == 0) {
-            die("El estudiante con ID $id_estudiante no tiene una inscripción activa en este nivel y período.");
-        }
-
-        // Proteger la observación antes de guardarla en MySQL.
-        $observacion = mysqli_real_escape_string($conexion, $observacion);
-
-        // Validar Nota 1 solamente si fue escrita
-        if ($nota_1 !== null) {
-
-            if (!is_numeric($nota_1) || $nota_1 < 0 || $nota_1 > 20) {
-                die("La Nota 1 del estudiante con ID $id_estudiante debe estar entre 0 y 20.");
+            // Comprobar que la consulta de inscripción se ejecutó correctamente.
+            if (!$resultado_inscripcion) {
+                throw new Exception("Error al verificar la inscripción.");
             }
-        }
 
-        // Validar Nota 2 solamente si fue escrita
-        if ($nota_2 !== null) {
+            // Impedir guardar notas si el estudiante no tiene
+            // una inscripción activa en el nivel y período correspondiente.
 
-            if (!is_numeric($nota_2) || $nota_2 < 0 || $nota_2 > 20) {
-                die("La Nota 2 del estudiante con ID $id_estudiante debe estar entre 0 y 20.");
+            if (mysqli_num_rows($resultado_inscripcion) == 0) {
+
+                throw new Exception("inscripcion_inactiva");
             }
-        }
 
-        // Validar Nota Final solamente si fue escrita
-        if ($nota_final !== null) {
+            // Proteger la observación antes de guardarla en MySQL.
+            $observacion = mysqli_real_escape_string($conexion, $observacion);
 
-            if (!is_numeric($nota_final) || $nota_final < 0 || $nota_final > 20) {
-                die("La Nota Final del estudiante con ID $id_estudiante debe estar entre 0 y 20.");
+            // Validar Nota 1 solamente si fue escrita.
+            if ($nota_1 !== null) {
+
+                if (!is_numeric($nota_1) || $nota_1 < 0 || $nota_1 > 20) {
+                    throw new Exception("error_guardado");
+                }
             }
-        }
 
-        // Preparar Nota 1 para MySQL
-        if ($nota_1 === null) {
-            $valor_nota_1 = "NULL";
-        } else {
-            $valor_nota_1 = "'$nota_1'";
-        }
+            // Validar Nota 2 solamente si fue escrita.
+            if ($nota_2 !== null) {
 
-        // Preparar Nota 2 para MySQL
-        if ($nota_2 === null) {
-            $valor_nota_2 = "NULL";
-        } else {
-            $valor_nota_2 = "'$nota_2'";
-        }
+                if (!is_numeric($nota_2) || $nota_2 < 0 || $nota_2 > 20) {
+                    throw new Exception("error_guardado");
+                }
+            }
 
-        // Preparar Nota Final para MySQL
-        if ($nota_final === null) {
-            $valor_nota_final = "NULL";
-        } else {
-            $valor_nota_final = "'$nota_final'";
-        }
 
-        // Buscar si el estudiante ya tiene una calificación
-        // en el mismo nivel, período y registro de evaluación.
-        // Ignorar los puntos y espacios sobrantes al final del nombre.
-        $sql_buscar = "
+            // Validar Nota Final solamente si fue escrita.
+            if ($nota_final !== null) {
+                if (!is_numeric($nota_final) || $nota_final < 0 || $nota_final > 20) {
+                    throw new Exception("error_guardado");
+                }
+            }
+
+            // Preparar Nota 1 para MySQL
+            if ($nota_1 === null) {
+                $valor_nota_1 = "NULL";
+            } else {
+                $valor_nota_1 = "'$nota_1'";
+            }
+
+            // Preparar Nota 2 para MySQL
+            if ($nota_2 === null) {
+                $valor_nota_2 = "NULL";
+            } else {
+                $valor_nota_2 = "'$nota_2'";
+            }
+
+            // Preparar Nota Final para MySQL
+            if ($nota_final === null) {
+                $valor_nota_final = "NULL";
+            } else {
+                $valor_nota_final = "'$nota_final'";
+            }
+
+            // Buscar si el estudiante ya tiene una calificación
+            // en el mismo nivel, período y registro de evaluación.
+            // Ignorar los puntos y espacios sobrantes al final del nombre.
+            $sql_buscar = "
             SELECT id_calificacion
             FROM calificaciones
             WHERE id_estudiante = '$id_estudiante'
@@ -219,19 +270,20 @@
             LIMIT 1
         ";
 
-        $resultado_buscar = mysqli_query($conexion, $sql_buscar);
+            $resultado_buscar = mysqli_query($conexion, $sql_buscar);
 
-        if (!$resultado_buscar) {
-            die("Error al buscar la calificación: " . mysqli_error($conexion));
-        }
+            // Comprobar que la búsqueda de la calificación fue correcta.
+            if (!$resultado_buscar) {
+                throw new Exception("error_guardado");
+            }
 
-        // Si ya existe, actualizarla
-        if (mysqli_num_rows($resultado_buscar) > 0) {
+            // Si ya existe, actualizarla
+            if (mysqli_num_rows($resultado_buscar) > 0) {
 
-            $fila_calificacion = mysqli_fetch_assoc($resultado_buscar);
-            $id_calificacion = $fila_calificacion['id_calificacion'];
+                $fila_calificacion = mysqli_fetch_assoc($resultado_buscar);
+                $id_calificacion = $fila_calificacion['id_calificacion'];
 
-            $sql_guardar = "
+                $sql_guardar = "
                     UPDATE calificaciones
 
                     SET descripcion_nota_1 = '$descripcion_nota_1',
@@ -243,11 +295,11 @@
 
                     WHERE id_calificacion = '$id_calificacion'
                 ";
-        } else {
+            } else {
 
 
-            // Crear una nueva calificación asociada al período académico activo.
-            $sql_guardar = "
+                // Crear una nueva calificación asociada al período académico activo.
+                $sql_guardar = "
                 INSERT INTO calificaciones
                 (id_estudiante, id_nivel, id_periodo, evaluacion, descripcion_nota_1, descripcion_nota_2, nota_1, nota_2, nota_final, observacion)
 
@@ -263,23 +315,52 @@
                 $valor_nota_final,
                 '$observacion')
             ";
+            }
+
+            // Ejecutar INSERT o UPDATE.
+            $resultado_guardar = mysqli_query($conexion, $sql_guardar);
+
+            // Comprobar que la calificación se guardó correctamente.
+            if (!$resultado_guardar) {
+                throw new Exception("error_guardado");
+            }
+
+            // Contar esta calificación porque se procesó correctamente.
+            $calificaciones_guardadas++;
+        } // Cerrar el foreach de los estudiantes.
+
+        // Comprobar si se guardó alguna calificación.
+        if ($calificaciones_guardadas == 0) {
+            throw new Exception("sin_calificaciones");
         }
 
-        // Ejecutar INSERT o UPDATE.
-        $resultado_guardar = mysqli_query($conexion, $sql_guardar);
+        // Confirmar todas las calificaciones procesadas.
+        mysqli_commit($conexion);
 
-        if (!$resultado_guardar) {
-            die("Error al guardar las notas: " . mysqli_error($conexion));
+        // Regresar al formulario con el mensaje de éxito.
+        header("Location: index.php?guardado=1");
+        exit();
+    } catch (Throwable $error) {
+
+        // Deshacer los cambios realizados durante este intento.
+        mysqli_rollback($conexion);
+
+        // Identificar el error ocurrido.
+        $mensaje_error = $error->getMessage();
+
+        // Avisar cuando una inscripción no esté activa.
+        if ($mensaje_error == "inscripcion_inactiva") {
+            header("Location: " . $url_regreso . "&error=inscripcion_inactiva");
+            exit();
         }
 
-        // Contar esta calificación porque la consulta se ejecutó correctamente.
-        $calificaciones_guardadas++;
-    }
+        // Avisar cuando no se ingresaron calificaciones.
+        if ($mensaje_error == "sin_calificaciones") {
+            header("Location: " . $url_regreso . "&error=sin_calificaciones");
+            exit();
+        }
 
-    // Evitar mostrar éxito cuando no se guardó ninguna calificación.
-    if ($calificaciones_guardadas == 0) {
-        die("No se guardaron calificaciones porque todas las notas estaban vacías.");
+        // Mostrar un mensaje general para los demás errores.
+        header("Location: " . $url_regreso . "&error=error_guardado");
+        exit();
     }
-
-    header("Location: index.php?guardado=1");
-    exit();
