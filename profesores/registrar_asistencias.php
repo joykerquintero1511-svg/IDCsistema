@@ -1,28 +1,65 @@
 <?php
-// 1. Conexión a la base de datos (Método tradicional)
+// 1. Conexión y sesión
 include('../session-start.php');
 require_once '../conexion.php';
 
+// Validar que sea profesor
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'profesor') {
+    header("Location: ../login.php");
+    exit();
+}
 
+$id_usuario = $_SESSION['id_usuario'];
 $mensaje = "";
 $tipo_mensaje = "";
 
 // ==========================================
-// 2. LÓGICA DE GUARDADO (MÉTODO POST)
+// 2. OBTENER LOS NIVELES AUTORIZADOS DEL PROFESOR
+// ==========================================
+$sql_niveles = "SELECT n.id_nivel, n.nivel_academico 
+                FROM niveles n 
+                INNER JOIN profesor_nivel pn ON n.id_nivel = pn.id_nivel
+                INNER JOIN profesores p ON pn.id_profesor = p.id_profesor
+                WHERE p.id_usuario = '$id_usuario'
+                ORDER BY n.id_nivel ASC";
+$resultado_niveles = mysqli_query($conexion, $sql_niveles);
+
+// Guardamos los niveles en un array para usarlos tanto en el select como en la validación de seguridad
+$niveles_permitidos = [];
+while ($row_niv = mysqli_fetch_assoc($resultado_niveles)) {
+    $niveles_permitidos[$row_niv['id_nivel']] = $row_niv['nivel_academico'];
+}
+
+// Capturamos el nivel seleccionado por el método GET
+$nivel_seleccionado = isset($_GET['nivel']) ? $_GET['nivel'] : '';
+
+// Validar que el nivel seleccionado realmente le pertenezca a este profesor
+if ($nivel_seleccionado != "" && !array_key_exists($nivel_seleccionado, $niveles_permitidos)) {
+    // Si intenta seleccionar un nivel no autorizado, bloqueamos o limpiamos
+    $nivel_seleccionado = "";
+}
+
+// ==========================================
+// 3. LÓGICA DE GUARDADO (MÉTODO POST)
 // ==========================================
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['guardar_asistencia'])) {
     $fecha_clase = $_POST['fecha_clase'] ?? '';
     $asistencias = $_POST['asistencia'] ?? [];
     $observaciones = $_POST['observaciones'] ?? [];
+    $nivel_formulario = $_POST['id_nivel'] ?? '';
 
-    if (empty($fecha_clase)) {
+    // Validación de seguridad estricta en el POST
+    if (!array_key_exists($nivel_formulario, $niveles_permitidos)) {
+        $mensaje = "No tienes autorización para registrar asistencia en este nivel.";
+        $tipo_mensaje = "error";
+    } elseif (empty($fecha_clase)) {
         $mensaje = "Seleccione una fecha válida.";
         $tipo_mensaje = "error";
     } elseif (empty($asistencias)) {
         $mensaje = "No hay datos de asistencia para guardar.";
         $tipo_mensaje = "error";
     } else {
-        // Iniciamos transacción manualmente (Tradicional)
+        // Iniciamos transacción manualmente
         mysqli_autocommit($conexion, FALSE);
         $error_flag = false;
 
@@ -60,28 +97,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['guardar_asistencia']))
 }
 
 // ==========================================
-// 3. LÓGICA DEL FILTRO (MÉTODO GET)
-// ==========================================
-// Consulta para llenar el menú desplegable superior
-$sql_niveles = "SELECT * FROM niveles"; 
-$resultado_niveles = mysqli_query($conexion, $sql_niveles);
-
-// Capturamos el nivel si el profesor ya seleccionó uno
-$nivel_seleccionado = "";
-if (isset($_GET['nivel'])) {
-    $nivel_seleccionado = $_GET['nivel'];
-}
-
-// ==========================================
-// 4. CONSULTA DE ESTUDIANTES FILTRADA
+// 4. CONSULTA DE ESTUDIANTES FILTRADA POR NIVEL AUTORIZADO
 // ==========================================
 $resultado_estudiantes = null;
 if ($nivel_seleccionado != "") {
-    // INNER JOIN tradicional filtrando por el ID del nivel
+    $nivel_seguro = mysqli_real_escape_string($conexion, $nivel_seleccionado);
     $sql_estudiantes = "SELECT e.id_estudiante, p.nombre, p.apellido, p.cedula
                         FROM estudiantes e
                         INNER JOIN personas p ON e.id_persona = p.id_persona
-                        WHERE e.id_nivel = '$nivel_seleccionado'
+                        WHERE e.id_nivel = '$nivel_seguro'
                         ORDER BY p.apellido ASC";
     $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 }
@@ -195,26 +219,21 @@ if ($nivel_seleccionado != "") {
                 <?php echo $mensaje; ?>
             </div>
         <?php endif; ?>
-
-        <form method="GET" action="registrar_asistencias.php">
-            <div class="form-header" style="border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 25px; display: block;">
-                <label style="color: #ffffff; font-size: 1.2rem; display: block; margin-bottom: 10px;">Selecciona el Nivel a evaluar:</label>
-                
-                <select name="nivel" required onchange="this.form.submit()">
-                    <option value="" disabled <?php if($nivel_seleccionado == "") echo "selected"; ?> style="background: #142132; color: rgba(255,255,255,0.4);">
-                        Seleccione un nivel...
-                    </option>
-                    
-                    <?php if($resultado_niveles): ?>
-                        <?php while($nivel = mysqli_fetch_assoc($resultado_niveles)): ?>
-                            <option value="<?php echo $nivel['id_nivel']; ?>" <?php if($nivel_seleccionado == $nivel['id_nivel']) echo "selected"; ?> style="background: #142132; color: #fff;">
-                                <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
-                            </option>
-                        <?php endwhile; ?>
-                    <?php endif; ?>
+        
+        <!-- SECCIÓN DE FILTRO CON EL ESTILO ORIGINAL -->
+        <div class="promocion-card">
+            <form method="GET" action="">
+                <select name="nivel" onchange="this.form.submit()" class="promocion-select" required>
+                    <option value="" style="color: white; background-color: #1e293b; padding: 10px; border-radius: 6px;">-- Seleccione un nivel --</option>
+                    <?php foreach ($niveles_permitidos as $id_n => $nombre_n):  ?> 
+                        <option value="<?php echo $id_n; ?>" <?php if($nivel_seleccionado == $id_n) echo 'selected'; ?> style="color: white; background-color: #1e293b; padding: 10px; border-radius: 6px;">
+                            <?php echo htmlspecialchars($nombre_n); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
-            </div>
-        </form>
+            </form>
+        </div>
+       
 
         <?php if ($nivel_seleccionado != ""): ?>
             
@@ -277,7 +296,8 @@ if ($nivel_seleccionado != "") {
 
     </div>
 </div>
-            <a href="index.php" style="display: block; text-align: center; margin-top: 30px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
+            <a href="index.php" style="display: block; text-align: center; margin-top: 5px;
+            padding: 5px 10px 10px 10px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
     <?php include '../script-seguridad.php'; ?>
 </body>
 </html>

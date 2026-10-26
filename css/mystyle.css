@@ -1897,3 +1897,105 @@ a.btn-login-efb:hover {
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
+/* --- Estilos para el Módulo de Certificados del Estudiante --- */
+.certificados-header {
+    margin-bottom: 25px;
+}
+
+.certificados-header h1 {
+    color: #38bdf8;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.certificados-header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.certificados-card {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+
+.certificados-card h2 {
+    color: #f1f5f9;
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 10px;
+}
+
+.certificados-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.certificado-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.certificado-item:hover {
+    border-color: #38bdf8;
+}
+
+.nivel-nombre {
+    color: #e2e8f0;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.btn-ver-certificado {
+    background: #3b82f6;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-ver-certificado:hover {
+    background: #2563eb;
+}
+
+.certificados-empty {
+    color: #94a3b8;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+.certificados-actions {
+    margin-top: 20px;
+}
+
+.btn-volver {
+    display: inline-block;
+    background: #475569;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.btn-volver:hover {
+    background: #334155;
+}
+

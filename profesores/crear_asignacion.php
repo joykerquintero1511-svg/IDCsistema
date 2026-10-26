@@ -12,11 +12,12 @@ $id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 $mensaje = "";
 
-// 2. CONSULTA DEL NIVEL O NIVELES ASIGNADOS AL PROFESOR
+// 2. CONSULTA ACTUALIZADA: Obtener TODOS los niveles asignados al profesor mediante la tabla pivote
 $query_niveles = "SELECT n.id_nivel, n.nivel_academico 
                   FROM niveles n 
-                  INNER JOIN profesores p ON p.id_nivel = n.id_nivel 
-                  WHERE p.id_usuario = '$id_usuario' 
+                  INNER JOIN profesor_nivel pn ON n.id_nivel = pn.id_nivel
+                  INNER JOIN profesores p ON pn.id_profesor = p.id_profesor
+                  WHERE p.id_usuario = '$id_usuario'
                   ORDER BY n.id_nivel ASC";
 
 $result_niveles = mysqli_query($conexion, $query_niveles);
