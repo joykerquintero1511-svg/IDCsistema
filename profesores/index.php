@@ -16,24 +16,34 @@ $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 // Limpiamos el nombre de la sesión (ej: "JoykerQuintero" -> "joykerquintero") para asegurar la coincidencia
 $nombre_limpio = strtolower(str_replace(' ', '', $nombre_profesor));
 
-$query_prof = "SELECT p.id_profesor, p.id_nivel, n.nivel_academico 
+// 3. CONSULTA: Obtener el ID real del profesor y TODOS sus niveles asignados
+$nombre_limpio = strtolower(str_replace(' ', '', $nombre_profesor));
+
+$query_prof = "SELECT p.id_profesor, 
+               GROUP_CONCAT(n.id_nivel SEPARATOR '||') AS ids_niveles,
+               GROUP_CONCAT(n.nivel_academico SEPARATOR '||') AS nombres_niveles
                FROM profesores p 
-               LEFT JOIN niveles n ON p.id_nivel = n.id_nivel 
+               LEFT JOIN profesor_nivel pn ON p.id_profesor = pn.id_profesor
+               LEFT JOIN niveles n ON pn.id_nivel = n.id_nivel 
                WHERE p.id_usuario = '$id_usuario' 
                   OR REPLACE(LOWER(CONCAT(p.nombre, IFNULL(p.apellido, ''))), ' ', '') = '$nombre_limpio'
                   OR REPLACE(LOWER(p.nombre), ' ', '') = '$nombre_limpio'
+               GROUP BY p.id_profesor
                LIMIT 1";
 
 $res_prof = mysqli_query($conexion, $query_prof);
 $id_profesor = 0;
-$nivel_asignado = "Sin nivel asignado";
+$nombres_niveles_array = [];
 
 if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
     $id_profesor = $row_prof['id_profesor'];
-    if (!empty($row_prof['nivel_academico'])) {
-        $nivel_asignado = $row_prof['nivel_academico'];
+    if (!empty($row_prof['nombres_niveles'])) {
+        $nombres_niveles_array = explode('||', $row_prof['nombres_niveles']);
     }
 }
+
+// Texto formateado para mostrar en la cabecera
+$nivel_asignado = !empty($nombres_niveles_array) ? implode(', ', $nombres_niveles_array) : "Sin niveles asignados";
 
 // 4. CONSULTA 1: Últimas asignaciones creadas por este profesor
 $query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico 

@@ -57,38 +57,52 @@ $estudiante = mysqli_fetch_assoc($resultado_estudiante);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Certificados del Estudiante</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificados del Estudiante - EFB</title>
+    <link rel="icon" type="image/png" href="/IDCsistema/images/EFB.png">
+    <link rel="stylesheet" href="/IDCsistema/css/mystyle.css">
+    <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
 <body>
 
-    <h1>
-        Certificados de
-        <?php echo htmlspecialchars(ucwords(strtolower($estudiante['nombre'] . ' ' . $estudiante['apellido']))); ?>
-    </h1>
-    <h2>Niveles cursados</h2>
+    <!-- Menú lateral unificado de administrador -->
+    <?php include '../sidebaradmin.php'; // Ajusta la ruta relativa según la ubicación exacta del archivo ?>
 
-<?php if (mysqli_num_rows($resultado_historial) > 0) { ?>
+    <!-- Contenedor Principal con el margen correcto -->
+    <main class="main-content">
+        
+        <div class="certificados-header">
+            <h1>Certificados de <?php echo htmlspecialchars(ucwords(strtolower($estudiante['nombre'] . ' ' . $estudiante['apellido']))); ?> 🎓</h1>
+            <p>Visualiza el historial académico y accede a los certificados de los niveles cursados.</p>
+        </div>
 
-    <?php while ($nivel = mysqli_fetch_assoc($resultado_historial)) { ?>
+        <div class="certificados-card">
+            <h2>Niveles Cursados</h2>
 
-        <p>
-            <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+            <?php if (mysqli_num_rows($resultado_historial) > 0) { ?>
+                <div class="certificados-list">
+                    <?php while ($nivel = mysqli_fetch_assoc($resultado_historial)) { ?>
+                        <div class="certificado-item">
+                            <span class="nivel-nombre">
+                                📜 <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+                            </span>
+                            <a href="../../certificados/certificado.php?id_inscripcion=<?php echo $nivel['id_inscripcion']; ?>" class="btn-ver-certificado" target="_blank">
+                                Ver certificado
+                            </a>
+                        </div>
+                    <?php } ?>
+                </div>
+            <?php } else { ?>
+                <p class="certificados-empty">Este estudiante no tiene niveles registrados.</p>
+            <?php } ?>
+        </div>
 
-            <a href="../../certificados/certificado.php?id_inscripcion=<?php echo $nivel['id_inscripcion']; ?>">
-                Ver certificado
-            </a>
-        </p>
+        <div class="certificados-actions">
+            <a href="listar.php" class="btn-volver">← Volver a la lista de estudiantes</a>
+        </div>
 
-    <?php } ?>
-
-<?php } else { ?>
-
-    <p>Este estudiante no tiene niveles registrados.</p>
-
-<?php } ?>
-
-    <a href="listar.php">← Volver a la lista de estudiantes</a>
+    </main>
 
 </body>
 </html>
