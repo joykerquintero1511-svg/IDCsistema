@@ -258,6 +258,12 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
                 </div>
 
                 <div class="info-card">
+                    <h3>📜 Historial Académico</h3>
+                    <p>Consulta docentes, niveles y registros de cohortes pasadas.</p>
+                    <a href="historial_academico.php" class="link">Ver Historial Académico &rarr;</a>
+                </div>
+
+                <div class="info-card">
                     <h3>Periodo Académico 📅</h3>
                     <p>Abre o cierra lapsos para la carga de notas o habilita procesos globales de inscripción.</p>
                     <a href="periodos.php" class="link">Configurar periodos academicos &rarr;</a>

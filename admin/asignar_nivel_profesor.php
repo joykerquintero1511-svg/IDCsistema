@@ -12,7 +12,29 @@ include("../conexion.php");
 $mensaje = "";
 $clase_alerta = "";
 
+// ==========================================
+// 0. OBTENER EL PERÍODO ACTIVO ACTUAL
+// ==========================================
+$query_periodo_activo = "SELECT id_periodo, nombre_periodo FROM periodos_academicos WHERE estado = 1 LIMIT 1";
+$res_pa = mysqli_query($conexion, $query_periodo_activo);
+$id_periodo_activo = 0;
+$nombre_periodo_activo = "Ninguno";
+
+if ($res_pa && $row_pa = mysqli_fetch_assoc($res_pa)) {
+    $id_periodo_activo = intval($row_pa['id_periodo']);
+    $nombre_periodo_activo = $row_pa['nombre_periodo'];
+} else {
+    // Si no hay período activo, detenemos la acción para evitar registros huérfanos
+    die("<div style='background: #7f1d1d; color: #fee2e2; padding: 20px; font-family: sans-serif; text-align: center;'>
+            <h3>Error Crítico de Configuración</h3>
+            <p>No hay ningún período con estado <strong>'Activo'</strong> en el sistema. Por favor, ve al módulo de períodos y activa uno antes de asignar profesores.</p>
+            <a href='periodos.php' style='color: #38bdf8;'>Ir a Gestión de Períodos</a>
+         </div>");
+}
+
+// ==========================================
 // 1. PROCESAR ACCIONES (ASIGNAR O DESASIGNAR)
+// ==========================================
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $accion = isset($_POST['accion']) ? $_POST['accion'] : '';
 
@@ -22,34 +44,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $id_nivel    = intval($_POST['id_nivel']);
 
         if ($id_profesor > 0 && $id_nivel > 0) {
-            // Verificar que no exista ya la asignación
-            $check_sql = "SELECT id FROM profesor_nivel WHERE id_profesor = $id_profesor AND id_nivel = $id_nivel";
-            $res_check = mysqli_query($conexion, $check_sql);
+            
+            // 1. VERIFICAR SI EL NIVEL YA ESTÁ ASIGNADO A OTRO PROFESOR EN ESTE PERÍODO
+            $check_nivel_ocupado = "SELECT p.nombre, p.apellido 
+                                    FROM profesor_nivel pn 
+                                    INNER JOIN profesores p ON pn.id_profesor = p.id_profesor 
+                                    WHERE pn.id_nivel = $id_nivel AND pn.id_periodo = $id_periodo_activo LIMIT 1";
+            $res_ocupado = mysqli_query($conexion, $check_nivel_ocupado);
 
-            if (mysqli_num_rows($res_check) == 0) {
-                $sql_insert = "INSERT INTO profesor_nivel (id_profesor, id_nivel) VALUES ($id_profesor, $id_nivel)";
+            if (mysqli_num_rows($res_ocupado) > 0) {
+                $row_occ = mysqli_fetch_assoc($res_ocupado);
+                $nombre_ocupante = $row_occ['nombre'] . ' ' . $row_occ['apellido'];
+                
+                $mensaje = "⚠️ Este nivel ya se encuentra asignado al docente <strong>{$nombre_ocupante}</strong> en este período.";
+                $clase_alerta = "background: #854d0e; color: #fef08a; border: 1px solid #eab308;";
+            } else {
+                // 2. INSERTAR SI ESTÁ LIBRE
+                $sql_insert = "INSERT INTO profesor_nivel (id_profesor, id_nivel, id_periodo) VALUES ($id_profesor, $id_nivel, $id_periodo_activo)";
                 if (mysqli_query($conexion, $sql_insert)) {
-                    $mensaje = "¡Nivel asignado con éxito al docente!";
+                    $mensaje = "¡Nivel asignado con éxito al docente para el período actual ($nombre_periodo_activo)!";
                     $clase_alerta = "background: #065f46; color: #d1fae5; border: 1px solid #10b981;";
                 } else {
                     $mensaje = "Error al asignar el nivel: " . mysqli_error($conexion);
                     $clase_alerta = "background: #7f1d1d; color: #fee2e2; border: 1px solid #ef4444;";
                 }
-            } else {
-                $mensaje = "El docente ya tiene asignado este nivel actualmente.";
-                $clase_alerta = "background: #854d0e; color: #fef08a; border: 1px solid #eab308;";
             }
         }
     }
 
-    // DESASIGNAR NIVEL
+    // DESASIGNAR NIVEL (Se elimina la asignación correspondiente al período activo)
     if ($accion === 'desasignar') {
         $id_profesor = intval($_POST['id_profesor']);
         $id_nivel    = intval($_POST['id_nivel']);
 
-        $sql_delete = "DELETE FROM profesor_nivel WHERE id_profesor = $id_profesor AND id_nivel = $id_nivel";
+        $sql_delete = "DELETE FROM profesor_nivel WHERE id_profesor = $id_profesor AND id_nivel = $id_nivel AND id_periodo = $id_periodo_activo";
         if (mysqli_query($conexion, $sql_delete)) {
-            $mensaje = "¡Nivel desasignado correctamente del docente!";
+            $mensaje = "¡Nivel desasignado correctamente del docente para este período!";
             $clase_alerta = "background: #065f46; color: #d1fae5; border: 1px solid #10b981;";
         } else {
             $mensaje = "Error al quitar la asignación: " . mysqli_error($conexion);
@@ -58,18 +88,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// 2. OBTENER PROFESORES Y SUS NIVELES ASIGNADOS (CON GROUP_CONCAT)
+// ==========================================
+// 2. OBTENER PROFESORES Y SUS NIVELES ASIGNADOS (FILTRADO POR PERÍODO ACTIVO)
+// ==========================================
 $query_profs = "SELECT p.id_profesor, p.nombre, p.apellido, p.id_usuario,
                 GROUP_CONCAT(n.id_nivel SEPARATOR '||') AS ids_niveles,
                 GROUP_CONCAT(n.nivel_academico SEPARATOR '||') AS nombres_niveles
                 FROM profesores p
-                LEFT JOIN profesor_nivel pn ON p.id_profesor = pn.id_profesor
+                LEFT JOIN profesor_nivel pn ON p.id_profesor = pn.id_profesor AND pn.id_periodo = $id_periodo_activo
                 LEFT JOIN niveles n ON pn.id_nivel = n.id_nivel
                 GROUP BY p.id_profesor
                 ORDER BY p.nombre ASC";
 $res_profs = mysqli_query($conexion, $query_profs);
 
+// ==========================================
 // 3. OBTENER USUARIOS PARA CRUZAR CORREOS
+// ==========================================
 $query_usuarios = "SELECT id_usuario, usuario, email FROM usuarios";
 $res_usuarios = mysqli_query($conexion, $query_usuarios);
 $usuarios_list = [];
@@ -79,7 +113,9 @@ if ($res_usuarios) {
     }
 }
 
+// ==========================================
 // 4. OBTENER NIVELES DISPONIBLES
+// ==========================================
 $query_niveles = "SELECT id_nivel, nivel_academico FROM niveles ORDER BY id_nivel ASC";
 $res_niveles = mysqli_query($conexion, $query_niveles);
 $niveles_array = [];
@@ -162,6 +198,8 @@ if ($res_niveles) {
                     </select>
                 </div>
 
+                
+
                 <div>
                     <button type="submit" style="background: #3b82f6; color: white; border: none; padding: 11px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
                         + Asignar Nivel
@@ -170,6 +208,17 @@ if ($res_niveles) {
 
             </div>
         </form>
+
+ <!-- Indicador Visual Dinámico del Período Activo -->
+<div style="background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid #38bdf8; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+    <div>
+        <span style="color: #94a3b8; font-size: 0.85rem; display: block; text-transform: uppercase; letter-spacing: 1px;">Período Académico en Curso</span>
+        <strong style="color: #38bdf8; font-size: 1.1rem;">⭐ <?php echo htmlspecialchars($nombre_periodo_activo); ?></strong>
+    </div>
+    <span style="background: #065f46; color: #d1fae5; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid #10b981;">
+        Modo Activo / Escritura
+    </span>
+</div>
 
         <!-- TABLA DE DOCENTES Y NIVELES ASIGNADOS -->
         <h3 style="color: #f1f5f9; border-bottom: 2px solid #334155; padding-bottom: 8px; margin-top: 20px;">Listado Actual de Docentes y sus Niveles</h3>
