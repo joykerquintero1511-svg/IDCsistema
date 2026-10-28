@@ -50,17 +50,20 @@ if ($_SESSION['rol'] === 'profesor') {
 
     $id_usuario = intval($_SESSION['id_usuario']);
 
+    // Comprobar que el profesor tenga asignado el nivel,en el mismo período académico de la calificación.
+
     $sql_permiso = "
-        SELECT calificaciones.id_calificacion
-        FROM calificaciones
-        INNER JOIN profesor_nivel
-            ON calificaciones.id_nivel = profesor_nivel.id_nivel
-        INNER JOIN profesores
-            ON profesor_nivel.id_profesor = profesores.id_profesor
-        WHERE calificaciones.id_calificacion = '$id_calificacion'
-        AND profesores.id_usuario = '$id_usuario'
-        LIMIT 1
-    ";
+    SELECT calificaciones.id_calificacion
+    FROM calificaciones
+    INNER JOIN profesor_nivel
+        ON calificaciones.id_nivel = profesor_nivel.id_nivel
+        AND calificaciones.id_periodo = profesor_nivel.id_periodo
+    INNER JOIN profesores
+        ON profesor_nivel.id_profesor = profesores.id_profesor
+    WHERE calificaciones.id_calificacion = '$id_calificacion'
+    AND profesores.id_usuario = '$id_usuario'
+    LIMIT 1
+";
 
     // Ejecutar la consulta para comprobar los permisos del profesor.
     $resultado_permiso = mysqli_query($conexion, $sql_permiso);

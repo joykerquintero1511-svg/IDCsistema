@@ -64,14 +64,16 @@ if ($_SESSION['rol'] == 'profesor') {
 
     $id_usuario = intval($_SESSION['id_usuario']);
 
-    // Buscar si el nivel pertenece al profesor.
+    // Comprobar que el profesor tenga asignado el niveldurante el período académico activo.
+
     $sql_permiso = "
         SELECT profesor_nivel.id_nivel
         FROM profesor_nivel
         INNER JOIN profesores
-        ON profesor_nivel.id_profesor = profesores.id_profesor
+            ON profesor_nivel.id_profesor = profesores.id_profesor
         WHERE profesores.id_usuario = '$id_usuario'
         AND profesor_nivel.id_nivel = '$id_nivel'
+        AND profesor_nivel.id_periodo = '$id_periodo'
         LIMIT 1
     ";
 

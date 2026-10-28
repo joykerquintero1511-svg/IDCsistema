@@ -16,12 +16,21 @@ $tipo_mensaje = "";
 // ==========================================
 // 2. OBTENER LOS NIVELES AUTORIZADOS DEL PROFESOR
 // ==========================================
-$sql_niveles = "SELECT n.id_nivel, n.nivel_academico 
-                FROM niveles n 
-                INNER JOIN profesor_nivel pn ON n.id_nivel = pn.id_nivel
-                INNER JOIN profesores p ON pn.id_profesor = p.id_profesor
-                WHERE p.id_usuario = '$id_usuario'
-                ORDER BY n.id_nivel ASC";
+// Obtener únicamente los niveles asignados al profesor
+// durante el período académico que está activo.
+$sql_niveles = "
+    SELECT niveles.id_nivel, niveles.nivel_academico
+    FROM niveles
+    INNER JOIN profesor_nivel
+        ON niveles.id_nivel = profesor_nivel.id_nivel
+    INNER JOIN profesores
+        ON profesor_nivel.id_profesor = profesores.id_profesor
+    INNER JOIN periodos_academicos
+        ON profesor_nivel.id_periodo = periodos_academicos.id_periodo
+    WHERE profesores.id_usuario = '$id_usuario'
+    AND periodos_academicos.estado = 1
+    ORDER BY niveles.id_nivel ASC
+";
 $resultado_niveles = mysqli_query($conexion, $sql_niveles);
 
 // Guardamos los niveles en un array para usarlos tanto en el select como en la validación de seguridad
@@ -71,15 +80,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['guardar_asistencia']))
                 $obs = isset($observaciones[$id_alumno]) ? trim($observaciones[$id_alumno]) : "";
                 // Vinculamos parámetros: i=entero, s=string
                 mysqli_stmt_bind_param($stmt, "isss", $id_alumno, $fecha_clase, $estado, $obs);
-                
-                if (!mysqli_stmt_execute($stmt)) { 
-                    $error_flag = true; 
-                    break; 
+
+                if (!mysqli_stmt_execute($stmt)) {
+                    $error_flag = true;
+                    break;
                 }
             }
             mysqli_stmt_close($stmt);
-        } else { 
-            $error_flag = true; 
+        } else {
+            $error_flag = true;
         }
 
         // Confirmamos o revertimos según el resultado
@@ -102,17 +111,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['guardar_asistencia']))
 $resultado_estudiantes = null;
 if ($nivel_seleccionado != "") {
     $nivel_seguro = mysqli_real_escape_string($conexion, $nivel_seleccionado);
-    $sql_estudiantes = "SELECT e.id_estudiante, p.nombre, p.apellido, p.cedula
-                        FROM estudiantes e
-                        INNER JOIN personas p ON e.id_persona = p.id_persona
-                        WHERE e.id_nivel = '$nivel_seguro'
-                        ORDER BY p.apellido ASC";
+
+    // Consultar únicamente estudiantes con inscripción activa
+    // en el nivel seleccionado y en el período académico activo.
+    $sql_estudiantes = "
+    SELECT estudiantes.id_estudiante,
+           personas.nombre,
+           personas.apellido,
+           personas.cedula
+    FROM inscripciones
+    INNER JOIN estudiantes
+        ON inscripciones.id_estudiante = estudiantes.id_estudiante
+    INNER JOIN personas
+        ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN periodos_academicos
+        ON inscripciones.id_periodo = periodos_academicos.id_periodo
+    WHERE inscripciones.id_nivel = '$nivel_seguro'
+    AND inscripciones.estado = 1
+    AND periodos_academicos.estado = 1
+    ORDER BY personas.apellido ASC
+";
+
     $resultado_estudiantes = mysqli_query($conexion, $sql_estudiantes);
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Control de Asistencias</title>
@@ -128,7 +154,13 @@ if ($nivel_seleccionado != "") {
             --success: #22c55e;
             --error: #ef4444;
         }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); color: var(--text-primary); margin: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+        }
 
         header {
             background-color: #020617;
@@ -137,167 +169,278 @@ if ($nivel_seleccionado != "") {
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid #334155;
-            position: sticky; top: 0; z-index: 100;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .logo-container { display: flex; align-items: center; gap: 15px; }
-        .logo-container img { height: 50px; border-radius: 5px; }
-        .logo-container span { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .card { background: var(--card-dark); border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-        h2 { margin-top: 0; color: var(--accent); font-size: 28px; }
-        .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .logo-container img {
+            height: 50px;
+            border-radius: 5px;
+        }
 
-        input[type="date"], select { 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: white; 
-            padding: 10px 15px; 
-            border-radius: 6px; 
-            font-size: 16px; 
-            outline: none; 
+        .logo-container span {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--card-dark);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--accent);
+            font-size: 28px;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        input[type="date"],
+        select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
             height: 45px;
         }
-        select { cursor: pointer; width: 100%; max-width: 400px; }
-        select:focus { border-color: var(--accent); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #0f172a; border-radius: 8px; overflow: hidden; }
-        th { background: #334155; color: var(--text-primary); padding: 15px; text-align: left; text-transform: uppercase; font-size: 13px; }
-        td { padding: 15px; border-bottom: 1px solid #1e293b; color: var(--text-secondary); }
-        tr:hover { background: #1e293b; }
-
-        .status-options { display: flex; gap: 15px; }
-        .status-options label { font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; color: var(--text-primary); }
-        
-        input[type="text"] { 
-            background: #1e293b; 
-            border: 1px solid #334155; 
-            color: white; 
-            padding: 10px; 
-            border-radius: 4px; 
-            width: 100%; 
-            box-sizing: border-box; 
+        select {
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
         }
 
-        .btn-save { 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            border-radius: 8px; 
-            width: 100%; 
-            font-size: 18px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 30px; 
-            transition: 0.3s; 
+        select:focus {
+            border-color: var(--accent);
         }
-        .btn-save:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
 
-        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center; }
-        .alert-success { background: rgba(34, 197, 94, 0.2); border: 1px solid var(--success); color: var(--success); }
-        .alert-error { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--error); color: var(--error); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
 
-        .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); font-size: 16px; border: 1px dashed #334155; border-radius: 8px; margin-top: 20px; }
+        th {
+            background: #334155;
+            color: var(--text-primary);
+            padding: 15px;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #1e293b;
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background: #1e293b;
+        }
+
+        .status-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .status-options label {
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-primary);
+        }
+
+        input[type="text"] {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-save {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: 0.3s;
+        }
+
+        .btn-save:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            border: 1px dashed #334155;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
     </style>
 </head>
+
 <body>
 
-<header>
-    <div class="logo-container">
-        <img src="../images/EFB.png" alt="Logo">
-        <span>Control de Asistencias</span>
-    </div>
-</header>
-
-<div class="container">
-    <div class="card">
-
-        <?php if (!empty($mensaje)): ?>
-            <div class="alert alert-<?php echo $tipo_mensaje; ?>">
-                <?php echo $mensaje; ?>
-            </div>
-        <?php endif; ?>
-        
-        <!-- SECCIÓN DE FILTRO CON EL ESTILO ORIGINAL -->
-        <div class="promocion-card">
-            <form method="GET" action="">
-                <select name="nivel" onchange="this.form.submit()" class="promocion-select" required>
-                    <option value="" style="color: white; background-color: #1e293b; padding: 10px; border-radius: 6px;">-- Seleccione un nivel --</option>
-                    <?php foreach ($niveles_permitidos as $id_n => $nombre_n):  ?> 
-                        <option value="<?php echo $id_n; ?>" <?php if($nivel_seleccionado == $id_n) echo 'selected'; ?> style="color: white; background-color: #1e293b; padding: 10px; border-radius: 6px;">
-                            <?php echo htmlspecialchars($nombre_n); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </form>
+    <header>
+        <div class="logo-container">
+            <img src="../images/EFB.png" alt="Logo">
+            <span>Control de Asistencias</span>
         </div>
-       
+    </header>
 
-        <?php if ($nivel_seleccionado != ""): ?>
-            
-            <form action="registrar_asistencias.php?nivel=<?php echo $nivel_seleccionado; ?>" method="POST">
-                <div class="form-header">
-                    <h2>Lista de Estudiantes</h2>
-                    <div>
-                        <label style="margin-right: 10px;">Fecha de la clase:</label>
-                        <input type="date" name="fecha_clase" value="<?php echo date('Y-m-d'); ?>" required>
-                    </div>
+    <div class="container">
+        <div class="card">
+
+            <?php if (!empty($mensaje)): ?>
+                <div class="alert alert-<?php echo $tipo_mensaje; ?>">
+                    <?php echo $mensaje; ?>
                 </div>
+            <?php endif; ?>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Estudiante</th>
-                            <th>Cédula</th>
-                            <th>Estatus</th>
-                            <th>Observación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($resultado_estudiantes && mysqli_num_rows($resultado_estudiantes) > 0): ?>
-                            <?php while ($row = mysqli_fetch_assoc($resultado_estudiantes)): ?>
+            <!-- SECCIÓN DE FILTRO CON EL ESTILO ORIGINAL -->
+            <div class="promocion-card">
+                <form method="GET" action="">
+                    <select name="nivel" onchange="this.form.submit()" class="promocion-select" required>
+                        <option value="" style="color: white; background-color: #1e293b; padding: 10px; border-radius: 6px;">-- Seleccione un nivel --</option>
+                        <?php foreach ($niveles_permitidos as $id_n => $nombre_n):  ?>
+                            <option value="<?php echo $id_n; ?>" <?php if ($nivel_seleccionado == $id_n) echo 'selected'; ?> style="color: white; background-color: #1e293b; padding: 10px; border-radius: 6px;">
+                                <?php echo htmlspecialchars($nombre_n); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+            </div>
+
+
+            <?php if ($nivel_seleccionado != ""): ?>
+
+                <form action="registrar_asistencias.php?nivel=<?php echo $nivel_seleccionado; ?>" method="POST">
+                    <div class="form-header">
+                        <h2>Lista de Estudiantes</h2>
+                        <div>
+                            <label style="margin-right: 10px;">Fecha de la clase:</label>
+                            <input type="date" name="fecha_clase" value="<?php echo date('Y-m-d'); ?>" required>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Cédula</th>
+                                <th>Estatus</th>
+                                <th>Observación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($resultado_estudiantes && mysqli_num_rows($resultado_estudiantes) > 0): ?>
+                                <?php while ($row = mysqli_fetch_assoc($resultado_estudiantes)): ?>
+                                    <tr>
+                                        <td style="color:white; font-weight:bold;">
+                                            <?php echo htmlspecialchars($row['apellido']) . ", " . htmlspecialchars($row['nombre']); ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($row['cedula']); ?></td>
+                                        <td>
+                                            <div class="status-options">
+                                                <label><input type="radio" name="asistencia[<?php echo $row['id_estudiante']; ?>]" value="Presente" checked> P</label>
+                                                <label><input type="radio" name="asistencia[<?php echo $row['id_estudiante']; ?>]" value="Ausente"> A</label>
+                                                <label><input type="radio" name="asistencia[<?php echo $row['id_estudiante']; ?>]" value="Justificado"> J</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="observaciones[<?php echo $row['id_estudiante']; ?>]" placeholder="Ej: Llegó tarde...">
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
                                 <tr>
-                                    <td style="color:white; font-weight:bold;">
-                                        <?php echo htmlspecialchars($row['apellido']) . ", " . htmlspecialchars($row['nombre']); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($row['cedula']); ?></td>
-                                    <td>
-                                        <div class="status-options">
-                                            <label><input type="radio" name="asistencia[<?php echo $row['id_estudiante']; ?>]" value="Presente" checked> P</label>
-                                            <label><input type="radio" name="asistencia[<?php echo $row['id_estudiante']; ?>]" value="Ausente"> A</label>
-                                            <label><input type="radio" name="asistencia[<?php echo $row['id_estudiante']; ?>]" value="Justificado"> J</label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <input type="text" name="observaciones[<?php echo $row['id_estudiante']; ?>]" placeholder="Ej: Llegó tarde...">
+                                    <td colspan="4" style="text-align: center; padding: 30px;">
+                                        No hay estudiantes inscritos actualmente en este nivel.
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" style="text-align: center; padding: 30px;">
-                                    No hay estudiantes inscritos actualmente en este nivel.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
 
-                <button type="submit" name="guardar_asistencia" class="btn-save">Guardar Lista de Asistencia</button>
-            </form>
+                    <button type="submit" name="guardar_asistencia" class="btn-save">Guardar Lista de Asistencia</button>
+                </form>
 
-        <?php else: ?>
-            <div class="empty-state">
-                👈 Por favor, seleccione un nivel en el menú desplegable superior para cargar la lista de estudiantes.
-            </div>
-        <?php endif; ?>
+            <?php else: ?>
+                <div class="empty-state">
+                    👈 Por favor, seleccione un nivel en el menú desplegable superior para cargar la lista de estudiantes.
+                </div>
+            <?php endif; ?>
 
+        </div>
     </div>
-</div>
-            <a href="index.php" style="display: block; text-align: center; margin-top: 5px;
+    <a href="index.php" style="display: block; text-align: center; margin-top: 5px;
             padding: 5px 10px 10px 10px; color: var(--accent); text-decoration: none; font-weight: bold;">&#8592; Volver</a>
     <?php include '../script-seguridad.php'; ?>
 </body>
+
 </html>

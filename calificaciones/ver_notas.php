@@ -43,13 +43,16 @@ $niveles_profesor = [];
 
 if ($_SESSION['rol'] === 'profesor') {
 
+    // Obtener los niveles asignados al profesor,únicamente durante el período académico activo.
+
     $sql_profesor = "
-        SELECT profesor_nivel.id_nivel
-        FROM profesor_nivel
-        INNER JOIN profesores
+    SELECT profesor_nivel.id_nivel
+    FROM profesor_nivel
+    INNER JOIN profesores
         ON profesor_nivel.id_profesor = profesores.id_profesor
-        WHERE profesores.id_usuario = '$id_usuario'
-    ";
+    WHERE profesores.id_usuario = '$id_usuario'
+    AND profesor_nivel.id_periodo = '$id_periodo_activo'
+";
 
     $resultado_profesor = mysqli_query($conexion, $sql_profesor);
 
@@ -74,16 +77,19 @@ if ($_SESSION['rol'] === 'admin') {
     ";
 } else {
 
+    // Mostrar solamente los niveles del profesor,correspondientes al período académico activo.
+
     $sql = "
-        SELECT niveles.id_nivel, niveles.nivel_academico
-        FROM niveles
-        INNER JOIN profesor_nivel
-            ON niveles.id_nivel = profesor_nivel.id_nivel
-        INNER JOIN profesores
-            ON profesor_nivel.id_profesor = profesores.id_profesor
-        WHERE profesores.id_usuario = '$id_usuario'
-        ORDER BY niveles.nivel_academico ASC
-    ";
+    SELECT niveles.id_nivel, niveles.nivel_academico
+    FROM niveles
+    INNER JOIN profesor_nivel
+        ON niveles.id_nivel = profesor_nivel.id_nivel
+    INNER JOIN profesores
+        ON profesor_nivel.id_profesor = profesores.id_profesor
+    WHERE profesores.id_usuario = '$id_usuario'
+    AND profesor_nivel.id_periodo = '$id_periodo_activo'
+    ORDER BY niveles.nivel_academico ASC
+";
 }
 
 // Ejecutar la consulta que obtiene los niveles académicos.

@@ -52,13 +52,18 @@
 
         $id_usuario = intval($_SESSION['id_usuario']);
 
+        // Comprobar que el profesor tenga asignado el nivel durante el período académico activo.
+
         $sql_permiso = "
             SELECT profesor_nivel.id_nivel
             FROM profesor_nivel
             INNER JOIN profesores
                 ON profesor_nivel.id_profesor = profesores.id_profesor
+            INNER JOIN periodos_academicos
+                ON profesor_nivel.id_periodo = periodos_academicos.id_periodo
             WHERE profesores.id_usuario = '$id_usuario'
             AND profesor_nivel.id_nivel = '$id_nivel'
+            AND periodos_academicos.estado = 1
             LIMIT 1
         ";
 

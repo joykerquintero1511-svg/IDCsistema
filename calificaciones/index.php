@@ -38,13 +38,16 @@ $id_usuario = intval($_SESSION['id_usuario']);
 
 if ($_SESSION['rol'] === 'profesor') {
 
+    // Obtener únicamente los niveles asignados al profesor
+    // durante el período académico activo.
     $sql_profesor = "
-        SELECT profesor_nivel.id_nivel
-        FROM profesor_nivel
-        INNER JOIN profesores
-            ON profesor_nivel.id_profesor = profesores.id_profesor
-        WHERE profesores.id_usuario = '$id_usuario'
-    ";
+    SELECT profesor_nivel.id_nivel
+    FROM profesor_nivel
+    INNER JOIN profesores
+        ON profesor_nivel.id_profesor = profesores.id_profesor
+    WHERE profesores.id_usuario = '$id_usuario'
+    AND profesor_nivel.id_periodo = '$id_periodo_activo'
+";
 
     $resultado_profesor = mysqli_query($conexion, $sql_profesor);
 
@@ -85,6 +88,8 @@ if ($_SESSION['rol'] === 'admin') {
     ";
 } else {
 
+    // Mostrar únicamente los niveles que el profesor
+    // tiene asignados en el período académico activo.
     $sql = "
         SELECT niveles.id_nivel, niveles.nivel_academico
         FROM niveles
@@ -93,6 +98,7 @@ if ($_SESSION['rol'] === 'admin') {
         INNER JOIN profesores
             ON profesor_nivel.id_profesor = profesores.id_profesor
         WHERE profesores.id_usuario = '$id_usuario'
+        AND profesor_nivel.id_periodo = '$id_periodo_activo'
         ORDER BY niveles.id_nivel ASC
     ";
 }

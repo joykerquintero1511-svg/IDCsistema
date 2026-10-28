@@ -59,28 +59,24 @@
 
         $id_usuario = intval($_SESSION['id_usuario']);
 
+        // Comprobar que el profesor tenga asignado el nivel,específicamente durante el período académico activo.
+
         $sql_permiso = "
-                SELECT profesor_nivel.id_nivel
-                FROM profesor_nivel
-                INNER JOIN profesores
-                    ON profesor_nivel.id_profesor = profesores.id_profesor
-                WHERE profesores.id_usuario = '$id_usuario'
-                AND profesor_nivel.id_nivel = '$id_nivel'
-                LIMIT 1
-            ";
+            SELECT profesor_nivel.id_nivel
+            FROM profesor_nivel
+            INNER JOIN profesores
+                ON profesor_nivel.id_profesor = profesores.id_profesor
+            WHERE profesores.id_usuario = '$id_usuario'
+            AND profesor_nivel.id_nivel = '$id_nivel'
+            AND profesor_nivel.id_periodo = '$id_periodo_activo'
+            LIMIT 1
+        ";
 
         $resultado_permiso = mysqli_query($conexion, $sql_permiso);
 
         if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
             die("No tienes permiso para exportar las calificaciones de este nivel.");
         }
-    }
-
-    $fila_permiso = mysqli_fetch_assoc($resultado_permiso);
-    $id_nivel_profesor = intval($fila_permiso['id_nivel']);
-
-    if ($id_nivel_profesor != $id_nivel) {
-        die("No tienes permiso para exportar este PDF.");
     }
 
 
