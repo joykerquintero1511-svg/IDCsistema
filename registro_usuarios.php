@@ -245,6 +245,7 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
             // Enviamos tanto 'correo' como 'email' por si acaso tu validar_campo.php escucha cualquiera de los dos
             formData.append('email', valor);
             formData.append('correo', valor);
+            formData.append('tipo', 'usuario');
 
             try {
                 let res = await fetch('validar_campo.php', { method: 'POST', body: formData });

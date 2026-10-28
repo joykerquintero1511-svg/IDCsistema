@@ -29,7 +29,6 @@
         <li><a href="/IDCsistema/admin/asignar_nivel_profesor.php">Asignar Nivel a Profesores</a></li>
         <li><a href="/IDCsistema/admin/gestion_niveles.php">Gestión de Niveles</a></li>
         <li><a href="/IDCsistema/calificaciones/ver_notas.php?origen=admin">Consulta de Calificaciones</a></li>
-        <li><a href="/IDCsistema/admin/cronograma.php">Cronogramas Clases</a></li>
         <li><a href="/IDCsistema/logout.php" class="closed">Cerrar Sesión</a></li>
     </ul>
 </aside>

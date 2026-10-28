@@ -286,7 +286,9 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
             let formData = new FormData();
             formData.append(campoPOST, valor);
-
+            formData.append('tipo', 'estudiante'); // Indicamos que es para validar estudiante
+            formData.append('tipo', 'persona'); // Indicamos que es para validar persona
+            
             fetch('validar_campo.php', {
                     method: 'POST',
                     body: formData

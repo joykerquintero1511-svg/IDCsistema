@@ -12,18 +12,29 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'profesor') {
 $id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 
-// 3. CONSULTA: Obtener el ID real del profesor y su nivel académico asignado
-// Limpiamos el nombre de la sesión (ej: "JoykerQuintero" -> "joykerquintero") para asegurar la coincidencia
-$nombre_limpio = strtolower(str_replace(' ', '', $nombre_profesor));
+// ==========================================
+// 3. OBTENER EL PERÍODO ACTIVO ACTUAL
+// ==========================================
+$query_pa = "SELECT id_periodo, nombre_periodo FROM periodos_academicos WHERE estado = 1 LIMIT 1";
+$res_pa = mysqli_query($conexion, $query_pa);
+$id_periodo_activo = 0;
+$nombre_periodo_activo = "Ninguno";
 
-// 3. CONSULTA: Obtener el ID real del profesor y TODOS sus niveles asignados
+if ($res_pa && $row_pa = mysqli_fetch_assoc($res_pa)) {
+    $id_periodo_activo = intval($row_pa['id_periodo']);
+    $nombre_periodo_activo = $row_pa['nombre_periodo'] ?? $row_pa['lapso'] ?? 'Período Actual';
+}
+
+// ==========================================
+// 4. CONSULTA: Obtener ID del profesor y sus niveles FILTRADOS POR EL PERÍODO ACTIVO
+// ==========================================
 $nombre_limpio = strtolower(str_replace(' ', '', $nombre_profesor));
 
 $query_prof = "SELECT p.id_profesor, 
                GROUP_CONCAT(n.id_nivel SEPARATOR '||') AS ids_niveles,
                GROUP_CONCAT(n.nivel_academico SEPARATOR '||') AS nombres_niveles
                FROM profesores p 
-               LEFT JOIN profesor_nivel pn ON p.id_profesor = pn.id_profesor
+               LEFT JOIN profesor_nivel pn ON p.id_profesor = pn.id_profesor AND pn.id_periodo = $id_periodo_activo
                LEFT JOIN niveles n ON pn.id_nivel = n.id_nivel 
                WHERE p.id_usuario = '$id_usuario' 
                   OR REPLACE(LOWER(CONCAT(p.nombre, IFNULL(p.apellido, ''))), ' ', '') = '$nombre_limpio'
@@ -36,7 +47,7 @@ $id_profesor = 0;
 $nombres_niveles_array = [];
 
 if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
-    $id_profesor = $row_prof['id_profesor'];
+    $id_profesor = intval($row_prof['id_profesor']);
     if (!empty($row_prof['nombres_niveles'])) {
         $nombres_niveles_array = explode('||', $row_prof['nombres_niveles']);
     }
@@ -45,19 +56,12 @@ if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
 // Texto formateado para mostrar en la cabecera
 $nivel_asignado = !empty($nombres_niveles_array) ? implode(', ', $nombres_niveles_array) : "Sin niveles asignados";
 
-// 4. CONSULTA 1: Últimas asignaciones creadas por este profesor
+// 5. CONSULTA 1: Últimas asignaciones creadas por este profesor (puedes filtrar por período si tu tabla asignación tiene id_periodo)
 $query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico 
                  FROM asignacion a
                  INNER JOIN niveles n ON a.id_nivel = n.id_nivel
                  ORDER BY a.id_asignacion DESC LIMIT 5"; 
 $result_tareas = mysqli_query($conexion, $query_tareas);
-
-// 5. CONSULTAR 2: Clases/Encuentros en el cronograma (incluyendo modalidad)
-$query_clases = "SELECT c.materia_tema, c.fecha, c.hora_inicio, c.hora_fin, n.nivel_academico 
-                 FROM cronograma_clases c
-                 INNER JOIN niveles n ON c.id_nivel = n.id_nivel
-                 ORDER BY c.fecha ASC";
-$result_clases = mysqli_query($conexion, $query_clases);
 
 // Si entra al panel de profesor
 $_SESSION['panel_regreso'] = 'index.php';
@@ -80,8 +84,12 @@ $_SESSION['panel_regreso'] = 'index.php';
     <main class="main-content">
         <header class="welcome-header">
             <h1>Bienvenido Profesor, <?php echo htmlspecialchars($nombre_profesor); ?></h1>
-            <!-- AQUÍ SE REFLEJA AUTOMÁTICAMENTE EL NIVEL QUE LE ASIGNÓ EL ADMIN -->
-            <p>Escuela de Formación Bíblica • Nivel Asignado: <span style="color: #38bdf8; font-weight: bold;"><?php echo htmlspecialchars($nivel_asignado); ?></span></p>
+            <!-- INFORMACIÓN CLARA DEL PERÍODO ACTIVO Y NIVELES ASIGNADOS -->
+            <p>
+                Escuela de Formación Bíblica • 
+                Período: <strong style="color: #38bdf8;"><?php echo htmlspecialchars($nombre_periodo_activo); ?></strong>  <br> 
+                Nivel Asignado: <span style="color: #f8fafc; font-weight: bold;"><?php echo htmlspecialchars($nivel_asignado); ?></span>
+            </p>
         </header>
 
         <div class="dashboard-grid">
@@ -109,28 +117,7 @@ $_SESSION['panel_regreso'] = 'index.php';
 
         </div>
 
-        <div>
-            <section class="info-card">
-                <h3>Tus Clases y Cronograma</h3>
-                <ul class="class-list">
-                    <?php if ($result_clases && mysqli_num_rows($result_clases) > 0): ?>
-                        <?php while($clase = mysqli_fetch_assoc($result_clases)): ?>
-                            <li class="class-item">
-                                <div class="item-info">
-                                    <h4><?php echo htmlspecialchars($clase['materia_tema']); ?></h4>
-                                    <p>Grupo: <span><?php echo htmlspecialchars($clase['nivel_academico']); ?></span></p>
-                                    <p>Fecha: <?php echo date('d/m/Y', strtotime($clase['fecha'])); ?></p>
-                                    <p>Hora: <?php echo date('h:i A', strtotime($clase['hora_inicio'])); ?> - <?php echo date('h:i A', strtotime($clase['hora_fin'])); ?></p>
-                                </div>
-                            </li>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <p class="no-data">No tienes encuentros programados en tu agenda.</p>
-                    <?php endif; ?>
-                </ul>
-            </section>
-        </div>
-
+        
     </div>
     </main>
     <?php include '../script-seguridad.php'; ?>

@@ -3,7 +3,7 @@ require_once 'conexion.php';
 
 header('Content-Type: application/json');
 
-// 1. VALIDAR CÉDULA (Inscripción / Personas)
+// 1. //VALIDAR CÉDULA (Inscripción / Personas)
 if (isset($_POST['cedula'])) {
     $cedula = mysqli_real_escape_string($conexion, trim($_POST['cedula']));
 
@@ -37,6 +37,9 @@ if (isset($_POST['correo']) || isset($_POST['email'])) {
     // Captura el valor venga con la clave 'correo' o 'email'
     $correo_input = isset($_POST['correo']) ? $_POST['correo'] : $_POST['email'];
     $correo = mysqli_real_escape_string($conexion, trim($correo_input));
+    
+    // Capturamos el tipo (si viene 'usuario', validamos solo usuarios; por defecto validamos estudiantes)
+    $tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : 'estudiante';
 
     if (empty($correo)) {
         echo json_encode(['status' => 'error', 'mensaje' => 'El correo es requerido.']);
@@ -48,18 +51,30 @@ if (isset($_POST['correo']) || isset($_POST['email'])) {
         exit();
     }
 
-    // Consulta unificada: verifica si el correo existe en la tabla 'estudiantes' O en la tabla 'usuarios'
-    $sql_estudiantes = "SELECT id_estudiante FROM estudiantes WHERE email = '$correo'";
-    $res_estudiantes = mysqli_query($conexion, $sql_estudiantes);
+    $correo_duplicado = false;
 
-    $sql_usuarios = "SELECT id_usuario FROM usuarios WHERE email = '$correo'";
-    $res_usuarios = mysqli_query($conexion, $sql_usuarios);
+    if ($tipo === 'usuario') {
+        // Validamos EXCLUSIVAMENTE en la tabla de usuarios
+        $sql_usuarios = "SELECT id_usuario FROM usuarios WHERE email = '$correo'";
+        $res_usuarios = mysqli_query($conexion, $sql_usuarios);
+        if ($res_usuarios && mysqli_num_rows($res_usuarios) > 0) {
+            $correo_duplicado = true;
+        }
+    } else {
+        // Validamos EXCLUSIVAMENTE en la tabla de estudiantes
+        $sql_estudiantes = "SELECT id_estudiante FROM estudiantes WHERE email = '$correo'";
+        $res_estudiantes = mysqli_query($conexion, $sql_estudiantes);
+        if ($res_estudiantes && mysqli_num_rows($res_estudiantes) > 0) {
+            $correo_duplicado = true;
+        }
+    }
 
-    // Comprobar si el correo existe en estudiantes o usuarios.
-
-    if (($res_estudiantes && mysqli_num_rows($res_estudiantes) > 0) || ($res_usuarios && mysqli_num_rows($res_usuarios) > 0)) {
+    // Respuesta según el resultado de la validación independiente
+    if ($correo_duplicado) {
         echo json_encode(['status' => 'error', 'mensaje' => '❌ Este correo ya está registrado.']);
     } else {
-        echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo válido y no registrado en el sistema.']);
+        echo json_encode(['status' => 'success', 'mensaje' => '✓ Correo válido y disponible.']);
     }
+    exit();
 }
+?>

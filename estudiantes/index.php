@@ -55,11 +55,6 @@ if ($result_notas && mysqli_num_rows($result_notas) > 0) {
     mysqli_data_seek($result_notas, 0);
 }
 
-// 5. CONSULTA 3: Cronograma de clases corregido con tus campos reales
-$query_clases = "SELECT materia_tema, fecha, hora_inicio, hora_fin 
-                 FROM cronograma_clases 
-                 ORDER BY fecha ASC";
-$result_clases = mysqli_query($conexion, $query_clases);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -80,8 +75,6 @@ $result_clases = mysqli_query($conexion, $query_clases);
     </div>
     <ul class="menu-links">
         <li><a href="index.php" class="active">Inicio</a></li>
-        <li><a href="mis_notas.php">Mis Calificaciones</a></li>
-        <li><a href="cronograma.php">Horarios de Clase</a></li>
     </ul>
     <a href="../logout.php" class="btn-logout">Cerrar Sesión</a>
 </div>
@@ -181,29 +174,7 @@ $result_clases = mysqli_query($conexion, $query_clases);
 
         </div>
 
-        <!-- COLUMNA DERECHA: CRONOGRAMA DE CLASES -->
-        <div class="info-card">
-            <h3>Próximas Clases y Encuentros</h3>
-            <?php if ($result_clases && mysqli_num_rows($result_clases) > 0): ?>
-                <ul class="class-list">
-                    <?php while ($clase = mysqli_fetch_assoc($result_clases)): ?>
-                        <li class="class-item">
-                            <div class="item-info">
-                                <h4><?php echo htmlspecialchars($clase['materia_tema']); ?></h4>
-                                <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #64748b;">
-                                    📅 Fecha: <?php echo date("d/m/Y", strtotime($clase['fecha'])); ?>
-                                </p>
-                                <p style="font-size: 0.85rem; color: #3b82f6; font-weight: 600;">
-                                    🕒 Horario: <?php echo date("g:i A", strtotime($clase['hora_inicio'])) . " - " . date("g:i A", strtotime($clase['hora_fin'])); ?>
-                                </p>
-                            </div>
-                        </li>
-                    <?php endwhile; ?>
-                </ul>
-            <?php else: ?>
-                <div class="no-data">No hay clases agendadas en tu cronograma.</div>
-            <?php endif; ?>
-        </div>
+        
 
     </div>
 </main>
