@@ -56,10 +56,13 @@ if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
 // Texto formateado para mostrar en la cabecera
 $nivel_asignado = !empty($nombres_niveles_array) ? implode(', ', $nombres_niveles_array) : "Sin niveles asignados";
 
-// 5. CONSULTA 1: Últimas asignaciones creadas por este profesor (puedes filtrar por período si tu tabla asignación tiene id_periodo)
+// ==========================================
+// 5. CONSULTA: Tareas filtradas ESTRICTAMENTE por el período activo
+// ==========================================
 $query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico 
                  FROM asignacion a
                  INNER JOIN niveles n ON a.id_nivel = n.id_nivel
+                 WHERE a.id_periodo = $id_periodo_activo
                  ORDER BY a.id_asignacion DESC LIMIT 5"; 
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
@@ -97,26 +100,35 @@ $_SESSION['panel_regreso'] = 'index.php';
         <div style="display: flex; flex-direction: column; gap: 2.0rem;">
             
             <section class="info-card">
-                <h3>Asignaciones Publicadas Recientemente</h3>
+                <h3>Asignaciones Publicadas Recientemente (<?php echo htmlspecialchars($nombre_periodo_activo); ?>)</h3>
                 <ul class="task-list">
                     <?php if ($result_tareas && mysqli_num_rows($result_tareas) > 0): ?>
                         <?php while($tarea = mysqli_fetch_assoc($result_tareas)): ?>
-                            <li class="task-item">
+                            <li class="task-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e293b;">
                                 <div class="item-info">
-                                    <h4><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
-                                    <p>Dirigido a: <span><?php echo htmlspecialchars($tarea['nivel_academico']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span></p>
-                                    <p>Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
+                                    <h4 style="color: #38bdf8; margin: 0 0 5px 0;"><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
+                                    <p style="color: #94a3b8; margin: 0; font-size: 0.9rem;">
+                                        Dirigido a: <span><?php echo htmlspecialchars($tarea['nivel_academico']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span>
+                                    </p>
+                                    <p style="color: #64748b; margin: 5px 0 0 0; font-size: 0.85rem;">Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
+                                </div>
+                                <!-- BOTÓN DE ELIMINACIÓN MANUAL -->
+                                <div>
+                                    <a href="eliminar_asignacion.php?id=<?php echo $tarea['id_asignacion']; ?>" 
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar esta asignación?');" 
+                                       style="background: #7f1d1d; color: #fee2e2; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: bold; border: 1px solid #ef4444;">
+                                        🗑️ Eliminar
+                                    </a>
                                 </div>
                             </li>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <p class="no-data">No has publicado ninguna asignación académica todavía.</p>
+                        <p class="no-data" style="color: #64748b; text-align: center; padding: 20px;">No has publicado ninguna asignación académica todavía para este período.</p>
                     <?php endif; ?>
                 </ul>
             </section>
 
         </div>
-
         
     </div>
     </main>

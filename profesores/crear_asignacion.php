@@ -12,10 +12,22 @@ $id_usuario = $_SESSION['id_usuario'];
 $nombre_profesor = $_SESSION['usuario'] ?? 'Profesor';
 $mensaje = "";
 
-// 2. CONSULTA ACTUALIZADA: Obtener TODOS los niveles asignados al profesor mediante la tabla pivote
+// ==========================================
+// 2. OBTENER EL PERÍODO ACTIVO ACTUAL
+// ==========================================
+$query_pa = "SELECT id_periodo FROM periodos_academicos WHERE estado = 1 LIMIT 1";
+$res_pa = mysqli_query($conexion, $query_pa);
+$id_periodo_activo = 0;
+if ($res_pa && $row_pa = mysqli_fetch_assoc($res_pa)) {
+    $id_periodo_activo = intval($row_pa['id_periodo']);
+}
+
+// ==========================================
+// 3. CONSULTA ACTUALIZADA: Obtener niveles del profesor FILTRADOS por el período activo
+// ==========================================
 $query_niveles = "SELECT n.id_nivel, n.nivel_academico 
                   FROM niveles n 
-                  INNER JOIN profesor_nivel pn ON n.id_nivel = pn.id_nivel
+                  INNER JOIN profesor_nivel pn ON n.id_nivel = pn.id_nivel AND pn.id_periodo = $id_periodo_activo
                   INNER JOIN profesores p ON pn.id_profesor = p.id_profesor
                   WHERE p.id_usuario = '$id_usuario'
                   ORDER BY n.id_nivel ASC";
@@ -34,7 +46,7 @@ if ($result_niveles) {
 $ids_validos = array_column($niveles_permitidos, 'id_nivel');
 
 
-// 3. PROCESAMIENTO DEL FORMULARIO
+// 4. PROCESAMIENTO DEL FORMULARIO
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_nivel = mysqli_real_escape_string($conexion, $_POST['id_nivel']);
     $titulo_tarea = mysqli_real_escape_string($conexion, $_POST['titulo_tarea']);
@@ -42,15 +54,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tema = mysqli_real_escape_string($conexion, $_POST['tema']);
     $fecha_limite = mysqli_real_escape_string($conexion, $_POST['fecha_limite']);
 
-    // Validar que el nivel seleccionado realmente pertenece a este profesor
+    // Validar que el nivel seleccionado realmente pertenece a este profesor en este período
     if (!in_array($id_nivel, $ids_validos)) {
-        $mensaje = "<div class='alert-error'>❌ No tienes permiso para publicar en este nivel académico.</div>";
+        $mensaje = "<div class='alert-error'>❌ No tienes permiso para publicar en este nivel académico para el período actual.</div>";
     } elseif (!empty($id_nivel) && !empty($titulo_tarea) && !empty($fecha_limite)) {
-        $query_insertar = "INSERT INTO asignacion (id_nivel, titulo_tarea, descripcion, tema, fecha_limite) 
-                           VALUES ('$id_nivel', '$titulo_tarea', '$descripcion', '$tema', '$fecha_limite')";
+        
+        // INSERT actual con el id_periodo_activo incluido
+        $query_insertar = "INSERT INTO asignacion (id_nivel, titulo_tarea, descripcion, tema, fecha_limite, id_periodo) 
+                           VALUES ('$id_nivel', '$titulo_tarea', '$descripcion', '$tema', '$fecha_limite', $id_periodo_activo)";
         
         if (mysqli_query($conexion, $query_insertar)) {
-            $mensaje = "<div class='alert-success'>✓ Asignación publicada exitosamente en el aula virtual.</div>";
+            $mensaje = "<div class='alert-success'>✓ Asignación publicada exitosamente en el aula virtual para el período actual.</div>";
         } else {
             $mensaje = "<div class='alert-error'>Error al guardar: " . mysqli_error($conexion) . "</div>";
         }
