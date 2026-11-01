@@ -38,6 +38,46 @@
     $id_periodo_activo = $fila_periodo['id_periodo'];
     $nombre_periodo_activo = $fila_periodo['nombre_periodo'];
 
+    // Por defecto, el PDF utilizará el período académico activo.
+    $id_periodo_consulta = $id_periodo_activo;
+    $nombre_periodo_consulta = $nombre_periodo_activo;
+
+    // Permitir al administrador seleccionar otro período académico.
+    if (
+        $_SESSION['rol'] === 'admin' &&
+        isset($_GET['id_periodo']) &&
+        $_GET['id_periodo'] != ""
+    ) {
+
+        // Convertir el período solicitado en un número entero.
+        $id_periodo_solicitado = intval($_GET['id_periodo']);
+
+        // Buscar el período solicitado en la base de datos.
+        $sql_periodo_seleccionado = "
+        SELECT id_periodo, nombre_periodo
+        FROM periodos_academicos
+        WHERE id_periodo = '$id_periodo_solicitado'
+        LIMIT 1
+    ";
+
+        // Ejecutar la consulta.
+        $resultado_periodo_seleccionado = mysqli_query($conexion, $sql_periodo_seleccionado);
+
+        // Comprobar que el período exista.
+        if (
+            !$resultado_periodo_seleccionado ||
+            mysqli_num_rows($resultado_periodo_seleccionado) == 0
+        ) {
+            die("El período académico seleccionado no existe.");
+        }
+
+        // Obtener los datos del período seleccionado.
+        $fila_periodo_seleccionado = mysqli_fetch_assoc($resultado_periodo_seleccionado);
+
+        $id_periodo_consulta = $fila_periodo_seleccionado['id_periodo'];
+        $nombre_periodo_consulta = $fila_periodo_seleccionado['nombre_periodo'];
+    }
+
     $id_nivel = intval($_GET['id_nivel']);
 
     // Obtener el nombre de la evaluación seleccionada.
@@ -84,6 +124,7 @@
     SELECT
     personas.nombre,
     personas.apellido,
+    personas.cedula,
     calificaciones.descripcion_nota_1,
     calificaciones.descripcion_nota_2,
     calificaciones.nota_1,
@@ -103,12 +144,11 @@
     LEFT JOIN calificaciones
         ON calificaciones.id_estudiante = estudiantes.id_estudiante
         AND calificaciones.id_nivel = inscripciones.id_nivel
-        AND calificaciones.id_periodo = '$id_periodo_activo'
+        AND calificaciones.id_periodo = '$id_periodo_consulta'
         AND TRIM(TRAILING '.' FROM TRIM(calificaciones.evaluacion)) = '$evaluacion_sql'
 
         WHERE inscripciones.id_nivel = '$id_nivel'
-        AND inscripciones.id_periodo = '$id_periodo_activo'
-        AND inscripciones.estado = 1
+        AND inscripciones.id_periodo = '$id_periodo_consulta'
 
         ORDER BY personas.apellido ASC
     ";
@@ -205,11 +245,25 @@
     <meta charset="UTF-8">
 
     <style>
+   /* Reserva espacio para el contenido y el pie de página en todas las hojas. */
+    @page {
+        margin: 35px 30px 65px 30px;
+    }
 
     body {
         font-family: "Helvetica", "Arial", sans-serif;
         font-size: 12px;
         color: #333;
+    }
+
+    /* Repite los títulos de las columnas al continuar la tabla en otra página. */
+    thead {
+        display: table-header-group;
+    }
+
+    /* Evita que una fila de estudiantes se divida entre dos páginas. */
+    tr {
+        page-break-inside: avoid;
     }
 
     .logo {
@@ -281,9 +335,10 @@
     font-size: 11px;
 }
 
-    .pie-pagina {
+    
+.pie-pagina {
     position: fixed;
-    bottom: 15px;
+    bottom: -40px;
     left: 0;
     right: 0;
     text-align: center;
@@ -291,11 +346,11 @@
     padding-top: 7px;
     font-size: 10px;
     color: #777;
-    }
+}
 
     .marca-agua {
     position: fixed;
-    top: 180px;
+    top: 210px;
     left: 50%;
     margin-left: -250px;
     width: 500px;
@@ -313,11 +368,7 @@
     </head>
 
     <body>
-
-    <div class="marca-agua">
-         <img src="' . $marca_agua_base64 . '">
-    </div>
-
+  
     <div class="encabezado">
         <img src="' . $logo_base64 . '" class="logo">
 
@@ -329,17 +380,22 @@
 
     <div class="info-seccion">
     
-    <p><strong>Período Académico:</strong> ' . htmlspecialchars($nombre_periodo_activo) . '</p>
+    <p><strong>Período Académico:</strong> ' . htmlspecialchars($nombre_periodo_consulta) . '</p>
     <p><strong>Nivel Académico:</strong> ' . htmlspecialchars($nombre_nivel) . '</p>
     <p><strong>Evaluación:</strong> ' . htmlspecialchars(ucwords(strtolower($evaluacion))) . '</p>
+    <p><strong>Fecha del reporte:</strong> ' . date('d/m/Y') . '</p>
     
     </div>
 
     <table>
 
+    <!-- Encabezado que se repetirá en cada página del PDF. -->
+    <thead>
     <tr>
-    <th>Nombre</th>
-    <th>Apellido</th>';
+
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Cédula</th>';
 
     if ($mostrar_actividad_1 == true) {
         $html .= '<th>' . htmlspecialchars($nombre_actividad_1) . '</th>';
@@ -353,14 +409,19 @@
         <th>Nota Final</th>
         <th>Observación</th>
     </tr>
-    ';
+    </thead>
+
+    <!-- Aquí comienzan las filas de los estudiantes. -->
+    <tbody>
+';
 
     while ($fila = mysqli_fetch_assoc($resultado)) {
 
         $html .= '
-    <tr>
-    <td>' . htmlspecialchars(ucwords(strtolower($fila['nombre']))) . '</td>
-    <td>' . htmlspecialchars(ucwords(strtolower($fila['apellido']))) . '</td>
+        <tr>
+        <td>' . htmlspecialchars(ucwords(strtolower($fila['nombre']))) . '</td>
+        <td>' . htmlspecialchars(ucwords(strtolower($fila['apellido']))) . '</td>
+        <td>' . htmlspecialchars($fila['cedula']) . '</td>
     ';
 
         if ($mostrar_actividad_1 == true) {
@@ -401,14 +462,14 @@
             );
         }
 
-        $html .= '
-    <td><strong>' . $nota_final . '</strong></td>
+        $html .= '<td><strong>' . $nota_final . '</strong></td>
     <td>' . $observacion . '</td>
 </tr>
 ';
     }
 
     $html .= '
+    </tbody>
     </table>
     <div class="pie-pagina">
         Escuela de Formación Bíblica &nbsp; | &nbsp; Iglesia Dios en Casa
@@ -420,6 +481,34 @@
 
     $dompdf = new Dompdf();
     $dompdf->loadHtml($html);
+
+    // Página 2 en adelante: la marca de agua aparece más arriba, buscando centrarla detrás de los estudiantes.
     $dompdf->setPaper('A4', 'landscape');
     $dompdf->render();
+
+    $canvas = $dompdf->getCanvas();
+
+    if ($ruta_marca_agua !== false) {
+
+        $medidas = getimagesize($ruta_marca_agua);
+
+        $ancho = 375;
+        $alto = $ancho * $medidas[1] / $medidas[0];
+
+        $canvas->page_script(function ($pagina, $total, $canvas, $fontMetrics) use ($ruta_marca_agua, $ancho, $alto) {
+
+            $x = ($canvas->get_width() - $ancho) / 2;
+
+            if ($pagina == 1) {
+                $y = 180;
+            } else {
+                $y = 65;
+            }
+
+            $canvas->set_opacity(0.085);
+            $canvas->image($ruta_marca_agua, $x, $y, $ancho, $alto);
+            $canvas->set_opacity(1);
+        });
+    }
+
     $dompdf->stream("reporte_calificaciones.pdf", array("Attachment" => false));

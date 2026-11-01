@@ -26,27 +26,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     foreach ($estudiantes_seleccionados as $id_estudiante) {
 
-        $id_estudiante = intval($id_estudiante); // porque id_estudiante también debe ser un número
+        $id_estudiante = intval($id_estudiante);
 
-        // Colocar como inactiva la inscripción anterior del estudiante
-        $sql_inactivar = "UPDATE inscripciones 
-                  SET estado = 0 
-                  WHERE id_estudiante = '$id_estudiante' 
-                  AND estado = 1";
+        // Consultar el nivel actual del estudiante.
+        $sql_actual = "SELECT id_nivel
+               FROM estudiantes
+               WHERE id_estudiante = '$id_estudiante'";
 
-        mysqli_query($conexion, $sql_inactivar);
+        $resultado_actual = mysqli_query($conexion, $sql_actual);
+        $estudiante_actual = mysqli_fetch_assoc($resultado_actual);
 
-        // 1. Actualizamos su nivel en la tabla 'estudiantes'
-        $sql_update = "UPDATE estudiantes SET id_nivel = '$id_nivel_nuevo' WHERE id_estudiante = '$id_estudiante'";
-        mysqli_query($conexion, $sql_update);
+        // Verificar que el estudiante exista.
+        if (!$estudiante_actual) {
+            continue;
+        }
 
-        // Crear una nueva inscripción para el nivel promovido con un QR nuevo
-        $token_qr = md5(uniqid(rand(), true)); // Nuevo token para su nueva entrada
+        $id_nivel_actual = intval($estudiante_actual['id_nivel']);
 
-        $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante,id_nivel,fecha_inscripcion,estado,estatus_presencial,token_qr)
-            VALUES ('$id_estudiante','$id_nivel_nuevo',NOW(),1,'pendiente','$token_qr')";
+        // Buscar el siguiente nivel permitido.
+        $sql_siguiente = "SELECT id_nivel
+                  FROM niveles
+                  WHERE id_nivel > '$id_nivel_actual'
+                  ORDER BY id_nivel ASC
+                  LIMIT 1";
 
-        if (mysqli_query($conexion, $sql_inscripcion)) {
+        $resultado_siguiente = mysqli_query($conexion, $sql_siguiente);
+        $nivel_siguiente = mysqli_fetch_assoc($resultado_siguiente);
+
+        // Impedir promociones a niveles incorrectos.
+        if (!$nivel_siguiente || intval($nivel_siguiente['id_nivel']) !== $id_nivel_nuevo) {
+            continue;
+        }
+
+        // Actualizar únicamente el nivel académico del estudiante.
+        // La promoción no crea ni desactiva inscripciones.
+        $sql_update = "UPDATE estudiantes
+               SET id_nivel = '$id_nivel_nuevo'
+               WHERE id_estudiante = '$id_estudiante'";
+
+        // Contar solamente las actualizaciones exitosas.
+        if (mysqli_query($conexion, $sql_update)) {
             $exitos++;
         }
     }

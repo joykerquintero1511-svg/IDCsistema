@@ -104,6 +104,31 @@ if (mysqli_num_rows($res_persona) > 0) {
 $sql_buscar_est = "SELECT id_estudiante FROM estudiantes WHERE id_persona = '$id_persona' LIMIT 1";
 $res_est = mysqli_query($conexion, $sql_buscar_est);
 
+// Verificar si el estudiante ya está inscrito en el período activo.
+if (mysqli_num_rows($res_est) > 0) {
+
+    // Obtener los datos sin avanzar el resultado de la consulta.
+    $estudiante_encontrado = mysqli_fetch_assoc($res_est);
+
+    // Regresar el cursor al inicio para que el código siguiente pueda leerlo.
+    mysqli_data_seek($res_est, 0);
+    $id_estudiante_existente = $estudiante_encontrado['id_estudiante'];
+    $id_periodo_actual = (int) $periodo['id_periodo'];
+
+    // Buscar una inscripción existente para este estudiante y período.
+    $sql_verificar_inscripcion = "SELECT id_inscripcion
+        FROM inscripciones
+        WHERE id_estudiante = '$id_estudiante_existente'
+        AND id_periodo = '$id_periodo_actual'
+        LIMIT 1";
+
+    $resultado_verificacion = mysqli_query($conexion, $sql_verificar_inscripcion);
+
+    if (mysqli_num_rows($resultado_verificacion) > 0) {
+        die("Este estudiante ya se encuentra inscrito en el período académico actual.");
+    }
+}
+
 if (mysqli_num_rows($res_est) > 0) {
     // Ya es estudiante de la escuela, tomamos su ID y actualizamos el nivel e email
     $fila_est = mysqli_fetch_assoc($res_est);

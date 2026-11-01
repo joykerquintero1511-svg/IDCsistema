@@ -23,8 +23,42 @@ if (mysqli_num_rows($resultado_periodo) == 0) {
 }
 
 $fila_periodo = mysqli_fetch_assoc($resultado_periodo);
+
 $id_periodo_activo = $fila_periodo['id_periodo'];
 $nombre_periodo_activo = $fila_periodo['nombre_periodo'];
+
+// Por defecto, consultar las calificaciones del período activo.
+$id_periodo_consulta = $id_periodo_activo;
+
+// Obtener el período seleccionado por el administrador.
+if (
+    isset($_SESSION['rol']) &&
+    $_SESSION['rol'] === 'admin' &&
+    isset($_GET['id_periodo']) &&
+    $_GET['id_periodo'] != ""
+) {
+
+    // Convertir el identificador recibido en un número entero.
+    $id_periodo_solicitado = intval($_GET['id_periodo']);
+
+    // Verificar que el período seleccionado exista.
+    $sql_periodo_seleccionado = "
+        SELECT id_periodo
+        FROM periodos_academicos
+        WHERE id_periodo = '$id_periodo_solicitado'
+        LIMIT 1
+    ";
+
+    $resultado_periodo_seleccionado = mysqli_query($conexion, $sql_periodo_seleccionado);
+
+    // Utilizar el período solicitado solamente si existe.
+    if (
+        $resultado_periodo_seleccionado &&
+        mysqli_num_rows($resultado_periodo_seleccionado) > 0
+    ) {
+        $id_periodo_consulta = $id_periodo_solicitado;
+    }
+}
 
 
 if (
@@ -412,9 +446,77 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
             <?php } ?>
             <div class="grid-filtros">
 
+                <?php if ($_SESSION['rol'] === 'admin') { ?>
+
+                    <!-- Permitir al administrador seleccionar un período académico. -->
+                    <div class="grupo-form">
+
+                        <label>Período Académico:</label>
+
+                        <select name="id_periodo" onchange="
+                        // Limpiar el nivel seleccionado anteriormente.
+                        this.form.elements['id_nivel'].value = '';
+
+                        // Limpiar la evaluación seleccionada anteriormente.
+                        this.form.elements['evaluacion'].value = '';
+
+                        // Enviar el formulario con el nuevo período académico.
+                        this.form.submit();
+                    ">
+
+                            <?php
+
+                            // Consultar todos los períodos académicos disponibles.
+                            $sql_periodos = "
+                            SELECT id_periodo, nombre_periodo
+                            FROM periodos_academicos
+                            ORDER BY id_periodo DESC
+                            ";
+
+                            $resultado_periodos = mysqli_query($conexion, $sql_periodos);
+
+                            // Mostrar los períodos en el selector.
+                            if ($resultado_periodos) {
+
+                                while ($fila_periodo_opcion = mysqli_fetch_assoc($resultado_periodos)) {
+
+                                    $seleccionado = "";
+
+                                    // Marcar el período que está consultando el administrador.
+                                    if ($fila_periodo_opcion['id_periodo'] == $id_periodo_consulta) {
+                                        $seleccionado = "selected";
+                                    }
+
+                            ?>
+
+                                    <option value="<?php echo $fila_periodo_opcion['id_periodo']; ?>"
+                                        <?php echo $seleccionado; ?>>
+
+                                        <?php echo htmlspecialchars($fila_periodo_opcion['nombre_periodo']); ?>
+
+                                    </option>
+
+                            <?php
+                                }
+                            }
+                            ?>
+
+                        </select>
+
+                    </div>
+
+                <?php } ?>
+
                 <div class="grupo-form">
                     <label>Nivel Académico:</label>
-                    <select name="id_nivel" required onchange="this.form.submit();">
+
+                    <select name="id_nivel" required onchange="
+                        // Limpiar la evaluación anterior al cambiar de nivel.
+                        this.form.elements['evaluacion'].value = '';
+
+                        // Enviar los filtros, conservando el período seleccionado.
+                        this.form.submit();
+                    ">
                         <option value="">Seleccione un nivel</option>
                         <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
                             <option value="<?php echo $fila['id_nivel']; ?>"
@@ -437,11 +539,12 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                             $id_nivel_seleccionado = intval($_GET['id_nivel']);
 
                             // Buscar las evaluaciones del nivel seleccionado y del período activo.
+                            // Buscar las evaluaciones del nivel y período seleccionado.
                             $sql_evaluaciones = "
                                 SELECT DISTINCT evaluacion
                                 FROM calificaciones
                                 WHERE id_nivel = '$id_nivel_seleccionado'
-                                AND id_periodo = '$id_periodo_activo'
+                                AND id_periodo = '$id_periodo_consulta'
                                 AND evaluacion != ''
                                 ORDER BY evaluacion ASC
                             ";
@@ -525,13 +628,12 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                 LEFT JOIN calificaciones
                     ON calificaciones.id_estudiante = estudiantes.id_estudiante
                     AND calificaciones.id_nivel = inscripciones.id_nivel
-                    AND calificaciones.id_periodo = '$id_periodo_activo'
+                    AND calificaciones.id_periodo = '$id_periodo_consulta'
                     AND TRIM(TRAILING '.' FROM TRIM(calificaciones.evaluacion)) = '$evaluacion_sql'
 
-                WHERE inscripciones.id_nivel = '$id_nivel'
-                AND inscripciones.id_periodo = '$id_periodo_activo'
-                AND inscripciones.estado = 1
-            ";
+                    WHERE inscripciones.id_nivel = '$id_nivel'
+                    AND inscripciones.id_periodo = '$id_periodo_consulta'
+                ";
             // Proteger el nombre o apellido escrito en el buscador.
             $buscar_sql = mysqli_real_escape_string($conexion, $buscar);
 
@@ -651,10 +753,9 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                 </div>
 
                 <div class="panel-exportar">
-                    <a href="imprimir_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-print">🖨 Imprimir</a>
 
-                    <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>" target="_blank" class="btn-exportar btn-pdf">📄 Exportar PDF</a>
-
+                    <!-- Exportar las calificaciones del período seleccionado a PDF. -->
+                    <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>&id_periodo=<?php echo $id_periodo_consulta; ?>" target="_blank" class="btn-exportar btn-pdf">📄 Exportar PDF</a>
 
                 </div>
 

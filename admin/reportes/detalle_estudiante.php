@@ -14,30 +14,33 @@
 
 
     $consulta = "
-        SELECT
+    SELECT
         inscripciones.id_estudiante,
-            personas.cedula,
-            personas.nacionalidad,
-            personas.nombre,
-            personas.apellido,
-            personas.genero,
-            personas.telefono,
-            personas.direccion,
-            personas.contacto_emergencia,
-            estudiantes.email,
-            estudiantes.nivel_instruccion,
-            niveles.nivel_academico,
-            inscripciones.estado,
-            inscripciones.fecha_inscripcion
-        FROM inscripciones
-        INNER JOIN estudiantes
-            ON inscripciones.id_estudiante = estudiantes.id_estudiante
-        INNER JOIN personas
-            ON estudiantes.id_persona = personas.id_persona
-         INNER JOIN niveles
-        ON inscripciones.id_nivel = niveles.id_nivel  
-        WHERE inscripciones.id_inscripcion = $id_inscripcion
-    ";
+        personas.cedula,
+        personas.nacionalidad,
+        personas.nombre,
+        personas.apellido,
+        personas.genero,
+        personas.telefono,
+        personas.direccion,
+        personas.contacto_emergencia,
+        estudiantes.email,
+        estudiantes.nivel_instruccion,
+        niveles.nivel_academico,
+        periodos_academicos.nombre_periodo,
+        inscripciones.estado,
+        inscripciones.fecha_inscripcion
+    FROM inscripciones
+    INNER JOIN estudiantes
+        ON inscripciones.id_estudiante = estudiantes.id_estudiante
+    INNER JOIN personas
+        ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+        ON inscripciones.id_nivel = niveles.id_nivel
+    LEFT JOIN periodos_academicos
+        ON inscripciones.id_periodo = periodos_academicos.id_periodo
+    WHERE inscripciones.id_inscripcion = $id_inscripcion
+";
 
     $resultado = $conexion->query($consulta);
 
@@ -55,19 +58,22 @@
     $id_estudiante = $fila['id_estudiante'];
 
     $consulta_historial = "
-        SELECT
-            inscripciones.id_inscripcion,
-            niveles.nivel_academico,
-            inscripciones.fecha_inscripcion,
-            inscripciones.estado
-        FROM inscripciones
-        INNER JOIN niveles
-            ON inscripciones.id_nivel = niveles.id_nivel
-        WHERE inscripciones.id_estudiante = $id_estudiante
-       ORDER BY inscripciones.estado DESC,
-            inscripciones.fecha_inscripcion DESC,
-            inscripciones.id_inscripcion DESC
-    ";
+    SELECT
+        inscripciones.id_inscripcion,
+        niveles.nivel_academico,
+        periodos_academicos.nombre_periodo,
+        inscripciones.fecha_inscripcion,
+        inscripciones.estado
+    FROM inscripciones
+    INNER JOIN niveles
+        ON inscripciones.id_nivel = niveles.id_nivel
+    LEFT JOIN periodos_academicos
+        ON inscripciones.id_periodo = periodos_academicos.id_periodo
+    WHERE inscripciones.id_estudiante = $id_estudiante
+    ORDER BY inscripciones.estado DESC,
+        inscripciones.fecha_inscripcion DESC,
+        inscripciones.id_inscripcion DESC
+";
 
     $resultado_historial = $conexion->query($consulta_historial);
 
@@ -160,8 +166,16 @@
             <h1>Detalle del Estudiante</h1>
 
             <div class="dato">
-                <div class="etiqueta">Cédula:</div>
-                <div class="valor"><?php echo htmlspecialchars($fila['cedula']); ?></div>
+                <div class="etiqueta">Período académico:</div>
+                <div class="valor">
+                    <?php
+                    if (!empty($fila['nombre_periodo'])) {
+                        echo htmlspecialchars($fila['nombre_periodo']);
+                    } else {
+                        echo "Sin período registrado";
+                    }
+                    ?>
+                </div>
             </div>
 
             <div class="dato">
@@ -294,6 +308,9 @@
                                     Nivel
                                 </th>
                                 <th style="text-align: left; padding: 12px; border-bottom: 2px solid #eaeaea;">
+                                    Período académico
+                                </th>
+                                <th style="text-align: left; padding: 12px; border-bottom: 2px solid #eaeaea;">
                                     Fecha de inscripción
                                 </th>
                                 <th style="text-align: left; padding: 12px; border-bottom: 2px solid #eaeaea;">
@@ -307,9 +324,18 @@
                             <?php while ($historial = $resultado_historial->fetch_assoc()): ?>
 
                                 <tr>
-
                                     <td style="padding: 12px; border-bottom: 1px solid #eeeeee;">
                                         <?php echo htmlspecialchars($historial['nivel_academico']); ?>
+                                    </td>
+
+                                    <td style="padding: 12px; border-bottom: 1px solid #eeeeee;">
+                                        <?php
+                                        if (!empty($historial['nombre_periodo'])) {
+                                            echo htmlspecialchars($historial['nombre_periodo']);
+                                        } else {
+                                            echo "Sin período registrado";
+                                        }
+                                        ?>
                                     </td>
 
                                     <td style="padding: 12px; border-bottom: 1px solid #eeeeee;">
