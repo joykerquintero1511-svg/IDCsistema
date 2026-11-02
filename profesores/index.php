@@ -57,12 +57,12 @@ if ($res_prof && $row_prof = mysqli_fetch_assoc($res_prof)) {
 $nivel_asignado = !empty($nombres_niveles_array) ? implode(', ', $nombres_niveles_array) : "Sin niveles asignados";
 
 // ==========================================
-// 5. CONSULTA: Tareas filtradas ESTRICTAMENTE por el período activo
+// 5. CONSULTA: Tareas filtradas ESTRICTAMENTE por el período activo y por el profesor actual
 // ==========================================
 $query_tareas = "SELECT a.id_asignacion, a.titulo_tarea, a.tema, a.fecha_limite, n.nivel_academico 
                  FROM asignacion a
                  INNER JOIN niveles n ON a.id_nivel = n.id_nivel
-                 WHERE a.id_periodo = $id_periodo_activo
+                 WHERE a.id_periodo = $id_periodo_activo AND a.id_profesor = $id_profesor
                  ORDER BY a.id_asignacion DESC LIMIT 5"; 
 $result_tareas = mysqli_query($conexion, $query_tareas);
 
