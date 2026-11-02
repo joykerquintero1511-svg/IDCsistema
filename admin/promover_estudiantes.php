@@ -1,14 +1,31 @@
 <?php
 session_start();
-require_once('../conexion.php'); 
+require_once('../conexion.php');
 
 // 1. Recibimos el filtro si existe
 $filtro_nivel = isset($_GET['filtro_nivel']) ? $_GET['filtro_nivel'] : '';
 
-// 2. Buscamos todos los niveles para llenar los dos select
+// Obtener todos los niveles para el filtro.
 $sql_niveles = "SELECT * FROM niveles ORDER BY id_nivel ASC";
 $q_niveles_filtro = mysqli_query($conexion, $sql_niveles);
-$q_niveles_promocion = mysqli_query($conexion, $sql_niveles); 
+
+// Preparar el selector del nivel siguiente.
+$q_niveles_promocion = false;
+
+// Buscar el nivel inmediatamente siguiente al seleccionado.
+if (!empty($filtro_nivel)) {
+
+    $id_nivel_actual = intval($filtro_nivel);
+
+    // Obtener el siguiente nivel según el orden académico registrado.
+    $sql_siguiente = "SELECT id_nivel, nivel_academico
+                      FROM niveles
+                      WHERE id_nivel > '$id_nivel_actual'
+                      ORDER BY id_nivel ASC
+                      LIMIT 1";
+
+    $q_niveles_promocion = mysqli_query($conexion, $sql_siguiente);
+}
 
 // 3. Solo consultamos si se seleccionó un nivel en el filtro
 $q_estudiantes = false;
@@ -25,6 +42,7 @@ if (!empty($filtro_nivel)) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,6 +51,7 @@ if (!empty($filtro_nivel)) {
     <link rel="stylesheet" href="/IDCsistema/css/mystyle.css">
     <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
+
 <body>
 
     <!-- Menú lateral unificado -->
@@ -40,7 +59,7 @@ if (!empty($filtro_nivel)) {
 
     <!-- Contenedor Principal (Aplica el margen correcto) -->
     <main class="main-content">
-        
+
         <div class="promocion-header">
             <h1>Promoción de Nivel Académico 🎓</h1>
             <p>Selecciona los estudiantes que aprobaron y elige a qué nivel serán promovidos.</p>
@@ -52,8 +71,12 @@ if (!empty($filtro_nivel)) {
                 <label>🔍 Filtrar lista por nivel actual </label>
                 <select name="filtro_nivel" onchange="this.form.submit()" class="promocion-select" required>
                     <option value="">-- Selecciona el nivel actual a promover --</option>
-                    <?php while($nivel = mysqli_fetch_assoc($q_niveles_filtro)): ?>
-                        <option value="<?php echo $nivel['id_nivel']; ?>" <?php if($filtro_nivel == $nivel['id_nivel']) echo 'selected'; ?>>
+                    <?php
+                    // Mostrar todos los niveles disponibles para filtrar estudiantes.
+                    while ($nivel = mysqli_fetch_assoc($q_niveles_filtro)):
+                    ?>
+                        <option value="<?php echo $nivel['id_nivel']; ?>"
+                            <?php if ($filtro_nivel == $nivel['id_nivel']) echo 'selected'; ?>>
                             <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
                         </option>
                     <?php endwhile; ?>
@@ -63,16 +86,30 @@ if (!empty($filtro_nivel)) {
 
         <!-- SECCIÓN 2: FORMULARIO DE PROMOCIÓN -->
         <form action="procesar_promocion.php" method="POST" id="form-promocion">
-            
+
             <div class="promocion-card">
                 <label>¿A qué nivel van a ser promovidos los seleccionados?</label>
+                <!-- Seleccionar el nivel al que serán promovidos -->
                 <select name="id_nivel_nuevo" required class="promocion-select">
-                    <option value="" disabled selected>Selecciona el nuevo nivel...</option>
-                    <?php while($nivel = mysqli_fetch_assoc($q_niveles_promocion)): ?>
-                        <option value="<?php echo $nivel['id_nivel']; ?>">
-                            <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
-                        </option>
-                    <?php endwhile; ?>
+
+                    <!-- Opción inicial del selector -->
+                    <option value="" disabled selected>
+                        Selecciona el nuevo nivel...
+                    </option>
+
+                    <!-- Mostrar únicamente el siguiente nivel -->
+                    <?php if ($q_niveles_promocion): ?>
+
+                        <?php while ($nivel = mysqli_fetch_assoc($q_niveles_promocion)): ?>
+
+                            <option value="<?php echo $nivel['id_nivel']; ?>">
+                                <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
+                            </option>
+
+                        <?php endwhile; ?>
+
+                    <?php endif; ?>
+
                 </select>
             </div>
 
@@ -99,7 +136,7 @@ if (!empty($filtro_nivel)) {
                                 </td>
                             </tr>
                         <?php elseif ($q_estudiantes && mysqli_num_rows($q_estudiantes) > 0): ?>
-                            <?php while($est = mysqli_fetch_assoc($q_estudiantes)): ?>
+                            <?php while ($est = mysqli_fetch_assoc($q_estudiantes)): ?>
                                 <tr>
                                     <td style="text-align: center;">
                                         <input type="checkbox" name="estudiantes[]" value="<?php echo $est['id_estudiante']; ?>" class="checkbox-custom check-estudiante" checked>
@@ -132,39 +169,40 @@ if (!empty($filtro_nivel)) {
 
     <!-- SCRIPT DE SELECCIÓN MASIVA (TODOS / DESSELECCIONAR) -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkTodos = document.getElementById('check-todos');
-        const checksEstudiantes = document.querySelectorAll('.check-estudiante');
-        const formPromocion = document.getElementById('form-promocion');
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkTodos = document.getElementById('check-todos');
+            const checksEstudiantes = document.querySelectorAll('.check-estudiante');
+            const formPromocion = document.getElementById('form-promocion');
 
-        if (checkTodos && checksEstudiantes.length > 0) {
-            // Evento para marcar/desmarcar todos desde el checkbox principal
-            checkTodos.addEventListener('change', function() {
+            if (checkTodos && checksEstudiantes.length > 0) {
+                // Evento para marcar/desmarcar todos desde el checkbox principal
+                checkTodos.addEventListener('change', function() {
+                    checksEstudiantes.forEach(chk => {
+                        chk.checked = this.checked;
+                    });
+                });
+
+                // Si se desmarca individualmente a un estudiante, se desmarca el checkbox "Todos"
                 checksEstudiantes.forEach(chk => {
-                    chk.checked = this.checked;
+                    chk.addEventListener('change', function() {
+                        const todosMarcados = Array.from(checksEstudiantes).every(c => c.checked);
+                        checkTodos.checked = todosMarcados;
+                    });
                 });
-            });
+            }
 
-            // Si se desmarca individualmente a un estudiante, se desmarca el checkbox "Todos"
-            checksEstudiantes.forEach(chk => {
-                chk.addEventListener('change', function() {
-                    const todosMarcados = Array.from(checksEstudiantes).every(c => c.checked);
-                    checkTodos.checked = todosMarcados;
+            // Validación para evitar enviar el formulario sin seleccionar al menos a un estudiante
+            if (formPromocion) {
+                formPromocion.addEventListener('submit', function(e) {
+                    const seleccionados = document.querySelectorAll('.check-estudiante:checked');
+                    if (seleccionados.length === 0) {
+                        e.preventDefault();
+                        alert('⚠️ Debes seleccionar al menos un estudiante para promover.');
+                    }
                 });
-            });
-        }
-
-        // Validación para evitar enviar el formulario sin seleccionar al menos a un estudiante
-        if (formPromocion) {
-            formPromocion.addEventListener('submit', function(e) {
-                const seleccionados = document.querySelectorAll('.check-estudiante:checked');
-                if (seleccionados.length === 0) {
-                    e.preventDefault();
-                    alert('⚠️ Debes seleccionar al menos un estudiante para promover.');
-                }
-            });
-        }
-    });
+            }
+        });
     </script>
 </body>
+
 </html>

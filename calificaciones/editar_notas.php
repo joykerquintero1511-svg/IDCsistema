@@ -13,21 +13,28 @@ if (
 // Identificar la calificación que se desea editar.
 $id_calificacion = intval($_GET['id_calificacion']);
 
-// Comprobar que la calificación pertenezca al período activo.
-$sql_periodo = "
-    SELECT calificaciones.id_calificacion
-    FROM calificaciones
-    INNER JOIN periodos_academicos
-        ON calificaciones.id_periodo = periodos_academicos.id_periodo
-    WHERE calificaciones.id_calificacion = '$id_calificacion'
-    AND periodos_academicos.estado = 1
-    LIMIT 1
-";
+// Solo el profesor está limitado a editar notas del período activo.
+// El administrador puede editar calificaciones de períodos anteriores.
+if ($_SESSION['rol'] === 'profesor') {
 
-$resultado_periodo = mysqli_query($conexion, $sql_periodo);
+    // Comprobar que la calificación pertenezca al período activo.
+    $sql_periodo = "
+        SELECT calificaciones.id_calificacion
+        FROM calificaciones
+        INNER JOIN periodos_academicos
+            ON calificaciones.id_periodo = periodos_academicos.id_periodo
+        WHERE calificaciones.id_calificacion = '$id_calificacion'
+        AND periodos_academicos.estado = 1
+        LIMIT 1
+    ";
 
-if (!$resultado_periodo || mysqli_num_rows($resultado_periodo) == 0) {
-    die("Esta calificación no pertenece al período académico activo.");
+    // Ejecutar la consulta del período.
+    $resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+    // Impedir que el profesor edite notas de períodos anteriores.
+    if (!$resultado_periodo || mysqli_num_rows($resultado_periodo) == 0) {
+        die("Esta calificación no pertenece al período académico activo.");
+    }
 }
 
 // Verificar que el profesor tenga asignado el nivel de la calificación.
