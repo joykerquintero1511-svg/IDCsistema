@@ -2,10 +2,9 @@
 session_start();
 require_once('conexion.php');
 
-$sql = "SELECT * FROM niveles";
+// Consulta ordenada por ID para mantener la correlatividad de los niveles
+$sql = "SELECT * FROM niveles ORDER BY id_nivel ASC";
 $resultado = mysqli_query($conexion, $sql);
-
-
 
 // Buscamos el último período académico asegurándonos de traer el ID y el estatus
 $q_inscrip = mysqli_query($conexion, "SELECT id_periodo, inscripciones_abiertas FROM periodos_academicos ORDER BY id_periodo DESC LIMIT 1");
@@ -25,7 +24,6 @@ if (!$r_inscrip || $r_inscrip['inscripciones_abiertas'] == 0) {
 }
 
 $id_periodo_activo = $r_inscrip['id_periodo'];
-
 ?>
 
 <!DOCTYPE html>
@@ -36,25 +34,21 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inscripción EFB</title>
 
-    <style>
-        /* Estilo base para los mensajes (ocultos o limpios por defecto) */
-        #msg-email,
-        #msg-cedula {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* Solo muestra el fondo y los márgenes si el span tiene texto adentro */
-        #msg-email:not(:empty),
-        #msg-cedula:not(:empty) {
-            display: inline-block;
-            margin-top: 6px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-    </style>
-
+    <style> #msg-cedula,
+#msg-email {
+    font-weight: bold;
+    font-size: 1.4rem;
+    display: inline-block;
+    margin-top: 0.6rem;
+    background-color: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42);
+    
+}
+</style>
 
     <link rel="icon" type="image/png" href="images/EFB.png">
 
@@ -89,6 +83,9 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                     <div style="max-width: 600px; margin: 0 auto; background: rgba(255, 255, 255, 0.02); padding: 4rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
 
                         <form action="registrar_estudiantes.php" method="POST" style="text-align: left;">
+
+                            <!-- Campo oculto para enviar el período activo -->
+                            <input type="hidden" name="id_periodo" value="<?php echo $id_periodo_activo; ?>">
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">
@@ -136,7 +133,6 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Género</label>
-
                                 <select name="genero" id="genero" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
                                     <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu género</option>
                                     <option value="F" style="background: #142132; color: #fff;">F (Femenino)</option>
@@ -146,7 +142,6 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Número de Teléfono</label>
-
                                 <input class="u-fullwidth" type="text" id="telefono" name="telefono" placeholder="Ej. 04121234567" required maxlength="11" pattern="[0-9]{11}" title="El número de teléfono debe contener exactamente 11 números"
                                     oninput="this.value = this.value.replace(/[^0-9]/g,'');"
                                     style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 6px;">
@@ -161,7 +156,6 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel de Instrucción</label>
-
                                 <select name="nivel_instruccion" id="nivel_instruccion" required style="width: 100%; background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer;">
                                     <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">Selecciona tu nivel de estudio</option>
                                     <option value="Primaria" style="background: #142132; color: #fff;">Educación Primaria</option>
@@ -175,48 +169,34 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                             <div style="margin-bottom: 2rem;">
                                 <label style="color: #ffffff; font-size: 1.4rem; display: block; margin-bottom: 0.8rem;">Nivel a Cursar</label>
-
                                 <select name="id_nivel" required style="background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.1); padding: 0 1.5rem; border-radius: 6px; height: 5.4rem; cursor: pointer; width: 100%;">
-
-                                    <!-- Opción por defecto (igual que en tu otro menú) -->
                                     <option value="" disabled selected style="background: #142132; color: rgba(255,255,255,0.4);">
                                         Selecciona el nivel a cursar
                                     </option>
-
-                                    <!-- Opciones generadas desde la Base de Datos -->
                                     <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
                                         <option value="<?php echo $fila['id_nivel']; ?>" style="background: #142132; color: #fff;">
                                             <?php echo $fila['nivel_academico']; ?>
                                         </option>
                                     <?php endwhile; ?>
-
                                 </select>
                             </div>
 
                             <button type="submit" class="btn btn--primary u-fullwidth" style="font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase; height: 5.5rem; line-height: 5.5rem;">
                                 Registrarse
                             </button>
-
                         </form>
-
                     </div>
 
                     <br><br>
 
                     <?php if (isset($_GET['origen']) && $_GET['origen'] === 'admin') { ?>
-
-                        <a href="admin/estudiantes/listar.php"
-                            style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                        <a href="admin/estudiantes/listar.php" style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
                             ← Volver a la lista de estudiantes
                         </a>
-
                     <?php } else { ?>
-
-                        <a href="index.php"
-                            style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                        <a href="index.php" style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
                             ← Volver a la página principal
                         </a>
-
                     <?php } ?>
 
                 </div>
@@ -225,10 +205,11 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
     </main>
 
     <script>
+        // Búsqueda automática por cédula y filtrado dinámico de niveles permitidos
         document.getElementById('cedula').addEventListener('blur', function() {
             let cedula = this.value;
 
-            if (cedula.length >= 7) { // Solo buscar si escribió una cédula válida
+            if (cedula.length >= 7) {
                 let formData = new FormData();
                 formData.append('cedula', cedula);
 
@@ -239,7 +220,6 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                     .then(response => response.json())
                     .then(data => {
                         if (!data.error) {
-                            // Rellenar los campos automáticamente
                             if (data.nacionalidad) document.getElementById('nacionalidad').value = data.nacionalidad;
                             document.getElementById('nombre').value = data.nombre;
                             document.getElementById('apellidos').value = data.apellido;
@@ -248,11 +228,31 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                             document.getElementById('telefono').value = data.telefono;
                             document.getElementById('contacto_emergencia').value = data.contacto_emergencia;
                             document.getElementById('direccion').value = data.direccion;
-
                             if (data.email) document.getElementById('email').value = data.email;
                             if (data.nivel_instruccion) document.getElementById('nivel_instruccion').value = data.nivel_instruccion;
 
-                            // Efecto visual: Ponemos los campos con un borde azul para que note el autorrelleno
+                            // FILTRAR NIVELES PERMITIDOS (Nivel actual promovido o repetir el anterior)
+                            if (data.id_nivel) {
+                                let nivelActual = parseInt(data.id_nivel);
+                                let selectNivel = document.querySelector('select[name="id_nivel"]');
+                                let opciones = selectNivel.options;
+
+                                for (let i = 0; i < opciones.length; i++) {
+                                    let val = parseInt(opciones[i].value);
+                                    if (!isNaN(val)) {
+                                        if (val === nivelActual || val === (nivelActual - 1)) {
+                                            opciones[i].style.display = 'block';
+                                            opciones[i].disabled = false;
+                                        } else {
+                                            opciones[i].style.display = 'none';
+                                            opciones[i].disabled = true;
+                                        }
+                                    }
+                                }
+                                selectNivel.value = nivelActual;
+                            }
+
+                            // Efecto visual de bordes azules
                             let campos = ['nombre', 'apellidos', 'fecha_nacimiento', 'telefono', 'contacto_emergencia', 'direccion', 'email'];
                             campos.forEach(id => {
                                 document.getElementById(id).style.borderColor = '#3b82f6';
@@ -265,67 +265,52 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
         });
     </script>
 
+    <script>
+        function validarCampoAJAX(inputId, spanId, campoPOST) {
+            let inputElement = document.getElementById(inputId);
+            let spanElement = document.getElementById(spanId);
+
+            if (!inputElement || !spanElement) return;
+
+            inputElement.addEventListener('blur', function() {
+                let valor = this.value.trim();
+
+                if (valor === '') {
+                    spanElement.textContent = '';
+                    this.style.borderColor = '';
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append(campoPOST, valor);
+                formData.append('tipo', (campoPOST === 'correo') ? 'reinscripcion' : 'estudiante');
+                
+                fetch('validar_campo.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        spanElement.textContent = data.mensaje;
+                        if (data.status === 'error') {
+                            spanElement.style.color = '#3b82f6';
+                            this.style.borderColor = '#3b82f6';
+                        } else if (data.status === 'info') {
+                            spanElement.style.color = '#3b82f6';
+                            this.style.borderColor = '#3b82f6';
+                        } else {
+                            spanElement.style.color = '#2ecc71';
+                            this.style.borderColor = '#2ecc71';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en la validación:', error);
+                    });
+            });
+        }
+
+        validarCampoAJAX('cedula', 'msg-cedula', 'cedula');
+        validarCampoAJAX('email', 'msg-email', 'correo');
+    </script>
 </body>
-<script>
-    // Función genérica para validar mediante AJAX
-    function validarCampoAJAX(inputId, spanId, campoPOST) {
-        let inputElement = document.getElementById(inputId);
-        let spanElement = document.getElementById(spanId);
-
-        if (!inputElement ||+ !spanElement) return;
-
-        // Blur 
-        inputElement.addEventListener('blur', function() {
-            let valor = this.value.trim();
-
-            if (valor === '') {
-                spanElement.textContent = '';
-                this.style.borderColor = '';
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append(campoPOST, valor);
-            formData.append('tipo', 'estudiante'); // Indicamos que es para validar estudiante
-            formData.append('tipo', 'persona'); // Indicamos que es para validar persona
-            
-            fetch('validar_campo.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    spanElement.textContent = data.mensaje;
-                    if (data.status === 'error') {
-
-                        // Muestra el mensaje y el borde en rojo.
-                        spanElement.style.color = '#ff4d4d';
-                        this.style.borderColor = '#ff4d4d';
-
-                        // Comprueba si el correo ya existe y solo debemos informar.
-                    } else if (data.status === 'info') {
-
-                        // Muestra el mensaje y el borde en azul.
-                        spanElement.style.color = '#3b82f6';
-                        this.style.borderColor = '#3b82f6';
-
-                    } else {
-
-                        // Muestra el mensaje y el borde en verde cuando está disponible.
-                        spanElement.style.color = '#2ecc71';
-                        this.style.borderColor = '#2ecc71';
-                    }
-                })
-
-                .catch(error => {
-                    console.error('Error en la validación:', error);
-                });
-        });
-    }
-
-    // Activamos la validación para Cédula y Correo
-    validarCampoAJAX('cedula', 'msg-cedula', 'cedula');
-    validarCampoAJAX('email', 'msg-email', 'correo');
-</script>
-
 </html>

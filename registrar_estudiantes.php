@@ -5,8 +5,6 @@ global $conexion;
 // =========================================================================
 // BLOQUEO DE SEGURIDAD: Verificar si las inscripciones están abiertas
 // =========================================================================
-// Buscar el período académico activo y comprobar si permite inscripciones.
-// Consultar el período activo para comprobar si permite inscripciones.
 $q_inscrip = mysqli_query($conexion, "
     SELECT id_periodo, inscripciones_abiertas
     FROM periodos_academicos
@@ -30,7 +28,6 @@ if (!$periodo || $periodo['inscripciones_abiertas'] == 0) {
     </body>
     ");
 }
-// =========================================================================
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     die("Acceso no permitido. Por favor, envía el formulario desde la página de inscripción.");
@@ -45,7 +42,7 @@ $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
 $contacto_emergencia = mysqli_real_escape_string($conexion, $_POST['contacto_emergencia']);
 $nivel_instruccion = mysqli_real_escape_string($conexion, $_POST['nivel_instruccion']);
 
-// Capturar y validar el nivel académico
+// Capturar y validar el nivel académico seleccionado en el formulario
 $id_nivel = intval($_POST['id_nivel']);
 
 $fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimiento']);
@@ -53,21 +50,11 @@ $fecha_registro = date('Y-m-d');
 $genero = mysqli_real_escape_string($conexion, $_POST['genero']);
 $estado_inscripcion = 1;
 
-// Preparar la dirección con mayúsculas y minúsculas ordenadas
-
-// Eliminar espacios al inicio y al final
+// Preparar la dirección
 $direccion = trim($_POST['direccion']);
-
-// Reemplazar múltiples espacios por uno solo
 $direccion = preg_replace('/\s+/', ' ', $direccion);
-
-// Convertir toda la dirección a minúsculas
 $direccion = mb_strtolower($direccion, 'UTF-8');
-
-// Colocar la primera letra de cada palabra en mayúscula
 $direccion = mb_convert_case($direccion, MB_CASE_TITLE, 'UTF-8');
-
-// Preparar la dirección para guardarla de forma segura en la base de datos
 $direccion = mysqli_real_escape_string($conexion, $direccion);
 
 // Validar campos obligatorios
@@ -82,14 +69,12 @@ $sql_buscar_persona = "SELECT id_persona FROM personas WHERE cedula = '$cedula' 
 $res_persona = mysqli_query($conexion, $sql_buscar_persona);
 
 if (mysqli_num_rows($res_persona) > 0) {
-    // La persona ya existe, tomamos su ID y actualizamos sus datos de contacto por si cambiaron
     $fila = mysqli_fetch_assoc($res_persona);
     $id_persona = $fila['id_persona'];
 
     $sql_update_persona = "UPDATE personas SET telefono='$telefono', contacto_emergencia='$contacto_emergencia', direccion='$direccion' WHERE id_persona='$id_persona'";
     mysqli_query($conexion, $sql_update_persona);
 } else {
-    // Es una persona nueva, hacemos el INSERT
     $sql_persona = "INSERT INTO personas (tipo_documento, cedula, nacionalidad, nombre, apellido, fecha_nacimiento, genero, telefono, contacto_emergencia, direccion) 
                     VALUES ('Cédula', '$cedula', '$nacionalidad', '$nombre', '$apellido', '$fecha_nacimiento', '$genero', '$telefono', '$contacto_emergencia', '$direccion')";
     if (!mysqli_query($conexion, $sql_persona)) {
@@ -99,51 +84,60 @@ if (mysqli_num_rows($res_persona) > 0) {
 }
 
 // =========================================================================
-// PASO 2: LÓGICA INTELIGENTE PARA LA TABLA ESTUDIANTES
+// PASO 2: LÓGICA INTELIGENTE PARA LA TABLA ESTUDIANTES E INSCRIPCIONES
 // =========================================================================
-$sql_buscar_est = "SELECT id_estudiante FROM estudiantes WHERE id_persona = '$id_persona' LIMIT 1";
+$sql_buscar_est = "SELECT id_estudiante, id_nivel AS nivel_actual FROM estudiantes WHERE id_persona = '$id_persona' LIMIT 1";
 $res_est = mysqli_query($conexion, $sql_buscar_est);
 
-// Verificar si el estudiante ya está inscrito en el período activo.
+$id_periodo_actual = (int) $periodo['id_periodo'];
+
 if (mysqli_num_rows($res_est) > 0) {
+    $fila_est = mysqli_fetch_assoc($res_est);
+    $id_estudiante = $fila_est['id_estudiante'];
+    $nivel_actual_estudiante = (int) $fila_est['nivel_actual'];
 
-    // Obtener los datos sin avanzar el resultado de la consulta.
-    $estudiante_encontrado = mysqli_fetch_assoc($res_est);
-
-    // Regresar el cursor al inicio para que el código siguiente pueda leerlo.
-    mysqli_data_seek($res_est, 0);
-    $id_estudiante_existente = $estudiante_encontrado['id_estudiante'];
-    $id_periodo_actual = (int) $periodo['id_periodo'];
-
-    // Buscar una inscripción existente para este estudiante y período.
-    $sql_verificar_inscripcion = "SELECT id_inscripcion
-        FROM inscripciones
-        WHERE id_estudiante = '$id_estudiante_existente'
-        AND id_periodo = '$id_periodo_actual'
-        LIMIT 1";
-
+    // 1. Validar si ya está inscrito en este mismo período actual
+    $sql_verificar_inscripcion = "SELECT id_inscripcion FROM inscripciones 
+                                  WHERE id_estudiante = '$id_estudiante' 
+                                  AND id_periodo = '$id_periodo_actual' 
+                                  LIMIT 1";
     $resultado_verificacion = mysqli_query($conexion, $sql_verificar_inscripcion);
 
     if (mysqli_num_rows($resultado_verificacion) > 0) {
-        die("Este estudiante ya se encuentra inscrito en el período académico actual.");
+        die("<div style='background:#0c0c0c; color:white; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'>
+                <div style='background:#111; padding:30px; border-radius:8px; border:1px solid #ef4444; text-align:center;'>
+                    <h2 style='color:#ef4444;'>⚠️ Acción no permitida</h2>
+                    <p style='color:#ccc; font-size:1.2rem;'>Este estudiante ya se encuentra inscrito en el período académico actual.</p>
+                    <a href='inscripcion.php' style='color:#3b82f6; text-decoration:none;'>← Volver al formulario</a>
+                </div>
+             </div>");
     }
-}
 
-if (mysqli_num_rows($res_est) > 0) {
-    // Ya es estudiante de la escuela, tomamos su ID y actualizamos el nivel e email
-    $fila_est = mysqli_fetch_assoc($res_est);
-    $id_estudiante = $fila_est['id_estudiante'];
+    // 2. Validar estrictamente en el backend: 
+    // El nivel seleccionado debe ser su nivel actual (promovido) o exactamente el anterior (repetir)
+    $nivel_permitido_minimo = $nivel_actual_estudiante - 1;
 
-    // Colocar como inactiva la inscripción anterior del estudiante
+    if ($id_nivel != $nivel_actual_estudiante && $id_nivel != $nivel_permitido_minimo) {
+        die("<div style='background:#0c0c0c; color:white; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'>
+                <div style='background:#111; padding:30px; border-radius:8px; border:1px solid #ef4444; text-align:center;'>
+                    <h2 style='color:#ef4444;'>🚫 Nivel Académico No Válido</h2>
+                    <p style='color:#ccc; font-size:1.2rem;'>No puedes inscribirte en este nivel. Solo puedes cursar tu nivel asignado o repetir el nivel anterior.</p>
+                    <a href='inscripcion.php' style='color:#3b82f6; text-decoration:none;'>← Volver al formulario</a>
+                </div>
+             </div>");
+    }
+
+    // Inactivar inscripción anterior e institucionalizar actualización de datos del estudiante
     $sql_inactivar = "UPDATE inscripciones SET estado = 0 WHERE id_estudiante = '$id_estudiante' AND estado = 1";
     mysqli_query($conexion, $sql_inactivar);
 
     $sql_update_est = "UPDATE estudiantes SET id_nivel='$id_nivel', nivel_instruccion='$nivel_instruccion', email='$email' WHERE id_estudiante='$id_estudiante'";
     mysqli_query($conexion, $sql_update_est);
+
 } else {
-    // Es un estudiante nuevo, hacemos el INSERT
+    // Estudiante nuevo
     $sql_estudiante = "INSERT INTO estudiantes (id_persona, id_nivel, nivel_instruccion, fecha_registro, email) 
-            VALUES ('$id_persona', '$id_nivel' , '$nivel_instruccion', '$fecha_registro', '$email')";
+                       VALUES ('$id_persona', '$id_nivel' , '$nivel_instruccion', '$fecha_registro', '$email')";
     if (!mysqli_query($conexion, $sql_estudiante)) {
         die("Error al guardar estudiante: " . mysqli_error($conexion));
     }
@@ -151,13 +145,10 @@ if (mysqli_num_rows($res_est) > 0) {
 }
 
 // =========================================================================
-// PASO 3: INSERTAR EN INSCRIPCIONES Y GENERAR QR (SIEMPRE SE HACE)
+// PASO 3: INSERTAR EN INSCRIPCIONES Y GENERAR QR
 // =========================================================================
 $token_qr = md5(uniqid(rand(), true));
 
-// <-- Ahora insertamos el id_nivel en lugar del texto
-// Guardar la inscripción asociada al período académico correspondiente.
-// Registrar la inscripción del estudiante en el período académico activo.
 $sql_inscripcion = "INSERT INTO inscripciones (id_estudiante, id_nivel, id_periodo, fecha_inscripcion, estado, estatus_presencial, token_qr)
     VALUES ('$id_estudiante', '$id_nivel', '$periodo[id_periodo]', NOW(), '$estado_inscripcion', 'pendiente', '$token_qr')";
 
@@ -180,27 +171,12 @@ $url_qr_codificada = urlencode($url_validacion);
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" href="images/EFB.png" type="image/png">
 
-    <!-- CSS adicional para ocultar botones a la hora de imprimir -->
     <style>
         @media print {
-            .no-print {
-                display: none !important;
-            }
-
-            body {
-                background-color: white !important;
-            }
-
-            .ticket-caja {
-                border: 2px solid black !important;
-                background: white !important;
-            }
-
-            h2,
-            p,
-            strong {
-                color: black !important;
-            }
+            .no-print { display: none !important; }
+            body { background-color: white !important; }
+            .ticket-caja { border: 2px solid black !important; background: white !important; }
+            h2, p, strong { color: black !important; }
         }
     </style>
 </head>
@@ -225,7 +201,6 @@ $url_qr_codificada = urlencode($url_validacion);
                             <strong style="color: #ffffff;"><?php echo htmlspecialchars(stripslashes($nombre) . " " . stripslashes($apellido)); ?></strong>, has asegurado tu cupo.
                         </p>
 
-                        <!-- CAJA DEL CÓDIGO QR -->
                         <div style="background: rgba(255,255,255,0.03); border: 2px dashed #3b71a8; padding: 2rem; border-radius: 8px; margin-bottom: 2.5rem;">
                             <p style="color: #3b71a8; font-size: 1.4rem; font-weight: bold; margin-bottom: 1rem; text-transform: uppercase;">Pase de Entrada Oficial</p>
 
