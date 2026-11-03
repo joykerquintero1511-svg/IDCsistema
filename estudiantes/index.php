@@ -108,7 +108,6 @@ if ($result_notas && mysqli_num_rows($result_notas) > 0) {
                                          Entrega límite: <?php echo date("d/m/Y", strtotime($tarea['fecha_limite'])); ?>
                                     </p>
                                 </div>
-                                <a href="subir_tarea.php?id=<?php echo $tarea['id_asignacion']; ?>" class="btn-action">Subir Tarea</a>
                             </li>
                         <?php endwhile; ?>
                     </ul>
