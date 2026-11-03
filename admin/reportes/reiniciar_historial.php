@@ -41,10 +41,14 @@ if (!$estudiante) {
     die("No se encontró el estudiante.");
 }
 
-// Buscar todos los niveles disponibles
+// Buscar únicamente los niveles anteriores al nivel actual
 $consulta_niveles = "
 SELECT id_nivel, nivel_academico
 FROM niveles
+WHERE id_nivel < (
+    SELECT id_nivel
+    FROM estudiantes
+    WHERE id_estudiante = '$id_estudiante')
 ORDER BY id_nivel ASC
 ";
 
@@ -82,21 +86,21 @@ if (!$resultado_niveles) {
                 <!-- Bloque de Información del Estudiante -->
                 <div class="admin-info-box">
                     <p class="admin-info-text">
-                        <span>Estudiante:</span> 
+                        <span>Estudiante:</span>
                         <span class="admin-info-value"><?php echo htmlspecialchars($estudiante['nombre'] . " " . $estudiante['apellido']); ?></span>
                     </p>
                     <p class="admin-info-text">
-                        <span>Cédula:</span> 
+                        <span>Cédula:</span>
                         <span class="admin-info-value"><?php echo htmlspecialchars($estudiante['cedula']); ?></span>
                     </p>
                     <p class="admin-info-text">
-                        <span>Nivel actual:</span> 
+                        <span>Nivel actual:</span>
                         <span class="admin-info-nivel"><?php echo htmlspecialchars($estudiante['nivel_academico']); ?></span>
                     </p>
                 </div>
 
-                <!-- Formulario -->
-                <form action="procesar_reinicio.php" method="POST" onsubmit="return confirm('¿Está seguro de reiniciar el recorrido académico de este estudiante?');">
+                <!-- Formulario para reiniciar el recorrido académico -->
+                <form action="procesar_reinicio.php" method="POST" id="form-reinicio">
 
                     <input type="hidden" name="id_estudiante" value="<?php echo $id_estudiante; ?>">
 
@@ -106,7 +110,7 @@ if (!$resultado_niveles) {
                             <option value="" disabled selected>Seleccione un nivel</option>
                             <?php while ($nivel = $resultado_niveles->fetch_assoc()) { ?>
                                 <option value="<?php echo $nivel['id_nivel']; ?>">
-                                    <?php 
+                                    <?php
                                     echo htmlspecialchars($nivel['nivel_academico']);
                                     if ($nivel['nivel_academico'] == $estudiante['nivel_academico']) {
                                         echo " (Nivel actual)";
@@ -136,6 +140,47 @@ if (!$resultado_niveles) {
 
         </div>
     </div>
+    <!-- Librería para mostrar mensajes personalizados -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Buscar el formulario de reinicio académico
+        const formularioReinicio = document.getElementById('form-reinicio');
+
+        // Escuchar cuando el administrador intenta reiniciar el recorrido
+        formularioReinicio.addEventListener('submit', function(evento) {
+
+            // Evitar que el formulario se envíe sin confirmación
+            evento.preventDefault();
+
+            // Mostrar una ventana de confirmación personalizada
+            Swal.fire({
+                title: '¿Reiniciar recorrido académico?',
+                text: 'El estudiante comenzará nuevamente desde el nivel seleccionado. Su historial académico anterior se conservará.',
+                icon: 'warning',
+                background: '#111827',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, reiniciar recorrido',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#008cff',
+                cancelButtonColor: '#374151',
+                reverseButtons: true
+            }).then(function(resultado) {
+
+                // Enviar el formulario únicamente si el administrador confirma
+                if (resultado.isConfirmed) {
+                    formularioReinicio.submit();
+                }
+
+            });
+
+        });
+    </script>
 
 </body>
+
+</html>
+</body>
+
 </html>

@@ -25,8 +25,8 @@
         die("El nivel seleccionado no es válido.");
     }
 
-    // Verificar que el estudiante exista
-    $sql_verificar_estudiante = "SELECT id_estudiante
+    // Consultar el estudiante y su nivel académico actual
+    $sql_verificar_estudiante = "SELECT id_estudiante, id_nivel
                              FROM estudiantes
                              WHERE id_estudiante = '$id_estudiante'";
 
@@ -35,6 +35,58 @@
     if (!$resultado_verificar_estudiante || $resultado_verificar_estudiante->num_rows == 0) {
         die("El estudiante no existe.");
     }
+
+    // Obtener el nivel actual del estudiante
+    $estudiante = $resultado_verificar_estudiante->fetch_assoc();
+    $id_nivel_actual = intval($estudiante['id_nivel']);
+
+    // Verificar que el nivel seleccionado sea anterior al actual
+    if ($id_nivel_nuevo >= $id_nivel_actual) {
+        die("Solo puede reiniciar el recorrido en un nivel anterior al actual.");
+    }
+
+    // Buscar el período académico activo
+    $sql_periodo = "SELECT id_periodo
+                FROM periodos_academicos
+                WHERE estado = 1
+                LIMIT 1";
+
+    $resultado_periodo = $conexion->query($sql_periodo);
+
+    // Verificar que la consulta se ejecutó correctamente
+    if (!$resultado_periodo) {
+        die("Error al consultar el período académico: " . $conexion->error);
+    }
+
+    // Verificar que exista un período activo
+    if ($resultado_periodo->num_rows == 0) {
+        die("No existe un período académico activo.");
+    }
+
+    // Obtener el identificador del período activo
+    $periodo = $resultado_periodo->fetch_assoc();
+
+    $id_periodo = intval($periodo['id_periodo']);
+
+    // Verificar si el estudiante ya estuvo inscrito en este período
+    $sql_verificar_inscripcion = "SELECT id_inscripcion
+                             FROM inscripciones
+                             WHERE id_estudiante = '$id_estudiante'
+                             AND id_periodo = '$id_periodo'
+                             LIMIT 1";
+
+    $resultado_verificar_inscripcion = $conexion->query($sql_verificar_inscripcion);
+
+    // Verificar si ocurrió un error en la consulta
+    if (!$resultado_verificar_inscripcion) {
+        die("Error al verificar la inscripción: " . $conexion->error);
+    }
+
+    // Evitar inscripciones duplicadas en el mismo período
+    if ($resultado_verificar_inscripcion->num_rows > 0) {
+        die("Este estudiante ya estuvo inscrito en el período académico activo. Para reiniciar su recorrido, debe hacerlo en un período nuevo.");
+    }
+
 
     // Iniciar una transacción para realizar el reinicio de forma segura
     $conexion->begin_transaction();
@@ -66,13 +118,13 @@
         die("Error al actualizar el nivel del estudiante: " . $conexion->error);
     }
 
-    // Crear una nueva inscripción activa en el nivel seleccionado
+    // Crear una nueva inscripción activa en el nivel seleccionado y período activo
     $token_qr = md5(uniqid(rand(), true));
 
     $sql_nueva_inscripcion = "INSERT INTO inscripciones
-                          (id_estudiante, id_nivel, fecha_inscripcion, estado, estatus_presencial, token_qr)
-                          VALUES
-                          ('$id_estudiante', '$id_nivel_nuevo', NOW(), 1, 'pendiente', '$token_qr')";
+                      (id_estudiante, id_nivel, id_periodo, fecha_inscripcion, estado, estatus_presencial, token_qr)
+                      VALUES
+                      ('$id_estudiante', '$id_nivel_nuevo', '$id_periodo', NOW(), 1, 'pendiente', '$token_qr')";
 
     $resultado_nueva_inscripcion = $conexion->query($sql_nueva_inscripcion);
 
