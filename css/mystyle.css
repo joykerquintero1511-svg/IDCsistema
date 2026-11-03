@@ -1999,3 +1999,176 @@ a.btn-login-efb:hover {
     background: #334155;
 }
 
+/* =================================================_
+   AISLAMIENTO Y CORRECCIÓN: REINICIAR RECORRIDO
+   ================================================= */
+
+/* Reseteo local para este módulo para evitar herencias gigantes */
+.admin-body-reinicio {
+    background-color: #0b0f19 !important;
+    color: #ffffff !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    box-sizing: border-box;
+}
+
+/* Contenido principal al lado del sidebar */
+.admin-body-reinicio .admin-main-content {
+    margin-left: 260px !important; /* Espacio fijo para el sidebar */
+    padding: 40px !important;
+    width: calc(100% - 260px) !important;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background-color: #0b0f19 !important;
+}
+
+.admin-body-reinicio .admin-container {
+    max-width: 750px !important;
+    margin: 0 auto !important;
+}
+
+/* Títulos con tamaños controlados en píxeles */
+.admin-body-reinicio .admin-titulo {
+    font-size: 26px !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+    margin: 0 0 5px 0 !important;
+}
+
+.admin-body-reinicio .admin-subtitulo {
+    font-size: 13px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 25px !important;
+}
+
+/* Tarjeta principal */
+.admin-body-reinicio .admin-card {
+    background: #111827 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    padding: 30px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Caja de información interna */
+.admin-body-reinicio .admin-info-box {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-left: 4px solid #3b82f6 !important;
+    padding: 18px !important;
+    border-radius: 6px !important;
+    margin-bottom: 20px !important;
+}
+
+.admin-body-reinicio .admin-info-text {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    margin-bottom: 10px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.admin-body-reinicio .admin-info-text:last-child {
+    margin-bottom: 0 !important;
+}
+
+.admin-body-reinicio .admin-info-value {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.admin-body-reinicio .admin-info-nivel {
+    color: #3b82f6 !important;
+    font-weight: 600 !important;
+}
+
+/* Formulario e Inputs */
+.admin-body-reinicio .admin-form-group {
+    margin-bottom: 20px !important;
+}
+
+.admin-body-reinicio .admin-label {
+    display: block !important;
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin-bottom: 8px !important;
+}
+
+.admin-body-reinicio .admin-select {
+    width: 100% !important;
+    background: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    padding: 12px 15px !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+.admin-body-reinicio .admin-select option {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+.admin-body-reinicio .admin-aviso {
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-bottom: 20px !important;
+    line-height: 1.4 !important;
+}
+
+.admin-body-reinicio .admin-btn-submit {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.admin-body-reinicio .admin-btn-submit:hover {
+    background-color: #2563eb !important;
+}
+
+.admin-body-reinicio .admin-enlace-volver {
+    color: #3b82f6 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.admin-body-reinicio .admin-enlace-volver:hover {
+    text-decoration: underline !important;
+}
+
+/* Contenido principal a pantalla completa y perfectamente centrado */
+.admin-body-reinicio .admin-main-content {
+    margin-left: 0 !important; /* Eliminamos el espacio del sidebar */
+    width: 100% !important;
+    padding: 50px 20px !important;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background-color: #0b0f19 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente todo el bloque */
+    justify-content: center; /* Centra verticalmente si lo deseas */
+}
+
+.admin-body-reinicio .admin-container {
+    width: 100% !important;
+    max-width: 750px !important;
+    margin: 0 auto !important;
+}
