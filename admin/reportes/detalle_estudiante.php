@@ -91,17 +91,19 @@
         <meta charset="UTF-8">
         <title>Detalle del Estudiante</title>
 
+        <link rel="icon" href="../../images/EFB.png" type="image/png">
+
         <style>
             body {
                 font-family: 'Inter', sans-serif;
-                background-color: #fafdff;
+                background-color: #e6e8ea;
                 padding: 40px;
                 color: #111111;
             }
 
             .detalle-card {
-                background: #ffffff;
-                border: 1px solid #eaeaea;
+                background: #ffffffbb;
+                border: 1px solid #000000;
                 border-radius: 8px;
                 padding: 30px;
                 max-width: 850px;
