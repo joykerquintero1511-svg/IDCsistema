@@ -2,12 +2,20 @@
     include '../../session-start.php';
 
     require_once '../../conexion.php';
+
+
     $filtro_nivel = "";
     $filtro_anio = "";
     $filtro_mes = "";
+    $filtro_periodo = "";
 
+    // Capturar el período seleccionado en el formulario.
+    if (isset($_GET['periodo']) && $_GET['periodo'] !== "") {
+        $filtro_periodo = intval($_GET['periodo']);
+    }
     $condiciones = [];
 
+    // Recuperar los filtros actuales.
     if (isset($_GET['nivel'])) {
         $filtro_nivel = $_GET['nivel'];
     }
@@ -20,67 +28,96 @@
         $filtro_mes = $_GET['mes'];
     }
 
-    // Buscar estudiantes con inscripción activa
-
+    // Consultar las inscripciones y sus períodos académicos.
     $consulta = "
-        SELECT
-            inscripciones.id_inscripcion,
-            personas.cedula,
-            personas.nombre,
-            personas.apellido,
-            niveles.nivel_academico,
-            estudiantes.id_estudiante
-        FROM inscripciones
-        INNER JOIN estudiantes
-            ON inscripciones.id_estudiante = estudiantes.id_estudiante
-        INNER JOIN personas
-            ON estudiantes.id_persona = personas.id_persona
-        INNER JOIN niveles
-            ON inscripciones.id_nivel = niveles.id_nivel
-        WHERE inscripciones.estado = 1
-    ";
+    SELECT
+        inscripciones.id_inscripcion,
+        personas.cedula,
+        personas.nombre,
+        personas.apellido,
+        niveles.nivel_academico,
+        periodos_academicos.nombre_periodo,
+        estudiantes.id_estudiante
+    FROM inscripciones
+    INNER JOIN estudiantes
+        ON inscripciones.id_estudiante = estudiantes.id_estudiante
+    INNER JOIN personas
+        ON estudiantes.id_persona = personas.id_persona
+    INNER JOIN niveles
+        ON inscripciones.id_nivel = niveles.id_nivel
+    LEFT JOIN periodos_academicos
+    ON inscripciones.id_periodo = periodos_academicos.id_periodo
+    WHERE inscripciones.estado = 1
+";
+
+    // Consultar los niveles disponibles.
     $consulta_niveles = "
-        SELECT id_nivel, nivel_academico
-        FROM niveles
-        ORDER BY id_nivel ASC
-    ";
+    SELECT id_nivel, nivel_academico
+    FROM niveles
+    ORDER BY id_nivel ASC
+";
+
+    // Consultar los períodos académicos disponibles.
+    $consulta_periodos = "
+    SELECT id_periodo, nombre_periodo
+    FROM periodos_academicos
+    ORDER BY id_periodo DESC
+";
+
+    // Consultar los años de inscripción.
     $consulta_anios = "
-        SELECT DISTINCT YEAR(fecha_inscripcion) AS anio
-        FROM inscripciones
-        ORDER BY anio DESC
-    ";
+    SELECT DISTINCT YEAR(fecha_inscripcion) AS anio
+    FROM inscripciones
+    ORDER BY anio DESC
+";
+
+    // Consultar los meses de inscripción.
     $consulta_meses = "
-        SELECT DISTINCT MONTH(fecha_inscripcion) AS mes
-        FROM inscripciones
-        ORDER BY mes ASC
-    ";
+    SELECT DISTINCT MONTH(fecha_inscripcion) AS mes
+    FROM inscripciones
+    ORDER BY mes ASC
+";
 
     $resultado_niveles = $conexion->query($consulta_niveles);
+    $resultado_periodos = $conexion->query($consulta_periodos);
     $resultado_anios = $conexion->query($consulta_anios);
     $resultado_meses = $conexion->query($consulta_meses);
 
-
-
+    // Aplicar el filtro de nivel académico.
     if ($filtro_nivel !== "") {
-        $condiciones[] = "inscripciones.id_nivel = $filtro_nivel";
+        $condiciones[] = "inscripciones.id_nivel = " . intval($filtro_nivel);
     }
 
+    // Aplicar el filtro de año.
     if ($filtro_anio !== "") {
-        $condiciones[] = "YEAR(inscripciones.fecha_inscripcion) = $filtro_anio";
+        $condiciones[] = "YEAR(inscripciones.fecha_inscripcion) = " . intval($filtro_anio);
     }
 
+    // Aplicar el filtro de mes.
     if ($filtro_mes !== "") {
-        $condiciones[] = "MONTH(inscripciones.fecha_inscripcion) = $filtro_mes";
+        $condiciones[] = "MONTH(inscripciones.fecha_inscripcion) = " . intval($filtro_mes);
     }
 
+    // Aplicar el filtro de período académico.
+    if ($filtro_periodo !== "") {
+        $condiciones[] = "inscripciones.id_periodo = " . $filtro_periodo;
+    }
+
+    // Incorporar los filtros seleccionados a la consulta.
     if (count($condiciones) > 0) {
         $consulta .= " AND ";
         $consulta .= implode(" AND ", $condiciones);
     }
 
+    // Ordenar los estudiantes por apellido y nombre.
     $consulta .= " ORDER BY personas.apellido ASC, personas.nombre ASC, inscripciones.fecha_inscripcion DESC ";
 
     $resultado = $conexion->query($consulta);
+
+    if (!$resultado) {
+        die('Error en la consulta: ' . $conexion->error);
+    }
+
 
     if (!$resultado) {
         die('Error en la consulta: ' . $conexion->error);
@@ -121,6 +158,22 @@
                                                                                         echo "selected";
                                                                                     } ?>>
                                     <?php echo $nivel['nivel_academico']; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+
+                    <div class="reportes-filter-group">
+                        <label for="periodo">Período académico:</label>
+                        <select name="periodo" id="periodo" class="reportes-select">
+                            <option value="">Todos</option>
+
+                            <?php while ($periodo = $resultado_periodos->fetch_assoc()) { ?>
+                                <option value="<?php echo $periodo['id_periodo']; ?>"
+                                    <?php if ($filtro_periodo == $periodo['id_periodo']) {
+                                        echo "selected";
+                                    } ?>>
+                                    <?php echo htmlspecialchars($periodo['nombre_periodo']); ?>
                                 </option>
                             <?php } ?>
                         </select>
@@ -187,6 +240,7 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Nivel</th>
+                            <th>Período académico</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -197,6 +251,15 @@
                                 <td><?php echo htmlspecialchars(ucwords(strtolower($fila['nombre']))); ?></td>
                                 <td><?php echo htmlspecialchars(ucwords(strtolower($fila['apellido']))); ?></td>
                                 <td><?php echo htmlspecialchars($fila['nivel_academico']); ?></td>
+                                <td>
+                                    <?php
+                                    if (!empty($fila['nombre_periodo'])) {
+                                        echo htmlspecialchars($fila['nombre_periodo']);
+                                    } else {
+                                        echo "Sin período";
+                                    }
+                                    ?>
+                                </td>
                                 <td>
                                     <a class="reportes-link-action" href="detalle_estudiante.php?id_inscripcion=<?php echo $fila['id_inscripcion']; ?>&nivel=<?php echo urlencode($filtro_nivel); ?>&anio=<?php echo $filtro_anio; ?>&mes=<?php echo $filtro_mes; ?>">
                                         Ver detalles

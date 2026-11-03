@@ -11,6 +11,7 @@
     $nivel = isset($_GET['nivel']) ? $_GET['nivel'] : "";
     $anio = isset($_GET['anio']) ? $_GET['anio'] : "";
     $mes = isset($_GET['mes']) ? $_GET['mes'] : "";
+    $periodo = isset($_GET['periodo']) ? intval($_GET['periodo']) : "";
 
 
     $consulta = "
@@ -380,7 +381,7 @@
                 ↻ Reiniciar recorrido académico
             </a>
 
-            <a href="reporte_estudiantes.php?estado=<?php echo $estado; ?>&nivel=<?php echo urlencode($nivel); ?>&anio=<?php echo $anio; ?>&mes=<?php echo $mes; ?>" class="btn-volver">
+            <a href="reporte_estudiantes.php?estado=<?php echo $estado; ?>&nivel=<?php echo urlencode($nivel); ?>&anio=<?php echo $anio; ?>&mes=<?php echo $mes; ?>&periodo=<?php echo $periodo; ?>" class="btn-volver">
                 ← Volver al reporte
             </a>
 
