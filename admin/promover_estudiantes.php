@@ -54,16 +54,30 @@ if (!empty($filtro_nivel)) {
 
 <body>
 
-    <!-- Menú lateral unificado -->
-    <?php include 'sidebaradmin.php'; ?>
+    
 
     <!-- Contenedor Principal (Aplica el margen correcto) -->
-    <main class="main-content">
+    <main class="main-content-reporte">
 
-        <div class="promocion-header">
-            <h1>Promoción de Nivel Académico 🎓</h1>
-            <p>Selecciona los estudiantes que aprobaron y elige a qué nivel serán promovidos.</p>
-        </div>
+        <div style="margin-bottom: 2rem; background-color: transparent; padding: 15px; border-radius: 8px; text-align: left;">
+
+            <a href="estudiantes/listar.php" style="display: inline-block;
+            background: #1d1d1d74;
+            color: #2563eb;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            transition: 0.3s;
+            margin-bottom: 20px;"> Volver</a>
+
+            <img src="../images/EFB.png" alt="Logo Escuela de Formación Bíblica" style="
+            width: 100px; margin-bottom: 15px; align-items: center; display: block; margin-left: auto; margin-right: auto;">
+                <h1 style=" color: #fff bold; text-align: center; ">Promoción de Estudiantes</h1>
+                <p style="text-align: center;">Seleccione los Estudiantes que aprobaron y promuevalos al nivel correspondiente</p>
+            </div>
 
         <!-- SECCIÓN 1: FILTRO DE BÚSQUEDA -->
         <div class="promocion-card">
@@ -157,11 +171,21 @@ if (!empty($filtro_nivel)) {
                 </table>
             </div>
 
-            <div class="promocion-actions">
-                <button type="submit" class="promocion-btn-submit">
+            <div style="margin: 10px;">
+                <button type="submit" style="display: inline-block;
+            background: #2dc122e2;
+            color: #ffffff;
+            padding: 20px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 17px;
+            font-family:sans-serif;
+            border: 1px solid #cbd5e1;
+            transition: 0.3s;
+            margin-bottom: 20px;">
                     Promover Estudiantes Seleccionados
                 </button>
-                <a href="index.php" class="promocion-link-back">← Volver al Panel Maestro</a>
             </div>
         </form>
 

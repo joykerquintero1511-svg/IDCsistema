@@ -124,6 +124,13 @@ body {
   flex-grow: 1;
 }
 
+.main-content-reporte {
+  margin-left: auto;
+  width: calc(100% - 260px);
+  padding: 3.5rem;
+  flex-grow: 1;
+}
+
 .welcome-header {
   margin-bottom: 3rem;
 }
@@ -2237,4 +2244,21 @@ a.btn-login-efb:hover {
   width: 100% !important;
   max-width: 750px !important;
   margin: 0 auto !important;
+}
+
+.buttom-estudiantes { 
+  background-color: #070d25; 
+  color: #fff ; color: bold; 
+  font-family: sans-serif; 
+  padding: 12px; 
+  margin: 15px; 
+  border-radius: 5px;
+  border-left: 4px solid #1037f6; 
+  padding: 10px 20px; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: all 0.3s; 
+  cursor: pointer;
+  text-decoration: none;
+
 }

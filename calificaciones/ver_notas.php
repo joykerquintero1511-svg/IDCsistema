@@ -176,10 +176,10 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
         .contenedor-principal {
             max-width: 1100px;
             margin: 0 auto;
-            background: #c0c0c1ac;
+            background: #000015ac;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 5px 20px rgba(232, 231, 231, 0.08);
         }
 
         .boton-volver {
@@ -216,14 +216,14 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
         }
 
         .cabecera h1 {
-            color: #0b2545;
+            color: #ffffff;
             /* Azul principal */
             margin: 0;
             font-size: 28px;
         }
 
         .panel-filtros {
-            background: #f8fafc;
+            background: #c3c3c3e2;
             padding: 20px;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
@@ -270,7 +270,7 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
         }
 
         .btn-buscar {
-            background: #0b2545;
+            background: #1037f6;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -410,7 +410,7 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
         ) {
         ?>
 
-            <a href="../admin/index.php">← Volver al Inicio</a>
+            <a  class='boton-volver'href="index.php">← Volver al Inicio</a>
 
         <?php
         } else {
@@ -429,12 +429,12 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
         </div>
 
         <!-- Mostrar el período académico activo definido por el administrador. -->
-        <p style="color: #0b2545; font-weight: bold;">
+        <p style="color: #f8f9f9; font-weight: bold;">
             Período activo:
             <?php echo htmlspecialchars($nombre_periodo_activo); ?>
         </p>
 
-        <form method="GET" class="panel-filtros">
+        <form  style='border-left: 4px solid #1037f6;'method="GET" class="panel-filtros">
 
             <?php if (
                 isset($_GET['origen']) &&

@@ -11,7 +11,7 @@ if (!isset($_SESSION['rol']) || ($_SESSION['rol'] !== 'admin' && $_SESSION['rol'
 // Lógica de retorno inteligente según el rol del usuario
 $url_volver = "index.php";
 if ($_SESSION['rol'] === 'admin') {
-    $url_volver = "admin/index.php";
+    $url_volver = "admin/estudiantes/listar.php";
 } elseif ($_SESSION['rol'] === 'profesor') {
     $url_volver = "profesores/index.php";
 }

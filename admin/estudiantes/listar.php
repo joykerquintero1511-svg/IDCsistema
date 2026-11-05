@@ -138,6 +138,24 @@
         <!-- Contenido Principal -->
         <main class="main-content">
 
+        <div style="margin-bottom: 2rem; background-color: transparent; padding: 15px; border-radius: 8px; text-align: left;">
+                <h1 style=" color: #fff bold; text-align: center; ">Gestión de Estudiantes</h1>
+            </div>
+
+            <div style="margin-bottom: 2rem; background-color: transparent; padding: 15px; border-radius: 8px; text-align: left;">
+                <a href="../reportes/reporte_estudiantes.php" class="buttom-estudiantes">
+                    Reporte de Estudiantes
+                </a>
+
+                <a href="../../validar.php" class="buttom-estudiantes">
+                    Validar Asistencia 
+                </a>
+
+                <a href="../promover_estudiantes.php" class="buttom-estudiantes">
+                    Promover Estudiantes
+                </a>
+            </div>
+
             <!-- Formulario de búsqueda y filtros -->
             <div class="reportes-card">
 

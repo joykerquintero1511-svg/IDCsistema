@@ -55,7 +55,7 @@ $resultado = mysqli_query($conexion,$sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Niveles - EFB</title>
-    <link rel="icon" type="image/png" href="../IDCsistema/images/EFB.png">
+    <link rel="icon" type="image/png" href="../images/EFB.png">
     <link rel="stylesheet" href="../css/mystyle.css">
     <link rel="stylesheet" href="/IDCsistema/css/movil.css">
     <style>
@@ -180,6 +180,23 @@ $resultado = mysqli_query($conexion,$sql);
             max-width: 450px;
             color: #fff;
         }
+
+        .buttom-estudiantes { 
+  background-color: #070d25; 
+  color: #fff ; color: bold; 
+  font-family: sans-serif; 
+  padding: 12px; 
+  margin: 15px; 
+  border-radius: 5px;
+  border-left: 4px solid #1037f6; 
+  padding: 10px 20px; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: all 0.3s; 
+  cursor: pointer;
+  text-decoration: none;
+
+}
     </style>
 </head>
 <body>
@@ -195,8 +212,13 @@ $resultado = mysqli_query($conexion,$sql);
                     <h1 style="margin: 0; font-size: 1.8rem; color: #fff;">Gestión de Niveles Académicos</h1>
                     <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.95rem;">Administra, edita o elimina los niveles del sistema</p>
                 </div>
-                <a href="crear_nivel.php" class="btn-crear-nivel">+ Nuevo Nivel</a>
-            </div>
+                
+            </div>  
+
+            <div style="margin: 15px; "> 
+                
+            <a href="asignar_nivel_profesor.php" class="buttom-estudiantes"> Asignar Nivel a Profesor</a>
+            <a href="crear_nivel.php" class="btn-crear-nivel">+ Nuevo Nivel</a></div>
 
             <!-- ALERTA DE MENSAJE -->
             <?php if(!empty($mensaje)): ?>

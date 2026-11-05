@@ -298,7 +298,7 @@ if ($res_niveles) {
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
-            <a href="index.php" style="background: #475569; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+            <a href="gestion_niveles.php" style="background: #475569; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
                 ← Volver al Panel de Administración
             </a>
         </div>

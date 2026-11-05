@@ -356,6 +356,13 @@ if (isset($_GET['id_nivel'])) {
                 ?>
 
             </div>
+
+            <div  style="margin-bottom: 2rem; background-color: #07101a; padding: 15px; border-radius: 8px; text-align: left;">
+                <a href="ver_notas.php?origen=admin" style="background-color: #090e25; color: #fff; padding: auto; border-left: 4px solid #1037f6; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: all 0.3s; cursor: pointer;
+                text-decoration: none;">Ver Calificaciones</a>
+
+            </div>
+
             <!-- TARJETA 1: FILTRO DE BÚSQUEDA (AHORA ALINEADA AL ANCHO TOTAL) -->
             <div class="info-card">
                 <h3>Buscar Grupo y Evaluación</h3>

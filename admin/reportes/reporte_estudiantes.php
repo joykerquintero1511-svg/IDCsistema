@@ -137,13 +137,27 @@
 
     <body>
 
-        <!-- Menú lateral unificado -->
-        <?php include '../sidebaradmin.php'; ?>
 
-        <main class="main-content">
+        <main class="main-content-reporte">
 
-            <div class="header">
-                <h1>Reporte de Estudiantes</h1>
+
+           <div style="margin-bottom: 2rem; background-color: transparent; padding: 15px; border-radius: 8px; text-align: left;">
+
+            <a href="../estudiantes/listar.php" style="display: inline-block;
+            background: #1d1d1d74;
+            color: #2563eb;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            transition: 0.3s;
+            margin-bottom: 20px;"> Volver</a>
+
+            <img src="../../images/EFB.png" alt="Logo Escuela de Formación Bíblica" style="
+            width: 100px; margin-bottom: 15px; align-items: center; display: block; margin-left: auto; margin-right: auto;">
+                <h1 style=" color: #fff bold; text-align: center; ">Reporte de Estudiantes</h1>
             </div>
 
             <div class="reportes-card">
