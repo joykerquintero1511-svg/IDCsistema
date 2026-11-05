@@ -1,6 +1,6 @@
 <?php
-include("conexion.php"); // Asegúrate de tener esto al inicio
-$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles"; // Ajusta 'nivel_academico' al nombre real de tu columna
+include("conexion.php");
+$query_niveles = "SELECT id_nivel, nivel_academico FROM niveles";
 $result_niveles = mysqli_query($conexion,$query_niveles);
 ?>
 
@@ -13,17 +13,15 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
     <link rel="icon" type="image/png" href="images/EFB.png">
 
     <style>
-        /* Mantenemos tus estilos base exactos */
         body { background-color: #0c0c0c; font-family: sans-serif; }
         .s-content { padding: 5rem 0; }
         .main-card { max-width: 500px; margin: 0 auto; background: #111111; padding: 4rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* Forzamos a que tanto inputs como el select y el botón respeten el ancho interno */
         .u-fullwidth { width: 100%; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-size: 1.1rem; outline: none; box-sizing: border-box; }
         
-        /* El botón con tu color azul original pero contenido */
         .btn-primary { background-color: #245285; border: none; cursor: pointer; font-weight: bold; height: 4.5rem; line-height: 4.5rem; padding: 0; }
         .btn-primary:hover { background-color: #1c426d; }
+        .btn-primary:disabled { background-color: #333; color: #666; cursor: not-allowed; opacity: 0.6; }
 
         .form-group { 
             margin-bottom: 20px; 
@@ -45,7 +43,6 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
             padding: 11px 14px; 
             color: #ffffff; 
             font-size: 0.95rem; 
-            transition: border-color 0.2s; 
             width: 100%; 
         }
         
@@ -58,12 +55,6 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
             cursor: pointer; 
             color-scheme: dark; 
         }
-        
-        textarea.form-control { 
-            resize: vertical; 
-            min-height: 110px; 
-        }
-
     </style>
 </head>
 <body>
@@ -77,31 +68,34 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
                 <p style="color: #666; margin-top: 0.5rem; font-size: 1.1rem;">Profesores, Administradores y Estudiantes</p>
             </div>
 
-            <form action="procesar_registro_usuarios.php" method="POST">
+            <form action="procesar_registro_usuarios.php" method="POST" id="form-registro">
                 
+                <!-- CÉDULA (Primer campo para buscar a la persona) -->
                 <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input class="u-fullwidth" type="text" name="nombre" required placeholder="Ej. Juan Pérez">
+                    <label>Cédula de Identidad</label>
+                    <input class="u-fullwidth" type="text" name="cedula" id="cedula" required placeholder="Ej. 30999887">
+                    <span id="msg-cedula" style="font-size: 0.85rem; display: block; margin-top: 4px;"></span>
                 </div>
 
+                <!-- NOMBRE COMPLETO (Autocompletado y bloqueado) -->
+                <div class="form-group">
+                    <label>Nombre Completo (Registrado en la escuela)</label>
+                    <input class="u-fullwidth" type="text" name="nombre" id="nombre" readonly required placeholder="Se completará automáticamente al ingresar la cédula" style="background: rgba(255,255,255,0.02); color: #888; cursor: not-allowed;">
+                    <input type="hidden" name="id_persona" id="id_persona">
+                </div>
+
+                <!-- CORREO ELECTRÓNICO (Autocompletado y verificado) -->
                 <div class="form-group">
                     <label>Correo Electrónico</label>
-                    <input class="u-fullwidth" type="email" name="email" id="email" required placeholder="correo@ejemplo.com">
-                    <span id="msg-email" class="mensaje-validacion" style="font-size: 0.85rem; display: block; margin-top: 4px;"></span>
+                    <input class="u-fullwidth" type="email" name="email" id="email" readonly required placeholder="correo@ejemplo.com" style="background: rgba(255,255,255,0.02); color: #888; cursor: not-allowed;">
+                    <span id="msg-email" style="font-size: 0.85rem; display: block; margin-top: 4px; color: #2ecc71;">✔ Verificado automáticamente por el sistema</span>
                 </div>
 
+                <!-- NIVEL ACADÉMICO (Autocompletado y bloqueado) -->
                 <div class="form-group">
-                    <label>Nivel Académico</label>
-                    <select class="form-control" name="id_nivel">
-                        <option value="">-- Seleccione el nivel --</option>
-                        <?php if ($result_niveles): ?>
-                            <?php while($nivel = mysqli_fetch_assoc($result_niveles)): ?>
-                                <option value="<?php echo $nivel['id_nivel']; ?>">
-                                    <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
-                                </option>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
-                    </select>
+                    <label>Nivel Académico (Asignado en su inscripción)</label>
+                    <input class="u-fullwidth" type="text" id="nivel_texto" readonly placeholder="Se cargará automáticamente al ingresar la cédula" style="background: rgba(255,255,255,0.02); color: #888; cursor: not-allowed;">
+                    <input type="hidden" name="id_nivel" id="id_nivel">
                 </div>
 
                 <div class="form-group">
@@ -129,10 +123,11 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
                     <input class="u-fullwidth" type="password" name="codigo_autorizacion" id="codigo_autorizacion" placeholder="Introduce la clave de la escuela">
                 </div>
 
-                <button type="submit" class="u-fullwidth btn-primary">Registrar Cuenta</button>
+                <!-- Botón desactivado por defecto hasta que coloquen una cédula válida -->
+                <button type="submit" id="btn-registrar" class="u-fullwidth btn-primary" disabled>Registrar Cuenta</button>
 
                 <div style="text-align: center; margin-top: 2.5rem;">
-                    <a href="index.php" style="color: rgba(255, 255, 255, 0.4); font-size: 1.3rem; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255, 255, 255, 0.4)'">
+                    <a href="index.php" style="color: rgba(255, 255, 255, 0.4); font-size: 1.3rem; text-decoration: none;">
                         Volver a la Página Principal
                     </a>
                 </div>
@@ -141,211 +136,190 @@ $result_niveles = mysqli_query($conexion,$query_niveles);
         </div>
     </main>
 
-    <script>
-        function evaluarRol() {
-            var rolSeleccionado = document.getElementById("selector-rol").value;
-            var bloqueCodigo = document.getElementById("bloque-codigo");
-            var inputCodigo = document.getElementById("codigo_autorizacion");
-
-            if (rolSeleccionado === "profesor" || rolSeleccionado === "admin") {
-                bloqueCodigo.style.display = "block";
-                inputCodigo.required = true;
-            } else {
-                bloqueCodigo.style.display = "none";
-                inputCodigo.required = false;
-                inputCodigo.value = "";
-            }
-        }
-    </script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let esCorreoValido = false;
-        let sonContrasenasValidas = false;
-
-        const inputEmail = document.getElementById('email');
-        const spanEmail = document.getElementById('msg-email');
+   <script>
+    function evaluarRol() {
+        var rolSeleccionado = document.getElementById("selector-rol").value;
+        var bloqueCodigo = document.getElementById("bloque-codigo");
+        var inputCodigo = document.getElementById("codigo_autorizacion");
         
-        const inputPass = document.getElementById('password');
-        const inputConfirmPass = document.getElementById('confirm_password');
-        const spanPass = document.getElementById('msg-password');
+        var inputNombre = document.getElementById('nombre');
+        var inputEmail = document.getElementById('email');
+        var inputNivelTexto = document.getElementById('nivel_texto');
+        var inputIdNivel = document.getElementById('id_nivel');
+        var inputCedula = document.getElementById('cedula');
+        var btnRegistrar = document.getElementById('btn-registrar');
+        var spanCedula = document.getElementById('msg-cedula');
 
-        const miFormulario = inputEmail ? inputEmail.closest('form') : document.querySelector('form');
+        if (rolSeleccionado === "profesor" || rolSeleccionado === "admin") {
+            // Mostrar clave especial
+            bloqueCodigo.style.display = "block";
+            inputCodigo.required = true;
 
-        // ESTILOS AUTOMÁTICOS DE LA ALERTA MODAL
-        if (!document.getElementById('estilos-alerta-autonomos')) {
-            const estiloModal = document.createElement('style');
-            estiloModal.id = 'estilos-alerta-autonomos';
-            estiloModal.innerHTML = `
-                .modal-alerta-bg {
-                    position: fixed !important; top: 0 !important; left: 0 !important;
-                    width: 100vw !important; height: 100vh !important;
-                    background: rgba(0, 0, 0, 0.8) !important;
-                    backdrop-filter: blur(4px) !important;
-                    display: flex !important; justify-content: center !important; align-items: center !important;
-                    z-index: 999999 !important;
-                }
-                .modal-alerta-box {
-                    background: #1e293b !important; border: 1px solid #334155 !important;
-                    border-radius: 12px !important; padding: 28px 24px !important;
-                    max-width: 380px !important; width: 90% !important; text-align: center !important;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important; color: #ffffff !important;
-                    font-family: system-ui, -apple-system, sans-serif !important;
-                }
-                .modal-alerta-box h3 { margin: 12px 0 8px 0 !important; color: #ffffff !important; font-size: 1.25rem !important; font-weight: bold !important; }
-                .modal-alerta-box p { color: #cbd5e1 !important; font-size: 0.95rem !important; margin-bottom: 22px !important; }
-                .modal-alerta-btn {
-                    background: linear-gradient(135deg, #0976fc 0%, #0042a5 100%) !important;
-                    color: #ffffff !important; border: none !important; padding: 10px 26px !important;
-                    border-radius: 20px !important; font-weight: bold !important; cursor: pointer !important;
-                }
-            `;
-            document.head.appendChild(estiloModal);
+            // Liberar campos para escritura manual
+            inputNombre.readOnly = false;
+            inputNombre.style.background = "#161b22";
+            inputNombre.style.color = "#ffffff";
+            inputNombre.style.cursor = "text";
+            inputNombre.placeholder = "Ingrese su nombre completo";
+            inputNombre.value = "";
+
+            inputEmail.readOnly = false;
+            inputEmail.style.background = "#161b22";
+            inputEmail.style.color = "#ffffff";
+            inputEmail.style.cursor = "text";
+            inputEmail.placeholder = "correo@ejemplo.com";
+            inputEmail.value = "";
+
+            // En el nivel colocamos Personal Docente / Administrativo
+            inputNivelTexto.value = "Personal Docente / Administrativo";
+            inputIdNivel.value = "0"; 
+
+            // Habilitar botón de registro directamente para personal
+            btnRegistrar.disabled = false;
+            spanCedula.textContent = "";
+            inputCedula.style.borderColor = "";
+
+        } else {
+            // Si es Estudiante, restaurar flujo automático por cédula
+            bloqueCodigo.style.display = "none";
+            inputCodigo.required = false;
+            inputCodigo.value = "";
+
+            // Volver a bloquear para autocompletado por cédula
+            inputNombre.readOnly = true;
+            inputNombre.style.background = "rgba(255,255,255,0.02)";
+            inputNombre.style.color = "#888";
+            inputNombre.style.cursor = "not-allowed";
+            inputNombre.value = "";
+            inputNombre.placeholder = "Se completará automáticamente al ingresar la cédula";
+
+            inputEmail.readOnly = true;
+            inputEmail.style.background = "rgba(255,255,255,0.02)";
+            inputEmail.style.color = "#888";
+            inputEmail.style.cursor = "not-allowed";
+            inputEmail.value = "";
+            inputEmail.placeholder = "correo@ejemplo.com";
+
+            inputNivelTexto.value = "";
+            inputIdNivel.value = "";
+
+            // Exigir validación por cédula de nuevo
+            btnRegistrar.disabled = true;
+        }
+    }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputCedula = document.getElementById('cedula');
+    const spanCedula = document.getElementById('msg-cedula');
+    const inputNombre = document.getElementById('nombre');
+    const inputIdPersona = document.getElementById('id_persona');
+    const inputEmail = document.getElementById('email');
+    const btnRegistrar = document.getElementById('btn-registrar');
+
+    const inputPass = document.getElementById('password');
+    const inputConfirmPass = document.getElementById('confirm_password');
+    const spanPass = document.getElementById('msg-password');
+    let sonContrasenasValidas = false;
+    let cedulaValida = false;
+
+    // BÚSQUEDA AUTOMÁTICA DE CÉDULA EXCLUSIVA PARA ESTUDIANTES
+    inputCedula.addEventListener('blur', async function() {
+        let rolActual = document.getElementById("selector-rol").value;
+        
+        // Si es profesor o admin, no se requiere la búsqueda automática por cédula
+        if (rolActual !== 'estudiante') return;
+
+        let cedulaVal = this.value.trim();
+
+        if (cedulaVal === '') {
+            spanCedula.textContent = '';
+            inputCedula.style.borderColor = '';
+            inputNombre.value = '';
+            inputEmail.value = '';
+            inputIdPersona.value = '';
+            document.getElementById('nivel_texto').value = '';
+            document.getElementById('id_nivel').value = '';
+            btnRegistrar.disabled = true;
+            cedulaValida = false;
+            return;
         }
 
-        // FUNCIÓN PARA MOSTRAR MODAL
-        function mostrarAlerta(mensaje, titulo = 'Atención', icono = '❌') {
-            let overlay = document.getElementById('modal-alerta-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'modal-alerta-overlay';
-                overlay.className = 'modal-alerta-bg';
-                document.body.appendChild(overlay);
-            }
+        let formData = new FormData();
+        formData.append('cedula', cedulaVal);
 
-            overlay.innerHTML = `
-                <div class="modal-alerta-box">
-                    <div style="font-size: 2.8rem; line-height: 1;">${icono}</div>
-                    <h3>${titulo}</h3>
-                    <p>${mensaje}</p>
-                    <button type="button" class="modal-alerta-btn" onclick="cerrarModalAlerta()">Entendido</button>
-                </div>
-            `;
-            overlay.style.display = 'flex';
-        }
+        try {
+            // Usamos tu archivo dedicado de búsqueda para no alterar validar_campo.php de inscripciones
+            let res = await fetch('buscar_persona_registro.php', { method: 'POST', body: formData });
+            let data = await res.json();
 
-        window.cerrarModalAlerta = function() {
-            const overlay = document.getElementById('modal-alerta-overlay');
-            if (overlay) overlay.style.display = 'none';
-        };
+            spanCedula.textContent = data.mensaje;
 
-        // VALIDACIÓN AJAX DE CORREO
-        async function validarCorreoAJAX() {
-            if (!inputEmail) return false;
-            let valor = inputEmail.value.trim();
-
-            if (valor === '') {
-                if (spanEmail) spanEmail.textContent = '';
-                inputEmail.style.borderColor = '';
-                esCorreoValido = false;
-                return false;
-            }
-
-            let formData = new FormData();
-            // Enviamos tanto 'correo' como 'email' por si acaso tu validar_campo.php escucha cualquiera de los dos
-            formData.append('email', valor);
-            formData.append('correo', valor);
-            formData.append('tipo', 'usuario');
-
-            try {
-                let res = await fetch('validar_campo.php', { method: 'POST', body: formData });
-                let data = await res.json();
-
-                if (spanEmail) spanEmail.textContent = data.mensaje;
-
-                if (data.status === 'error') {
-                    if (spanEmail) spanEmail.style.color = '#ff4d4d';
-                    inputEmail.style.borderColor = '#ff4d4d';
-                    esCorreoValido = false;
-                    return false;
-                } else {
-                    if (spanEmail) spanEmail.style.color = '#2ecc71';
-                    inputEmail.style.borderColor = '#2ecc71';
-                    esCorreoValido = true;
-                    return true;
-                }
-            } catch (err) {
-                console.error('Error en validación AJAX:', err);
-                esCorreoValido = false;
-                return false;
-            }
-        }
-
-        if (inputEmail) {
-            inputEmail.addEventListener('blur', validarCorreoAJAX);
-        }
-
-        // VALIDACIÓN DE CONTRASEÑAS
-        function validarContrasenas() {
-            if (!inputPass || !inputConfirmPass) return;
-
-            const pass = inputPass.value;
-            const confirmPass = inputConfirmPass.value;
-
-            if (confirmPass === '') {
-                if (spanPass) spanPass.textContent = '';
-                inputConfirmPass.style.borderColor = '';
-                sonContrasenasValidas = false;
-                return;
-            }
-
-            if (pass !== confirmPass) {
-                if (spanPass) {
-                    spanPass.textContent = '❌ Las contraseñas no coinciden.';
-                    spanPass.style.color = '#ff4d4d';
-                }
-                inputConfirmPass.style.borderColor = '#ff4d4d';
-                sonContrasenasValidas = false;
+            if (data.encontrado) {
+                spanCedula.style.color = '#2ecc71';
+                inputCedula.style.borderColor = '#2ecc71';
+                
+                // Rellenamos los datos automáticamente del estudiante
+                inputNombre.value = data.nombre_completo;
+                inputEmail.value = data.correo;
+                inputIdPersona.value = data.id_persona;
+                
+                // Rellenamos el nivel académico automatizado
+                document.getElementById('nivel_texto').value = data.nivel_academico;
+                document.getElementById('id_nivel').value = data.id_nivel;
+                
+                cedulaValida = true;
+                btnRegistrar.disabled = false;
             } else {
-                if (spanPass) {
-                    spanPass.textContent = '✓ Las contraseñas coinciden.';
-                    spanPass.style.color = '#2ecc71';
-                }
-                inputConfirmPass.style.borderColor = '#2ecc71';
-                sonContrasenasValidas = true;
+                spanCedula.style.color = '#ff4d4d';
+                inputCedula.style.borderColor = '#ff4d4d';
+                
+                inputNombre.value = '';
+                inputEmail.value = '';
+                inputIdPersona.value = '';
+                document.getElementById('nivel_texto').value = '';
+                document.getElementById('id_nivel').value = '';
+                
+                cedulaValida = false;
+                btnRegistrar.disabled = true;
             }
-        }
-
-        if (inputPass && inputConfirmPass) {
-            inputPass.addEventListener('input', validarContrasenas);
-            inputConfirmPass.addEventListener('input', validarContrasenas);
-        }
-
-        // SUBMIT CON EVALUACIÓN ASÍNCRONA
-        if (miFormulario) {
-            miFormulario.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                // 1. Re-validar correo antes de enviar
-                let correoOk = esCorreoValido ? true : await validarCorreoAJAX();
-
-                if (!correoOk) {
-                    mostrarAlerta(
-                        'El correo electrónico ingresado no es válido o ya se encuentra registrado.',
-                        'Correo No Disponible',
-                        '❌'
-                    );
-                    if (inputEmail) inputEmail.focus();
-                    return;
-                }
-
-                // 2. Re-validar contraseñas
-                validarContrasenas();
-                if (!sonContrasenasValidas) {
-                    mostrarAlerta(
-                        'Las contraseñas no coinciden. Por favor verifica antes de continuar.',
-                        'Error de Contraseña',
-                        '🔒'
-                    );
-                    if (inputConfirmPass) inputConfirmPass.focus();
-                    return;
-                }
-
-                // 3. Enviar formulario si todo está en orden
-                miFormulario.submit();
-            });
+        } catch (err) {
+            console.error('Error al buscar la cédula:', err);
         }
     });
-    </script>
+
+    // VALIDAR CONTRASEÑAS
+    function validarContrasenas() {
+        if (!inputPass || !inputConfirmPass) return;
+        const pass = inputPass.value;
+        const confirmPass = inputConfirmPass.value;
+
+        if (confirmPass === '') {
+            spanPass.textContent = '';
+            inputConfirmPass.style.borderColor = '';
+            sonContrasenasValidas = false;
+            return;
+        }
+
+        if (pass !== confirmPass) {
+            spanPass.textContent = '❌ Las contraseñas no coinciden.';
+            spanPass.style.color = '#ff4d4d';
+            inputConfirmPass.style.borderColor = '#ff4d4d';
+            sonContrasenasValidas = false;
+        } else {
+            spanPass.textContent = '✓ Las contraseñas coinciden.';
+            spanPass.style.color = '#2ecc71';
+            inputConfirmPass.style.borderColor = '#2ecc71';
+            sonContrasenasValidas = true;
+        }
+    }
+
+    if (inputPass && inputConfirmPass) {
+        inputPass.addEventListener('input', validarContrasenas);
+        inputConfirmPass.addEventListener('input', validarContrasenas);
+    }
+});
+</script>
 </body>
 </html>
