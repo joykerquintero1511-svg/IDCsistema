@@ -247,7 +247,7 @@
     <style>
    /* Reserva espacio para el contenido y el pie de página en todas las hojas. */
     @page {
-        margin: 35px 30px 65px 30px;
+         margin: 145px 30px 45px 30px;
     }
 
     body {
@@ -267,16 +267,20 @@
     }
 
     .logo {
-    width: 100px;
+    width: 55px;
     height: auto;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     }
 
-    .encabezado {
-        text-align: center;
-        border-bottom: 2px solid #006da8;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
+   .encabezado {
+    position: fixed;
+    top: -110px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    border-bottom: 2px solid #006da8;
+    padding-bottom: 4px;
+    margin-bottom: 0;
     }
 
     .iglesia {
@@ -290,7 +294,7 @@
 
     .encabezado h1 {
         margin: 0;
-        font-size: 22px;
+        font-size: 15px;
         text-transform: uppercase;
         color: #222;
         letter-spacing: 1px;
@@ -298,27 +302,31 @@
 
     .encabezado h2 {
         margin: 5px 0 0 0;
-        font-size: 16px;
+        font-size: 11px;
         font-weight: normal;
         color: #555;
     }
 
    .info-seccion {
-    border-left: 4px solid #006da8;
-    padding: 10px 14px;
-    margin-bottom: 18px;
-}
+    position: fixed;
+    top: -65px;
+    left: 0;
+    right: 0;
+    border-left: 3px solid #006da8;
+    padding: 3px 8px;
+    margin-bottom: 0;
+    }
 
-.info-seccion p {
-    margin: 3px 0;
-    font-size: 12px;
-    color: #333;
-}
+    .info-seccion p {
+        margin: 3px 0;
+        font-size: 9px;
+        color: #333;
+    }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
+        margin-top: 0px;
     }
 
     th, td {

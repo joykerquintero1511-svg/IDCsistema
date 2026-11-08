@@ -2,6 +2,18 @@
     require_once '../conexion.php';
     session_start();
 
+    // Consultar el responsable que firma los certificados.
+    $sql_firmante = "SELECT nombre_firmante, cargo_firmante
+                 FROM configuracion_certificados
+                 WHERE id_configuracion = 1";
+
+    $resultado_firmante = mysqli_query($conexion, $sql_firmante);
+    $firmante = mysqli_fetch_assoc($resultado_firmante);
+
+    if (!$firmante) {
+        die("No se encontró la configuración del firmante.");
+    }
+
     // Permitir el acceso unicamente al administrador
 
     if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
@@ -325,24 +337,32 @@
              align-items: flex-end;
              width: 78%;
              margin: 32px auto 0;
+             gap: 30px;
          }
 
          .fecha {
              margin: 0;
-             font-size: 18px;
+             font-size: 17px;
              color: #2c3e4e;
              text-align: left;
              position: relative;
-             top: 4px;
+             top: -12px;
+             padding-bottom: 4px;
          }
 
          .firma {
              margin: 0;
-             font-size: 18px;
+             width: 230px;
+             font-size: 17px;
              color: #2c3e4e;
              text-align: center;
              position: relative;
-             top: 7px;
+             top: 22px;
+         }
+
+         .firma p {
+             margin: 7px 0 2px 0;
+             line-height: 1.3;
          }
 
 
@@ -419,10 +439,18 @@
                  width: 297mm;
                  height: 210mm;
                  min-height: 0;
-                 padding: 15mm 25mm 25mm 25mm;
+                 padding: 12mm 25mm 15mm 25mm;
                  border: 10px solid #1c5889;
                  box-shadow: inset 0 0 0 4px white, inset 0 0 0 6px #1c5889;
                  page-break-inside: avoid;
+             }
+
+             .pie-certificado {
+                 margin-top: 15px;
+             }
+
+             .firma {
+                 top: 0;
              }
 
          }
@@ -487,7 +515,20 @@
                  <div class="firma">
                      <div class="espacio-firma"></div>
                      <div class="firma-linea"></div>
-                     <p>Coordinación Académica</p>
+
+                     <!-- Nombre configurable del responsable -->
+                     <?php if (trim($firmante['nombre_firmante']) != "") { ?>
+                         <p>
+                             <strong>
+                                 <?php echo htmlspecialchars(mb_convert_case($firmante['nombre_firmante'], MB_CASE_TITLE, 'UTF-8')); ?>
+                             </strong>
+                         </p>
+                     <?php } ?>
+
+                     <!-- Cargo configurable del responsable -->
+                     <p>
+                         <?php echo htmlspecialchars($firmante['cargo_firmante']); ?>
+                     </p>
                  </div>
              </div>
              <div class="btn-imprimir">

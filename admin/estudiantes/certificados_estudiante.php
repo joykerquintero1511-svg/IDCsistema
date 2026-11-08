@@ -1,25 +1,25 @@
 <?php
 
-    session_start();
+session_start();
 
-    require_once '../../conexion.php';
+require_once '../../conexion.php';
 
-    // Permitir el acceso únicamente al administrador
-    if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-        header("Location: ../../login.php");
-        exit();
-    }
+// Permitir el acceso únicamente al administrador
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+    header("Location: ../../login.php");
+    exit();
+}
 
-    // Verificar que llegue el ID del estudiante
-    if (!isset($_GET['id_estudiante'])) {
-        die("No se especificó el estudiante.");
-    }
+// Verificar que llegue el ID del estudiante
+if (!isset($_GET['id_estudiante'])) {
+    die("No se especificó el estudiante.");
+}
 
-    // Convertir el ID recibido en un número entero
-    $id_estudiante = intval($_GET['id_estudiante']);
-    // Buscar los datos del estudiante seleccionado
+// Convertir el ID recibido en un número entero
+$id_estudiante = intval($_GET['id_estudiante']);
+// Buscar los datos del estudiante seleccionado
 
-    $sql_estudiante = "
+$sql_estudiante = "
         SELECT personas.nombre, personas.apellido
         FROM estudiantes
         INNER JOIN personas
@@ -27,19 +27,19 @@
         WHERE estudiantes.id_estudiante = '$id_estudiante'
     ";
 
-    $resultado_estudiante = mysqli_query($conexion, $sql_estudiante);
+$resultado_estudiante = mysqli_query($conexion, $sql_estudiante);
 
 $estudiante = mysqli_fetch_assoc($resultado_estudiante);
 
-    // Verificar que el estudiante exista
+// Verificar que el estudiante exista
 
-        if (!$estudiante) {
-            die("Estudiante no encontrado.");
-    }
+if (!$estudiante) {
+    die("Estudiante no encontrado.");
+}
 
-    // Buscar el historial de niveles del estudiante
+// Buscar el historial de niveles del estudiante
 
-    $sql_historial = "
+$sql_historial = "
         SELECT inscripciones.id_inscripcion,
         niveles.nivel_academico
         FROM inscripciones
@@ -49,13 +49,14 @@ $estudiante = mysqli_fetch_assoc($resultado_estudiante);
         ORDER BY inscripciones.fecha_inscripcion ASC
     ";
 
-    $resultado_historial = mysqli_query($conexion, $sql_historial);
+$resultado_historial = mysqli_query($conexion, $sql_historial);
 
 
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,14 +65,16 @@ $estudiante = mysqli_fetch_assoc($resultado_estudiante);
     <link rel="stylesheet" href="/IDCsistema/css/mystyle.css">
     <link rel="stylesheet" href="/IDCsistema/css/movil.css">
 </head>
+
 <body>
 
     <!-- Menú lateral unificado de administrador -->
-    <?php include '../sidebaradmin.php'; // Ajusta la ruta relativa según la ubicación exacta del archivo ?>
+    <?php include '../sidebaradmin.php'; // Ajusta la ruta relativa según la ubicación exacta del archivo 
+    ?>
 
     <!-- Contenedor Principal con el margen correcto -->
     <main class="main-content">
-        
+
         <div class="certificados-header">
             <h1>Certificados de <?php echo htmlspecialchars(ucwords(strtolower($estudiante['nombre'] . ' ' . $estudiante['apellido']))); ?> 🎓</h1>
             <p>Visualiza el historial académico y accede a los certificados de los niveles cursados.</p>
@@ -99,10 +102,21 @@ $estudiante = mysqli_fetch_assoc($resultado_estudiante);
         </div>
 
         <div class="certificados-actions">
-            <a href="listar.php" class="btn-volver">← Volver a la lista de estudiantes</a>
+
+            <!-- Permite al administrador configurar el firmante -->
+            <a href="configurar_firmante.php?id_estudiante=<?php echo $id_estudiante; ?>"
+                class="btn-ver-certificado"
+                style="margin-right: 15px;">
+                Configurar firmante
+            </a>
+            <a href="listar.php" class="btn-volver">
+                ← Volver a la lista de estudiantes
+            </a>
+
         </div>
 
     </main>
 
 </body>
+
 </html>
