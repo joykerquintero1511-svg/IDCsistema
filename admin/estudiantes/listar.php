@@ -243,7 +243,7 @@
                             <th>Email</th>
                             <th>Teléfono</th>
                             <th>Nivel Académico</th>
-                            <th>Período Académico</th>
+                            <th>Período.A</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
