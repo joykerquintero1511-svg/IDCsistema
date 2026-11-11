@@ -290,6 +290,11 @@ if (isset($_GET['id_nivel'])) {
             // Comprobar si se recibió un error al guardar las notas.
             if (isset($_GET['error'])) {
 
+                // Avisar cuando se intente crear una segunda evaluación.
+                if ($_GET['error'] == 'evaluacion_unica') {
+                    $mensaje_error = "Este nivel ya tiene una evaluación registrada en el período académico activo. Debes utilizar la evaluación existente.";
+                }
+
                 // Avisar cuando no se recibieron estudiantes.
                 if ($_GET['error'] == 'sin_estudiantes') {
                     $mensaje_error = "No hay estudiantes disponibles para guardar calificaciones.";
@@ -357,7 +362,7 @@ if (isset($_GET['id_nivel'])) {
 
             </div>
 
-            <div  style="margin-bottom: 2rem; background-color: #07101a; padding: 15px; border-radius: 8px; text-align: left;">
+            <div style="margin-bottom: 2rem; background-color: #07101a; padding: 15px; border-radius: 8px; text-align: left;">
                 <a href="ver_notas.php?origen=admin" style="background-color: #090e25; color: #fff; padding: auto; border-left: 4px solid #1037f6; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: all 0.3s; cursor: pointer;
                 text-decoration: none;">Ver Calificaciones</a>
 
@@ -392,7 +397,7 @@ if (isset($_GET['id_nivel'])) {
                         }
                         ?>
 
-                        <!-- Permitir escribir una evaluación o seleccionar una existente. -->
+                        <!-- Permitir seleccionar una evaluación guardada. -->
                         <input
                             type="text"
                             name="evaluacion"

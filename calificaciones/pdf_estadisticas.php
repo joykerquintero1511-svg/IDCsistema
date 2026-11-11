@@ -1,0 +1,533 @@
+    <?php
+
+    require '../vendor/autoload.php';
+    require_once '../conexion.php';
+
+    session_start();
+
+    if (
+        !isset($_SESSION['rol']) ||
+        ($_SESSION['rol'] != 'profesor' && $_SESSION['rol'] != 'admin')
+    ) {
+        header("Location: ../login.php");
+        exit();
+    }
+
+    use Dompdf\Dompdf;
+
+    // Buscar el período académico activo para generar el reporte de calificaciones.
+    $sql_periodo = "
+            SELECT id_periodo, nombre_periodo
+            FROM periodos_academicos
+            WHERE estado = 1
+            LIMIT 1
+        ";
+
+    $resultado_periodo = mysqli_query($conexion, $sql_periodo);
+
+    if (!$resultado_periodo) {
+        die("Error al consultar el período académico.");
+    }
+
+    if (mysqli_num_rows($resultado_periodo) == 0) {
+        die("No hay un período académico activo.");
+    }
+
+    $fila_periodo = mysqli_fetch_assoc($resultado_periodo);
+
+    $id_periodo_activo = $fila_periodo['id_periodo'];
+    $nombre_periodo_activo = $fila_periodo['nombre_periodo'];
+
+    // Por defecto, el PDF utilizará el período académico activo.
+    $id_periodo_consulta = $id_periodo_activo;
+    $nombre_periodo_consulta = $nombre_periodo_activo;
+
+    // Permitir al administrador seleccionar otro período académico.
+    if (
+        $_SESSION['rol'] === 'admin' &&
+        isset($_GET['id_periodo']) &&
+        $_GET['id_periodo'] != ""
+    ) {
+
+        // Convertir el período solicitado en un número entero.
+        $id_periodo_solicitado = intval($_GET['id_periodo']);
+
+        // Buscar el período solicitado en la base de datos.
+        $sql_periodo_seleccionado = "
+        SELECT id_periodo, nombre_periodo
+        FROM periodos_academicos
+        WHERE id_periodo = '$id_periodo_solicitado'
+        LIMIT 1
+    ";
+
+        // Ejecutar la consulta.
+        $resultado_periodo_seleccionado = mysqli_query($conexion, $sql_periodo_seleccionado);
+
+        // Comprobar que el período exista.
+        if (
+            !$resultado_periodo_seleccionado ||
+            mysqli_num_rows($resultado_periodo_seleccionado) == 0
+        ) {
+            die("El período académico seleccionado no existe.");
+        }
+
+        // Obtener los datos del período seleccionado.
+        $fila_periodo_seleccionado = mysqli_fetch_assoc($resultado_periodo_seleccionado);
+
+        $id_periodo_consulta = $fila_periodo_seleccionado['id_periodo'];
+        $nombre_periodo_consulta = $fila_periodo_seleccionado['nombre_periodo'];
+    }
+
+    $id_nivel = intval($_GET['id_nivel']);
+
+    // Obtener el nombre de la evaluación seleccionada.
+    $evaluacion = trim($_GET['evaluacion']);
+
+    // Eliminar espacios y puntos sobrantes al final.
+    $evaluacion = rtrim($evaluacion, " .");
+
+    // Proteger el nombre antes de utilizarlo en SQL.
+    $evaluacion_sql = mysqli_real_escape_string($conexion, $evaluacion);
+
+    if ($id_nivel <= 0 || $evaluacion == '') {
+        die("Datos incompletos para generar el PDF.");
+    }
+
+    // Verificar que el profesor tenga asignado el nivel
+    // del cual desea generar el reporte PDF.
+    if ($_SESSION['rol'] === 'profesor') {
+
+        $id_usuario = intval($_SESSION['id_usuario']);
+
+        // Comprobar que el profesor tenga asignado el nivel,específicamente durante el período académico activo.
+
+        $sql_permiso = "
+            SELECT profesor_nivel.id_nivel
+            FROM profesor_nivel
+            INNER JOIN profesores
+                ON profesor_nivel.id_profesor = profesores.id_profesor
+            WHERE profesores.id_usuario = '$id_usuario'
+            AND profesor_nivel.id_nivel = '$id_nivel'
+            AND profesor_nivel.id_periodo = '$id_periodo_activo'
+            LIMIT 1
+        ";
+
+        $resultado_permiso = mysqli_query($conexion, $sql_permiso);
+
+        if (!$resultado_permiso || mysqli_num_rows($resultado_permiso) == 0) {
+            die("No tienes permiso para exportar las calificaciones de este nivel.");
+        }
+    }
+
+
+    $sql = "
+    SELECT
+    personas.nombre,
+    personas.apellido,
+    personas.cedula,
+    calificaciones.descripcion_nota_1,
+    calificaciones.descripcion_nota_2,
+    calificaciones.nota_1,
+    calificaciones.nota_2,
+    calificaciones.nota_final,
+    calificaciones.observacion
+
+    
+    FROM inscripciones
+
+    INNER JOIN estudiantes
+    ON inscripciones.id_estudiante = estudiantes.id_estudiante
+
+    INNER JOIN personas
+    ON estudiantes.id_persona = personas.id_persona
+
+
+    LEFT JOIN calificaciones
+        ON calificaciones.id_estudiante = estudiantes.id_estudiante
+        AND calificaciones.id_nivel = inscripciones.id_nivel
+        AND calificaciones.id_periodo = '$id_periodo_consulta'
+        AND TRIM(TRAILING '.' FROM TRIM(calificaciones.evaluacion)) = '$evaluacion_sql'
+
+        WHERE inscripciones.id_nivel = '$id_nivel'
+        AND inscripciones.id_periodo = '$id_periodo_consulta'
+
+        AND inscripciones.id_inscripcion = (
+        SELECT MAX(inscripciones_duplicadas.id_inscripcion)
+        FROM inscripciones AS inscripciones_duplicadas
+        WHERE inscripciones_duplicadas.id_estudiante = inscripciones.id_estudiante
+        AND inscripciones_duplicadas.id_nivel = inscripciones.id_nivel
+        AND inscripciones_duplicadas.id_periodo = inscripciones.id_periodo
+    )
+        ORDER BY personas.apellido ASC
+    ";
+
+    $resultado = mysqli_query($conexion, $sql);
+
+    if (!$resultado || mysqli_num_rows($resultado) == 0) {
+        die("No se encontraron calificaciones.");
+    }
+
+    $sql_nivel = "SELECT nivel_academico FROM niveles WHERE id_nivel = '$id_nivel'";
+    $resultado_nivel = mysqli_query($conexion, $sql_nivel);
+    $fila_nivel = mysqli_fetch_assoc($resultado_nivel);
+    $nombre_nivel = $fila_nivel['nivel_academico'];
+
+    // Ruta del logo principal de la EFB
+    $ruta_logo = realpath('../certificados/images/marca_agua_logo.png');
+
+    // Convertir el logo a Base64 para mostrarlo correctamente en el PDF
+    $logo_base64 = '';
+
+    if ($ruta_logo !== false) {
+        $tipo_logo = pathinfo($ruta_logo, PATHINFO_EXTENSION);
+        $datos_logo = file_get_contents($ruta_logo);
+        $logo_base64 = 'data:image/' . $tipo_logo . ';base64,' . base64_encode($datos_logo);
+    }
+
+    // Preparar el logo EFB para usarlo como marca de agua
+    $ruta_marca_agua = realpath('../certificados/images/marca_logo3.png');
+
+    $marca_agua_base64 = '';
+
+    if ($ruta_marca_agua !== false) {
+        $tipo_marca_agua = pathinfo($ruta_marca_agua, PATHINFO_EXTENSION);
+        $datos_marca_agua = file_get_contents($ruta_marca_agua);
+        $marca_agua_base64 = 'data:image/' . $tipo_marca_agua . ';base64,' . base64_encode($datos_marca_agua);
+    }
+
+    // Preparar los nombres de las actividades
+
+    $nombre_actividad_1 = "Nota 1";
+    $nombre_actividad_2 = "Nota 2";
+
+    $mostrar_actividad_1 = false;
+    $mostrar_actividad_2 = false;
+
+    while ($fila_encabezado = mysqli_fetch_assoc($resultado)) {
+
+        // Obtener el nombre de la Actividad 1, si fue escrito
+        if (
+            $fila_encabezado['descripcion_nota_1'] !== null &&
+            $fila_encabezado['descripcion_nota_1'] !== ""
+        ) {
+            $nombre_actividad_1 = ucwords(
+                strtolower($fila_encabezado['descripcion_nota_1'])
+            );
+        }
+
+        // Mostrar la columna Nota 1 solamente si algún estudiante tiene Nota 1
+        if (
+            $fila_encabezado['nota_1'] !== null &&
+            $fila_encabezado['nota_1'] !== ""
+        ) {
+            $mostrar_actividad_1 = true;
+        }
+
+        // Obtener el nombre de la Actividad 2, si fue escrito
+        if (
+            $fila_encabezado['descripcion_nota_2'] !== null &&
+            $fila_encabezado['descripcion_nota_2'] !== ""
+        ) {
+            $nombre_actividad_2 = ucwords(
+                strtolower($fila_encabezado['descripcion_nota_2'])
+            );
+        }
+
+        // Mostrar la columna Nota 2 solamente si algún estudiante tiene Nota 2
+        if (
+            $fila_encabezado['nota_2'] !== null &&
+            $fila_encabezado['nota_2'] !== ""
+        ) {
+            $mostrar_actividad_2 = true;
+        }
+    }
+
+    // Regresar el resultado al primer estudiante
+    mysqli_data_seek($resultado, 0);
+
+    $html = '
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+    <link rel="icon" href="../images/EFB.png" type="image/png">
+    <meta charset="UTF-8">
+
+    <style>
+   /* Reserva espacio para el contenido y el pie de página en todas las hojas. */
+    @page {
+         margin: 145px 30px 45px 30px;
+    }
+
+    body {
+        font-family: "Helvetica", "Arial", sans-serif;
+        font-size: 12px;
+        color: #333;
+    }
+
+    /* Repite los títulos de las columnas al continuar la tabla en otra página. */
+    thead {
+        display: table-header-group;
+    }
+
+    /* Evita que una fila de estudiantes se divida entre dos páginas. */
+    tr {
+        page-break-inside: avoid;
+    }
+
+    .logo {
+    width: 55px;
+    height: auto;
+    margin-bottom: 2px;
+    }
+
+   .encabezado {
+    position: fixed;
+    top: -110px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    border-bottom: 2px solid #006da8;
+    padding-bottom: 4px;
+    margin-bottom: 0;
+    }
+
+    .iglesia {
+    font-family: "Times New Roman", serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #005f91;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+}
+
+    .encabezado h1 {
+        margin: 0;
+        font-size: 15px;
+        text-transform: uppercase;
+        color: #222;
+        letter-spacing: 1px;
+    }
+
+    .encabezado h2 {
+        margin: 5px 0 0 0;
+        font-size: 11px;
+        font-weight: normal;
+        color: #555;
+    }
+
+   .info-seccion {
+    position: fixed;
+    top: -65px;
+    left: 0;
+    right: 0;
+    border-left: 3px solid #006da8;
+    padding: 3px 8px;
+    margin-bottom: 0;
+    }
+
+    .info-seccion p {
+        margin: 3px 0;
+        font-size: 9px;
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0px;
+    }
+
+    th, td {
+    border: 1px solid #b8c4cc;
+    padding: 9px 8px;
+    text-align: center;
+    }
+
+    th {
+    background-color: #eeeeee;
+    color: #222;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+
+    
+.pie-pagina {
+    position: fixed;
+    bottom: -40px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    border-top: 1px solid #006da8;
+    padding-top: 7px;
+    font-size: 10px;
+    color: #777;
+}
+
+    .marca-agua {
+    position: fixed;
+    top: 210px;
+    left: 50%;
+    margin-left: -250px;
+    width: 500px;
+    text-align: center;
+    opacity: 0.085;
+    z-index: -1;
+}
+
+    .marca-agua img {
+        width: 500px;
+        height: auto;
+    }
+
+    </style>
+    </head>
+
+    <body>
+  
+    <div class="encabezado">
+        <img src="' . $logo_base64 . '" class="logo">
+
+    <div class="iglesia">IGLESIA DIOS EN CASA</div>
+
+        <h1>Escuela de Formación Bíblica</h1>
+        <h2>Reporte Estadístico de Calificaciones</h2>
+    </div>
+
+    <div class="info-seccion">
+    
+    <p><strong>Período Académico:</strong> ' . htmlspecialchars($nombre_periodo_consulta) . '</p>
+    <p><strong>Nivel Académico:</strong> ' . htmlspecialchars($nombre_nivel) . '</p>
+    <p><strong>Evaluación:</strong> ' . htmlspecialchars(ucwords(strtolower($evaluacion))) . '</p>
+    <p><strong>Fecha del reporte:</strong> ' . date('d/m/Y') . '</p>
+    
+    </div>
+
+    <table>
+
+    <!-- Encabezado que se repetirá en cada página del PDF. -->
+    <thead>
+        <tr>
+            <th>Indicador</th>
+            <th>Resultado</th>
+         </tr>
+     </thead>
+
+    <!-- Aquí comienzan las filas del reporte estadístico. -->
+    <tbody>
+';
+
+    // Inicializar los contadores del reporte.
+    $total_estudiantes = 0;
+    $aprobados = 0;
+    $reprobados = 0;
+    $pendientes = 0;
+    $suma_notas = 0;
+
+    // Recorrer las calificaciones del grupo.
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+
+        $total_estudiantes++;
+
+        // Comprobar si el estudiante tiene nota final.
+        if ($fila['nota_final'] === null || $fila['nota_final'] === "") {
+
+            $pendientes++;
+        } elseif ($fila['nota_final'] >= 14) {
+
+            $aprobados++;
+            $suma_notas += floatval($fila['nota_final']);
+        } else {
+
+            $reprobados++;
+            $suma_notas += floatval($fila['nota_final']);
+        }
+    }
+
+    // Calcular el porcentaje de aprobación.
+    $porcentaje_aprobacion = 0;
+
+    if ($total_estudiantes > 0) {
+        $porcentaje_aprobacion = ($aprobados / $total_estudiantes) * 100;
+    }
+
+    // Calcular el promedio de las notas registradas.
+    $promedio_general = 0;
+    $total_calificados = $aprobados + $reprobados;
+
+    if ($total_calificados > 0) {
+        $promedio_general = $suma_notas / $total_calificados;
+    }
+
+    // Construir la tabla estadística.
+    $html .= '
+    <tr>
+        <td>Total de estudiantes</td>
+        <td>' . $total_estudiantes . '</td>
+    </tr>
+    <tr>
+        <td>Aprobados</td>
+        <td>' . $aprobados . '</td>
+    </tr>
+    <tr>
+        <td>Reprobados</td>
+        <td>' . $reprobados . '</td>
+    </tr>
+    <tr>
+        <td>Pendientes</td>
+        <td>' . $pendientes . '</td>
+    </tr>
+    <tr>
+        <td>Porcentaje de aprobación</td>
+        <td>' . number_format($porcentaje_aprobacion, 2) . '%</td>
+    </tr>
+    <tr>
+        <td>Promedio general</td>
+        <td>' . number_format($promedio_general, 2) . '</td>
+    </tr>
+';
+
+    $html .= '
+    </tbody>
+    </table>
+    <div class="pie-pagina">
+        Escuela de Formación Bíblica &nbsp; | &nbsp; Iglesia Dios en Casa
+    </div>
+
+    </body>
+    </html>
+    ';
+
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml($html);
+
+    // Página 2 en adelante: la marca de agua aparece más arriba, buscando centrarla detrás de los estudiantes.
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
+
+    $canvas = $dompdf->getCanvas();
+
+    if ($ruta_marca_agua !== false) {
+
+        $medidas = getimagesize($ruta_marca_agua);
+
+        $ancho = 375;
+        $alto = $ancho * $medidas[1] / $medidas[0];
+
+        $canvas->page_script(function ($pagina, $total, $canvas, $fontMetrics) use ($ruta_marca_agua, $ancho, $alto) {
+
+            $x = ($canvas->get_width() - $ancho) / 2;
+
+            if ($pagina == 1) {
+                $y = 180;
+            } else {
+                $y = 65;
+            }
+
+            $canvas->set_opacity(0.085);
+            $canvas->image($ruta_marca_agua, $x, $y, $ancho, $alto);
+            $canvas->set_opacity(1);
+        });
+    }
+
+    $dompdf->stream("reporte_estadistico_calificaciones.pdf", array("Attachment" => false));

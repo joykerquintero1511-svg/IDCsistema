@@ -138,7 +138,7 @@
         <!-- Contenido Principal -->
         <main class="main-content">
 
-        <div style="margin-bottom: 2rem; background-color: transparent; padding: 15px; border-radius: 8px; text-align: left;">
+            <div style="margin-bottom: 2rem; background-color: transparent; padding: 15px; border-radius: 8px; text-align: left;">
                 <h1 style=" color: #fff bold; text-align: center; ">Gestión de Estudiantes</h1>
             </div>
 
@@ -148,7 +148,7 @@
                 </a>
 
                 <a href="../../validar.php" class="buttom-estudiantes">
-                    Validar Asistencia 
+                    Validar Asistencia
                 </a>
 
                 <a href="../promover_estudiantes.php" class="buttom-estudiantes">
@@ -280,7 +280,7 @@
                                             Certificados
                                         </a>
 
-                                        <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-delete" onclick="return confirm('¿Está seguro de eliminar este estudiante?');">
+                                        <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-delete">
                                             Eliminar
                                         </a>
                                     </td>

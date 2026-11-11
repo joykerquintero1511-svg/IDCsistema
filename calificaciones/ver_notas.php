@@ -410,7 +410,7 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
         ) {
         ?>
 
-            <a  class='boton-volver'href="index.php">← Volver al Inicio</a>
+            <a class='boton-volver' href="index.php">← Volver al Inicio</a>
 
         <?php
         } else {
@@ -434,7 +434,7 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
             <?php echo htmlspecialchars($nombre_periodo_activo); ?>
         </p>
 
-        <form  style='border-left: 4px solid #1037f6;'method="GET" class="panel-filtros">
+        <form style='border-left: 4px solid #1037f6;' method="GET" class="panel-filtros">
 
             <?php if (
                 isset($_GET['origen']) &&
@@ -538,16 +538,32 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                             // Obtener el nivel seleccionado para buscar sus evaluaciones.
                             $id_nivel_seleccionado = intval($_GET['id_nivel']);
 
-                            // Buscar las evaluaciones del nivel seleccionado y del período activo.
-                            // Buscar las evaluaciones del nivel y período seleccionado.
+
+                            // Definir el período que se utilizará para buscar las evaluaciones.
+                            $id_periodo_evaluaciones = $id_periodo_activo;
+
+                            // Permitir al administrador consultar el período que haya seleccionado.
+                            if ($_SESSION['rol'] === 'admin') {
+                                $id_periodo_evaluaciones = $id_periodo_consulta;
+                            }
+
+                            // Buscar las evaluaciones del nivel y período correspondiente.
                             $sql_evaluaciones = "
-                                SELECT DISTINCT evaluacion
-                                FROM calificaciones
-                                WHERE id_nivel = '$id_nivel_seleccionado'
-                                AND id_periodo = '$id_periodo_consulta'
-                                AND evaluacion != ''
-                                ORDER BY evaluacion ASC
-                            ";
+                            SELECT
+                            evaluacion,
+                            MAX(id_calificacion) AS ultimo_registro
+                            FROM calificaciones
+                            WHERE id_nivel = '$id_nivel_seleccionado'
+                            AND id_periodo = '$id_periodo_evaluaciones'
+                            AND TRIM(evaluacion) != ''
+                            GROUP BY evaluacion
+                            ORDER BY ultimo_registro DESC
+                        ";
+
+                            // Limitar al profesor a una sola evaluación.
+                            if ($_SESSION['rol'] === 'profesor') {
+                                $sql_evaluaciones .= " LIMIT 1";
+                            }
 
                             $resultado_evaluaciones = mysqli_query($conexion, $sql_evaluaciones);
 
@@ -659,19 +675,53 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                 <?php } ?>
 
                 <?php
-                $fila_encabezado = mysqli_fetch_assoc($resultado_calificaciones);
+                // Consultar los nombres de las actividades de la evaluación seleccionada.
+                $sql_nombres_actividades = "
+    SELECT descripcion_nota_1, descripcion_nota_2
+    FROM calificaciones
+    WHERE id_nivel = '$id_nivel'
+    AND id_periodo = '$id_periodo_consulta'
+    AND TRIM(TRAILING '.' FROM TRIM(evaluacion)) = '$evaluacion_sql'
+    AND (
+        TRIM(COALESCE(descripcion_nota_1, '')) != ''
+        OR TRIM(COALESCE(descripcion_nota_2, '')) != ''
+    )
+    ORDER BY id_calificacion DESC
+    LIMIT 1
+";
 
+                // Ejecutar la consulta.
+                $resultado_nombres_actividades = mysqli_query(
+                    $conexion,
+                    $sql_nombres_actividades
+                );
+
+                // Colocar nombres predeterminados.
                 $nombre_actividad_1 = "Nota 1";
                 $nombre_actividad_2 = "Nota 2";
 
-                if ($fila_encabezado['descripcion_nota_1'] != "") {
-                    $nombre_actividad_1 = ucwords(strtolower($fila_encabezado['descripcion_nota_1']));
-                }
-                if ($fila_encabezado['descripcion_nota_2'] != "") {
-                    $nombre_actividad_2 = ucwords(strtolower($fila_encabezado['descripcion_nota_2']));
-                }
+                // Obtener los nombres guardados, si existen.
+                if (
+                    $resultado_nombres_actividades &&
+                    mysqli_num_rows($resultado_nombres_actividades) > 0
+                ) {
 
-                mysqli_data_seek($resultado_calificaciones, 0);
+                    $fila_nombres_actividades = mysqli_fetch_assoc(
+                        $resultado_nombres_actividades
+                    );
+
+                    if ($fila_nombres_actividades['descripcion_nota_1'] != "") {
+                        $nombre_actividad_1 = ucwords(
+                            strtolower($fila_nombres_actividades['descripcion_nota_1'])
+                        );
+                    }
+
+                    if ($fila_nombres_actividades['descripcion_nota_2'] != "") {
+                        $nombre_actividad_2 = ucwords(
+                            strtolower($fila_nombres_actividades['descripcion_nota_2'])
+                        );
+                    }
+                }
                 ?>
 
                 <div class="tabla-responsive">
@@ -682,6 +732,7 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                             <th><?php echo htmlspecialchars($nombre_actividad_1); ?></th>
                             <th><?php echo htmlspecialchars($nombre_actividad_2); ?></th>
                             <th>Nota Final</th>
+                            <th>Estado</th>
                             <th>Observación</th>
                             <th>Acción</th>
                         </tr>
@@ -721,6 +772,19 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                                     ?>
                                 </td>
 
+                                <!-- Mostrar el estado académico según la nota final. -->
+                                <td>
+                                    <?php
+                                    if ($fila_calificacion['nota_final'] === null || $fila_calificacion['nota_final'] === '') {
+                                        echo "<span style='color: #94a3b8;'>Pendiente</span>";
+                                    } elseif ($fila_calificacion['nota_final'] >= 14) {
+                                        echo "<strong style='color: green;'>Aprobado</strong>";
+                                    } else {
+                                        echo "<strong style='color: red;'>Reprobado</strong>";
+                                    }
+                                    ?>
+                                </td>
+
                                 <td>
                                     <?php
                                     if ($fila_calificacion['observacion'] === null || $fila_calificacion['observacion'] === "") {
@@ -755,8 +819,10 @@ if (isset($_GET['id_nivel']) && $_GET['id_nivel'] != "") {
                 <div class="panel-exportar">
 
                     <!-- Exportar las calificaciones del período seleccionado a PDF. -->
-                    <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>&id_periodo=<?php echo $id_periodo_consulta; ?>" target="_blank" class="btn-exportar btn-pdf">📄 Exportar PDF</a>
+                    <a href="pdf_notas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>&id_periodo=<?php echo $id_periodo_consulta; ?>" target="_blank" class="btn-exportar btn-pdf"> Exportar PDF</a>
 
+                    <!-- Exportar el reporte estadístico del período seleccionado. -->
+                    <a href="pdf_estadisticas.php?id_nivel=<?php echo $id_nivel; ?>&evaluacion=<?php echo urlencode($evaluacion); ?>&id_periodo=<?php echo $id_periodo_consulta; ?>" target="_blank" class="btn-exportar btn-pdf"> Reporte Estadístico</a>
                 </div>
 
             <?php } else { ?>

@@ -90,18 +90,57 @@
         exit();
     }
 
-    // Evitar guardar calificaciones sin un nombre de registro
+    // Evitar guardar calificaciones sin un nombre de registro.
     if ($evaluacion === "") {
         die("Debe indicar el nombre del registro de calificación.");
+    }
+
+
+    // Comprobar si la evaluación seleccionada ya existe.
+    $sql_evaluacion_existente = "
+    SELECT id_calificacion
+    FROM calificaciones
+    WHERE id_nivel = '$id_nivel'
+    AND id_periodo = '$id_periodo_activo'
+    AND TRIM(TRAILING '.' FROM TRIM(evaluacion)) = '$evaluacion_sql'
+    LIMIT 1
+";
+
+    // Ejecutar la consulta.
+    $resultado_evaluacion_existente = mysqli_query($conexion, $sql_evaluacion_existente);
+
+    // Comprobar que la consulta se ejecutó correctamente.
+    if (!$resultado_evaluacion_existente) {
+        die("Error al verificar la evaluación existente.");
+    }
+
+    // Si la evaluación no existe, comprobar si ya hay otra.
+    if (mysqli_num_rows($resultado_evaluacion_existente) == 0) {
+
+        $sql_otra_evaluacion = "
+        SELECT id_calificacion
+        FROM calificaciones
+        WHERE id_nivel = '$id_nivel'
+        AND id_periodo = '$id_periodo_activo'
+        LIMIT 1
+    ";
+
+        $resultado_otra_evaluacion = mysqli_query($conexion, $sql_otra_evaluacion);
+
+        if (!$resultado_otra_evaluacion) {
+            die("Error al verificar los registros de calificación.");
+        }
+
+        // Impedir crear una segunda evaluación.
+        if (mysqli_num_rows($resultado_otra_evaluacion) > 0) {
+            header("Location: " . $url_regreso . "&error=evaluacion_unica");
+            exit();
+        }
     }
 
     // Capturar las descripciones de las actividades.
     $descripcion_nota_1 = trim($_POST['descripcion_nota_1']);
     $descripcion_nota_2 = trim($_POST['descripcion_nota_2']);
-
-    // Proteger las descripciones antes de guardarlas en MySQL.
-    $descripcion_nota_1 = mysqli_real_escape_string($conexion, $descripcion_nota_1);
-    $descripcion_nota_2 = mysqli_real_escape_string($conexion, $descripcion_nota_2);
 
     // Obtener las notas enviadas desde el formulario.
     if (isset($_POST['nota_1'])) {

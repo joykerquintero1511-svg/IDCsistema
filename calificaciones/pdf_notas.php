@@ -400,7 +400,7 @@
     <!-- Encabezado que se repetirá en cada página del PDF. -->
     <thead>
     <tr>
-
+        <th>N.º</th>
         <th>Nombre</th>
         <th>Apellido</th>
         <th>Cédula</th>';
@@ -415,6 +415,7 @@
 
     $html .= '
         <th>Nota Final</th>
+        <th>Estado</th>
         <th>Observación</th>
     </tr>
     </thead>
@@ -422,15 +423,21 @@
     <!-- Aquí comienzan las filas de los estudiantes. -->
     <tbody>
 ';
+    // Iniciar la numeración de estudiantes.
+    $numero_estudiante = 1;
 
     while ($fila = mysqli_fetch_assoc($resultado)) {
 
         $html .= '
         <tr>
-        <td>' . htmlspecialchars(ucwords(strtolower($fila['nombre']))) . '</td>
-        <td>' . htmlspecialchars(ucwords(strtolower($fila['apellido']))) . '</td>
-        <td>' . htmlspecialchars($fila['cedula']) . '</td>
-    ';
+            <td>' . $numero_estudiante . '</td>
+            <td>' . htmlspecialchars(ucwords(strtolower($fila['nombre']))) . '</td>
+            <td>' . htmlspecialchars(ucwords(strtolower($fila['apellido']))) . '</td>
+            <td>' . htmlspecialchars($fila['cedula']) . '</td>
+        ';
+        // Aumentar el número para el siguiente estudiante.
+        $numero_estudiante++;
+
 
         if ($mostrar_actividad_1 == true) {
 
@@ -461,6 +468,15 @@
             $nota_final = htmlspecialchars($fila['nota_final']);
         }
 
+        // Determinar el estado académico según la nota final.
+        if ($fila['nota_final'] === null || $fila['nota_final'] === "") {
+            $estado_academico = "Pendiente";
+        } else if ($fila['nota_final'] >= 14) {
+            $estado_academico = "Aprobado";
+        } else {
+            $estado_academico = "Reprobado";
+        }
+
         // Preparar Observación
         if ($fila['observacion'] === null || $fila['observacion'] === "") {
             $observacion = "Sin observación";
@@ -471,6 +487,7 @@
         }
 
         $html .= '<td><strong>' . $nota_final . '</strong></td>
+    <td>' . $estado_academico . '</td>
     <td>' . $observacion . '</td>
 </tr>
 ';
