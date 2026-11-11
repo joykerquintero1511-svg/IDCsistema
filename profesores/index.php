@@ -106,11 +106,11 @@ $_SESSION['panel_regreso'] = 'index.php';
                         <?php while($tarea = mysqli_fetch_assoc($result_tareas)): ?>
                             <li class="task-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e293b;">
                                 <div class="item-info">
-                                    <h4 style="color: #38bdf8; margin: 0 0 5px 0;"><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
-                                    <p style="color: #94a3b8; margin: 0; font-size: 0.9rem;">
+                                    <h4 style="color: #38bdf8; margin: 0 0 5px 8px;"><?php echo htmlspecialchars($tarea['titulo_tarea']); ?></h4>
+                                    <p style="color: #94a3b8; margin: 0 0 2px 8px; font-size: 0.9rem;">
                                         Dirigido a: <span><?php echo htmlspecialchars($tarea['nivel_academico']); ?></span> • Tema: <span><?php echo htmlspecialchars($tarea['tema']); ?></span>
                                     </p>
-                                    <p style="color: #64748b; margin: 5px 0 0 0; font-size: 0.85rem;">Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
+                                    <p style="color: #64748b; margin: 3px 0 0 8px; font-size: 0.85rem;">Fecha límite: <?php echo date('d/m/Y', strtotime($tarea['fecha_limite'])); ?></p>
                                 </div>
                                 <!-- BOTÓN DE ELIMINACIÓN MANUAL -->
                                 <div>
