@@ -166,7 +166,7 @@ $url_qr_codificada = urlencode($url_validacion);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Registro Exitoso - Pase QR</title>
+    <title>Registro Exitoso </title>
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" href="images/EFB.png" type="image/png">
@@ -202,20 +202,13 @@ $url_qr_codificada = urlencode($url_validacion);
                         </p>
 
                         <div style="background: rgba(255,255,255,0.03); border: 2px dashed #3b71a8; padding: 2rem; border-radius: 8px; margin-bottom: 2.5rem;">
-                            <p style="color: #3b71a8; font-size: 1.4rem; font-weight: bold; margin-bottom: 1rem; text-transform: uppercase;">Pase de Entrada Oficial</p>
-
-                            <div style="background: white; padding: 1.5rem; display: inline-block; border-radius: 8px; margin-bottom: 1.5rem;">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=<?php echo $url_qr_codificada; ?>" alt="Código QR EFB" style="display: block;">
-                            </div>
 
                             <p style="color: rgba(255, 255, 255, 0.5); font-size: 1.3rem; margin-bottom: 0; line-height: 1.4;">
-                                ⚠️ <b>OBLIGATORIO:</b> Toma una captura de pantalla (screenshot) o imprime este código. Deberás presentarlo en la puerta el primer día de clases para confirmar tu asistencia.
+                                ⚠️ <b>OBLIGATORIO:</b>  Deberás presentarte en la puerta el primer día de clases para confirmar tu asistencia Con tu numero de <b>Cedula</b>.
                             </p>
                         </div>
 
                         <div class="no-print">
-                            <button onclick="window.print()" style="background-color: #3b71a8; color: white; border: none; padding: 1.2rem 2rem; font-size: 1.4rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 1.5rem; width: 100%;">🖨️ Imprimir / Guardar PDF</button>
-
                             <a href="index.php" class="btn btn--primary u-fullwidth" style="font-size: 1.3rem; text-transform: uppercase; height: 5rem; line-height: 5rem; background: transparent; border: 1px solid rgba(255,255,255,0.2);">Volver al Inicio</a>
                         </div>
                     </div>

@@ -85,19 +85,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['token'])) {
 
 <div class="efb-validar-wrapper">
     <div class="efb-validar-container">
-        <h2>Control de Asistencia </h2>
+        <h2>Validar Inscripción</h2>
         
         <?php if (!empty($mensaje)): ?>
             <div class="efb-alert <?= $tipo_alerta; ?>"><?= $mensaje; ?></div>
         <?php endif; ?>
 
         <!-- Contenedor donde se activa la cámara -->
-        <div id="reader"></div>
 
         <form id="form-validacion" action="validar.php" method="POST">
             <div class="efb-form-group">
-                <label for="busqueda">O ingrese la Cédula / Token manualmente:</label>
-                <input type="text" id="busqueda" name="busqueda" placeholder="Ej. V12345678 o Token QR" autofocus autocomplete="off" required>
+                <label for="busqueda">Ingrese la Cédula a Validar:</label>
+                <input type="text" id="busqueda" name="busqueda" placeholder="Ej. V12345678" autofocus autocomplete="off" required>
             </div>
             <button type="submit">Verificar y Registrar</button>
         </form>
