@@ -35,7 +35,7 @@
                 </div>
 
                 <button type="submit" class="btn btn--primary u-fullwidth" style="height: 5.5rem; line-height: 5.5rem; margin-bottom: 2rem;">
-                    Ingresar al Sistema
+                    Iniciar Sesión
                 </button>
 
                 <div style="text-align: center; margin-top: 2.5rem;">
