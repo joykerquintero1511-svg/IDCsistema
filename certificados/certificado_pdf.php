@@ -51,6 +51,7 @@
     }
 
     // Consultar el nombre y cargo del firmante.
+
     $sql_firmante = "SELECT nombre_firmante, cargo_firmante FROM configuracion_certificados WHERE id_configuracion = 1";
     $resultado_firmante = mysqli_query($conexion, $sql_firmante);
     $firmante = mysqli_fetch_assoc($resultado_firmante);
@@ -82,16 +83,22 @@
 
     // Convertir el logo a una imagen incorporada: Dompdf no depende de rutas del navegador.
     $logo_src = '';
+
     $logo_archivo = __DIR__ . '/images/marca_agua_logo.png';
+
+    //comprobamos exista 
     if (is_file($logo_archivo)) {
         $logo_src = 'data:image/png;base64,' . base64_encode(file_get_contents($logo_archivo));
     }
+
     $marca_src = '';
     $marca_archivo = __DIR__ . '/images/marca_logo3.png';
     if (is_file($marca_archivo)) {
         $marca_src = 'data:image/png;base64,' . base64_encode(file_get_contents($marca_archivo));
     }
+
     $nombre_completo = mb_strtoupper($datos_certificado['nombre'] . ' ' . $datos_certificado['apellido'], 'UTF-8');
+
     $clase_nombre = 'nombre';
     if (mb_strlen($nombre_completo, 'UTF-8') > 28) {
         $clase_nombre = 'nombre nombre-largo';
@@ -99,6 +106,7 @@
 
     // Capturar HTML antes de convertirlo en PDF.
     ob_start();
+
     ?>
     <!DOCTYPE html>
     <html lang="es">
