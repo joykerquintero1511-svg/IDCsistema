@@ -90,7 +90,8 @@ $resultado_historial = mysqli_query($conexion, $sql_historial);
                             <span class="nivel-nombre">
                                 📜 <?php echo htmlspecialchars($nivel['nivel_academico']); ?>
                             </span>
-                            <a href="../../certificados/certificado.php?id_inscripcion=<?php echo $nivel['id_inscripcion']; ?>" class="btn-ver-certificado" target="_blank">
+                            <!-- Abrir el certificado generado con Dompdf. -->
+                            <a href="../../certificados/certificado_pdf.php?id_inscripcion=<?php echo $nivel['id_inscripcion']; ?>" class="btn-ver-certificado" target="_blank">
                                 Ver certificado
                             </a>
                         </div>
