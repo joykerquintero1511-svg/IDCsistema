@@ -1,5 +1,8 @@
     <?php
 
+    // Establecer la zona horaria de Venezuela.
+    date_default_timezone_set('America/Caracas');
+
     require '../vendor/autoload.php';
     require_once '../conexion.php';
 
@@ -119,6 +122,7 @@
         }
     }
 
+    // consulta 
 
     $sql = "
     SELECT
@@ -161,6 +165,7 @@
         ORDER BY personas.apellido ASC
     ";
 
+    // obtener datos 
     $resultado = mysqli_query($conexion, $sql);
 
     if (!$resultado || mysqli_num_rows($resultado) == 0) {
@@ -245,6 +250,7 @@
     // Regresar el resultado al primer estudiante
     mysqli_data_seek($resultado, 0);
 
+    // contenido inicial del documento 
     $html = '
     <!DOCTYPE html>
     <html lang="es">
@@ -424,7 +430,7 @@
     $pendientes = 0;
     $suma_notas = 0;
 
-    // Recorrer las calificaciones del grupo.
+    // Recorrer estudiantes y las calificaciones del grupo.
     while ($fila = mysqli_fetch_assoc($resultado)) {
 
         $total_estudiantes++;
@@ -453,6 +459,7 @@
 
     // Calcular el promedio de las notas registradas.
     $promedio_general = 0;
+
     $total_calificados = $aprobados + $reprobados;
 
     if ($total_calificados > 0) {
@@ -481,7 +488,7 @@
         <td>Porcentaje de aprobación</td>
         <td>' . number_format($porcentaje_aprobacion, 2) . '%</td>
     </tr>
-    <tr>
+     <tr>
         <td>Promedio general</td>
         <td>' . number_format($promedio_general, 2) . '</td>
     </tr>
@@ -497,6 +504,8 @@
     </body>
     </html>
     ';
+
+    // Instrucciones 
 
     $dompdf = new Dompdf();
     $dompdf->loadHtml($html);

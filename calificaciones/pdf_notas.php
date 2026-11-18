@@ -1,5 +1,8 @@
     <?php
 
+    // Establecer la zona horaria de Venezuela.
+    date_default_timezone_set('America/Caracas');
+
     require '../vendor/autoload.php';
     require_once '../conexion.php';
 
