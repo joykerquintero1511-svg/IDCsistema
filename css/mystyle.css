@@ -993,32 +993,40 @@ input[type="number"].table-input {
   border-radius: 4px;
   font-size: 0.70rem; /* Botones más pequeños */
   font-weight: 500;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-right: 0.3rem;
   margin-left: 0.1rem;
   transition: all 0.2s ease;
   white-space: nowrap; /* Evita que el botón se parta en dos líneas */
+  text-align: center !important;
 }
 
 .estudiantes-btn-edit {
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(59, 131, 246, 0.426);
   color: #60a5fa;
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
+.estudiantes-btn-certify {
+  background: rgba(234, 246, 59, 0.426);
+  color: #f2fa60;
+  border: 1px solid rgba(224, 246, 59, 0.3);
+}
+
 .estudiantes-btn-edit:hover {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 131, 246, 0.335);
   color: #93c5fd;
 }
 
 .estudiantes-btn-delete {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.5);
   color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .estudiantes-btn-delete:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.468);
   color: #fca5a5;
 }
 

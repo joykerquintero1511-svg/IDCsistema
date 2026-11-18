@@ -11,7 +11,6 @@ $q_inscrip = mysqli_query($conexion, "SELECT id_periodo, inscripciones_abiertas 
 $r_inscrip = mysqli_fetch_assoc($q_inscrip);
 
 if (!$r_inscrip || $r_inscrip['inscripciones_abiertas'] == 0) {
-    // Si están cerradas, lo pateamos pal inicio
     die("
     <div style='background:#0b0f19; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'>
         <div style='background:#1e293b; padding:40px; border-radius:10px; text-align:center; color:white; max-width:400px;'>
@@ -34,21 +33,20 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inscripción EFB</title>
 
-    <style> #msg-cedula,
-#msg-email {
-    font-weight: bold;
-    font-size: 1.4rem;
-    display: inline-block;
-    margin-top: 0.6rem;
-    background-color: transparent !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42);
-    
-}
-</style>
+    <style> 
+        #msg-cedula, #msg-email {
+            font-weight: bold;
+            font-size: 1.4rem;
+            display: inline-block;
+            margin-top: 0.6rem;
+            background-color: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42);
+        }
+    </style>
 
     <link rel="icon" type="image/png" href="images/EFB.png">
 
@@ -84,7 +82,6 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
 
                         <form action="registrar_estudiantes.php" method="POST" style="text-align: left;">
 
-                            <!-- Campo oculto para enviar el período activo -->
                             <input type="hidden" name="id_periodo" value="<?php echo $id_periodo_activo; ?>">
 
                             <div style="margin-bottom: 2rem;">
@@ -205,63 +202,100 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
     </main>
 
     <script>
-        // Búsqueda automática por cédula y filtrado dinámico de niveles permitidos
-        document.getElementById('cedula').addEventListener('blur', function() {
-            let cedula = this.value;
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectNivel = document.querySelector('select[name="id_nivel"]');
+            const todasLasOpciones = Array.from(selectNivel.options).map(opt => ({
+                value: opt.value,
+                text: opt.text,
+                disabled: opt.disabled
+            }));
 
-            if (cedula.length >= 7) {
-                let formData = new FormData();
-                formData.append('cedula', cedula);
-
-                fetch('buscar_cedula.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.error) {
-                            if (data.nacionalidad) document.getElementById('nacionalidad').value = data.nacionalidad;
-                            document.getElementById('nombre').value = data.nombre;
-                            document.getElementById('apellidos').value = data.apellido;
-                            document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento;
-                            if (data.genero) document.getElementById('genero').value = data.genero;
-                            document.getElementById('telefono').value = data.telefono;
-                            document.getElementById('contacto_emergencia').value = data.contacto_emergencia;
-                            document.getElementById('direccion').value = data.direccion;
-                            if (data.email) document.getElementById('email').value = data.email;
-                            if (data.nivel_instruccion) document.getElementById('nivel_instruccion').value = data.nivel_instruccion;
-
-                            // FILTRAR NIVELES PERMITIDOS (Nivel actual promovido o repetir el anterior)
-                            if (data.id_nivel) {
-                                let nivelActual = parseInt(data.id_nivel);
-                                let selectNivel = document.querySelector('select[name="id_nivel"]');
-                                let opciones = selectNivel.options;
-
-                                for (let i = 0; i < opciones.length; i++) {
-                                    let val = parseInt(opciones[i].value);
-                                    if (!isNaN(val)) {
-                                        if (val === nivelActual || val === (nivelActual - 1)) {
-                                            opciones[i].style.display = 'block';
-                                            opciones[i].disabled = false;
-                                        } else {
-                                            opciones[i].style.display = 'none';
-                                            opciones[i].disabled = true;
-                                        }
-                                    }
-                                }
-                                selectNivel.value = nivelActual;
-                            }
-
-                            // Efecto visual de bordes azules
-                            let campos = ['nombre', 'apellidos', 'fecha_nacimiento', 'telefono', 'contacto_emergencia', 'direccion', 'email'];
-                            campos.forEach(id => {
-                                document.getElementById(id).style.borderColor = '#3b82f6';
-                                document.getElementById(id).style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error en la búsqueda:', error));
+            function restaurarTodosLosNiveles() {
+                selectNivel.innerHTML = '';
+                todasLasOpciones.forEach(opt => {
+                    let optionEl = document.createElement('option');
+                    optionEl.value = opt.value;
+                    optionEl.textContent = opt.text;
+                    optionEl.disabled = opt.disabled;
+                    optionEl.style.background = '#142132';
+                    optionEl.style.color = opt.value === '' ? 'rgba(255,255,255,0.4)' : '#fff';
+                    selectNivel.appendChild(optionEl);
+                });
+                selectNivel.selectedIndex = 0;
             }
+
+            document.getElementById('cedula').addEventListener('blur', function() {
+                let cedula = this.value.trim();
+                let spanCedula = document.getElementById('msg-cedula');
+
+                if (cedula.length >= 7) {
+                    let formData = new FormData();
+                    formData.append('cedula', cedula);
+
+                    fetch('buscar_cedula.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.error) {
+                                if (data.nacionalidad) document.getElementById('nacionalidad').value = data.nacionalidad;
+                                document.getElementById('nombre').value = data.nombre;
+                                document.getElementById('apellidos').value = data.apellido;
+                                document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento;
+                                if (data.genero) document.getElementById('genero').value = data.genero;
+                                document.getElementById('telefono').value = data.telefono;
+                                document.getElementById('contacto_emergencia').value = data.contacto_emergencia;
+                                document.getElementById('direccion').value = data.direccion;
+                                if (data.email) document.getElementById('email').value = data.email;
+                                if (data.nivel_instruccion) document.getElementById('nivel_instruccion').value = data.nivel_instruccion;
+
+                                spanCedula.textContent = "👋 ¡Bienvenido Nuevamente!";
+                                spanCedula.style.color = "#2ecc71";
+
+                                // FILTRAR NIVELES PERMITIDOS (Nivel actual y TODOS los anteriores hacia atrás)
+                                if (data.id_nivel !== null && data.id_nivel !== undefined && data.id_nivel !== "") {
+                                    let nivelActual = parseInt(data.id_nivel);
+                                    selectNivel.innerHTML = '';
+
+                                    todasLasOpciones.forEach(opt => {
+                                        let val = parseInt(opt.value);
+                                        // Aquí está el cambio clave: val <= nivelActual muestra el actual y todos los previos
+                                        if (opt.value === '' || val <= nivelActual) {
+                                            let optionEl = document.createElement('option');
+                                            optionEl.value = opt.value;
+                                            optionEl.textContent = opt.text;
+                                            optionEl.disabled = opt.disabled;
+                                            optionEl.style.background = '#142132';
+                                            optionEl.style.color = opt.value === '' ? 'rgba(255,255,255,0.4)' : '#fff';
+                                            selectNivel.appendChild(optionEl);
+                                        }
+                                    });
+                                    selectNivel.value = nivelActual;
+                                } else {
+                                    restaurarTodosLosNiveles();
+                                }
+
+                                let campos = ['nombre', 'apellidos', 'fecha_nacimiento', 'telefono', 'contacto_emergencia', 'direccion', 'email'];
+                                campos.forEach(id => {
+                                    let el = document.getElementById(id);
+                                    if(el) {
+                                        el.style.borderColor = '#3b82f6';
+                                        el.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                                    }
+                                });
+                            } else {
+                                spanCedula.textContent = "✨ Estudiante Nuevo";
+                                spanCedula.style.color = "#38bdf8";
+                                restaurarTodosLosNiveles();
+                            }
+                        })
+                        .catch(error => console.error('Error en la búsqueda:', error));
+                } else {
+                    spanCedula.textContent = "";
+                    restaurarTodosLosNiveles();
+                }
+            });
         });
     </script>
 
@@ -292,10 +326,7 @@ $id_periodo_activo = $r_inscrip['id_periodo'];
                     .then(response => response.json())
                     .then(data => {
                         spanElement.textContent = data.mensaje;
-                        if (data.status === 'error') {
-                            spanElement.style.color = '#3b82f6';
-                            this.style.borderColor = '#3b82f6';
-                        } else if (data.status === 'info') {
+                        if (data.status === 'error' || data.status === 'info') {
                             spanElement.style.color = '#3b82f6';
                             this.style.borderColor = '#3b82f6';
                         } else {

@@ -294,9 +294,10 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
 
                         <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
                             <p style="color: #ef4444; font-size: 13px; margin-bottom: 10px;">⚠️ Zona de Mantenimiento:</p>
-                            <a href="purgar_pendientes.php" onclick="return confirm('¿Estás seguro? Esto eliminará permanentemente a todos los alumnos pre-inscritos que NO validaron su asistencia presencial con el QR.');" style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; display: inline-block;">
-                                🗑️ Ejecutar Purga Trimestral (Borrar Pendientes)
-                            </a>
+                           <a href="#" onclick="abrirModalPurga(); return false;" 
+   style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; display: inline-block;">
+    🗑️ Ejecutar Purga Trimestral (Borrar Pendientes)
+</a>
                         </div>
                     </div>
                 </div>
@@ -304,6 +305,51 @@ $estado_actual = $res_estado['inscripciones_abiertas'] ?? 0;
             </div>
         </div>
     </main>
+
+    <!-- VENTANA MODAL DE PURGA PERSONALIZADA -->
+<div id="modal-purga" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); z-index: 1000; justify-content: center; align-items: center;">
+    
+    <div style="background: #161b22; border: 1px solid #30363d; padding: 25px; border-radius: 10px; width: 90%; max-width: 420px; box-shadow: 0 5px 20px rgba(0,0,0,0.6); color: #fff; position: relative;">
+        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+    <img src="../images/EFB.png" alt="Logo EFB" style="width: 40px; height: auto;">
+</div>
+        <h3 style="color: #cecb1e; margin-top: 0; margin-bottom: 12px; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+            ⚠️ Confirmar Purga Trimestral
+        </h3>
+        
+        <p style="color: #c9d1d9; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">
+            ¿Estás seguro? Esto eliminará permanentemente a todos los alumnos pre-inscritos que <strong>NO validaron</strong> su asistencia presencial con el QR.
+        </p>
+        
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" onclick="cerrarModalPurga()" style="background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                Cancelar
+            </button>
+            <a href="purgar_pendientes.php" style="background: #dc2626c0; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block;">
+                Sí, Ejecutar Purga
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function abrirModalPurga() {
+        document.getElementById('modal-purga').style.display = 'flex';
+    }
+
+    function cerrarModalPurga() {
+        document.getElementById('modal-purga').style.display = 'none';
+    }
+
+    // Cerrar si hacen clic fuera de la tarjeta modal
+    window.addEventListener('click', function(event) {
+        let modal = document.getElementById('modal-purga');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+</script>
 
     <!-- AQUÍ LLAMAS A TU SCRIPT MATA-FANTASMAS -->
     <?php include '../script-seguridad.php'; ?>

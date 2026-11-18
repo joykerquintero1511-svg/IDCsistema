@@ -272,16 +272,16 @@
                                     </td>
 
                                     <td>
-                                        <a href="editar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-edit">
-                                            Editar
+                                        <a href="editar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-edit" title="Editar Estudiante">
+                                            ✏️
                                         </a>
 
-                                        <a href="certificados_estudiante.php?id_estudiante=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-edit">
-                                            Certificados
+                                        <a href="certificados_estudiante.php?id_estudiante=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-certify" title="Ver Certificados del Estudiante">
+                                            📜
                                         </a>
 
-                                        <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-delete">
-                                            Eliminar
+                                        <a href="eliminar.php?id=<?php echo $fila['id_estudiante']; ?>" class="estudiantes-btn-action estudiantes-btn-delete" title="Eliminar Estudiante">
+                                            🗑️
                                         </a>
                                     </td>
                                 </tr>
