@@ -1,9 +1,9 @@
-    <?php
+  <?php
 
     // Establecer la zona horaria de Venezuela.
     date_default_timezone_set('America/Caracas');
 
-    require '../vendor/autoload.php';
+    require '../vendor/autoload.php';  // permite cargar las clases de las librerías instaladas con Composer
     require_once '../conexion.php';
 
     session_start();
